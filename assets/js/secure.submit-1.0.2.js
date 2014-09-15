@@ -34,11 +34,9 @@ var hps = (function ($) {
     FieldValidator.prototype.constructor = FieldValidator;
 
     HPS = {
-
         Tag: "SecureSubmit",
 
         Urls: {
-            UAT: "https://posgateway.uat.secureexchange.net/Hps.Exchange.PosGateway.Hpf.v1/api/token",
             CERT: "https://posgateway.cert.secureexchange.net/Hps.Exchange.PosGateway.Hpf.v1/api/token",
             PROD: "https://api.heartlandportico.com/SecureSubmit.v1/api/token"
         },
@@ -56,7 +54,7 @@ var hps = (function ($) {
         },
 				
 		tokenize: function (options) {			
-			var gateway_url, params, env;
+			var gateway_url, params, env, cardType;
 
             // add additional service parameters
             params = $.param({
@@ -72,33 +70,61 @@ var hps = (function ($) {
 
             env = options.data.public_key.split("_")[1];
 
-            if (env === "uat") {
-                gateway_url = HPS.Urls.UAT;
-            } else if (env === "cert") {
+            if (env === "cert") {
                 gateway_url = HPS.Urls.CERT;
             } else {
                 gateway_url = HPS.Urls.PROD;
             }
 
+            var re = {
+                visa: /^4[0-9]{12}(?:[0-9]{3})?$/,
+                mastercard: /^5[1-5][0-9]{14}$/,
+                amex: /^3[47][0-9]{13}$/,
+                diners: /^3(?:0[0-5]|[68][0-9])[0-9]{11}$/,
+                discover: /^6(?:011|5[0-9]{2})[0-9]{12}$/,
+                jcb: /^(?:2131|1800|35\d{3})\d{11}$/
+            };
 
-            // request token
+            var cnum = $.trim(options.data.number);
+
+            try {
+            if (re.visa.test(cnum)) {
+                cardType = 'Visa';
+            } else if (re.mastercard.test(cnum)) {
+                cardType = 'MasterCard';
+            } else if (re.amex.test(cnum)) {
+                cardType = 'American Express';
+            } else if (re.diners.test(cnum)) {
+                cardType = 'Diners';
+            } else if (re.discover.test(cnum)) {
+                cardType = 'Discover';
+            } else if (re.jcb.test(cnum)) {
+                cardType = 'JCB';
+            }
+        } catch(err) { alert(err); }
+
             $.ajax({
                 cache: false,
                 url: gateway_url,
                 data: params,
                 dataType: "jsonp",
                 success: function (response) {
-
                     // Request failed, handle error
                     if (typeof response.error === 'object') {
                         // call error handler if provided and valid
                         if (typeof options.error === 'function') {
                             options.error(response.error);
-                        }
+                        } else {
                         // handle exception
-                        HPS.error(response.error.message);
+                            HPS.error(response.error.message);
+                        }
                     }
 					else if(typeof options.success === 'function') {
+                        response.card_type = cardType;
+                        response.exp_month = $.trim(options.data.exp_month);
+                        response.exp_year = $.trim(options.data.exp_year);
+                        response.last_four = cnum.slice(-4);
+
 						options.success(response);
 					}
                 }
@@ -123,10 +149,7 @@ var hps = (function ($) {
                 error: options.error,
                 validators: [
                     new OptionValidator("public_key", options),
-                    new FieldValidator("card_number", "input"),
-                    new FieldValidator("card_cvc", "input"),
-                    new FieldValidator("exp_month", "input"),
-                    new FieldValidator("exp_year", "input")
+                    new FieldValidator("card_number", "input")
                 ]
             });
 
@@ -180,6 +203,57 @@ var hps = (function ($) {
 		                    name: "token_value",
 		                    value: response.token_value
 		                }).appendTo(theForm);
+
+                        var re = {
+                            visa: /^4[0-9]{12}(?:[0-9]{3})?$/,
+                            mastercard: /^5[1-5][0-9]{14}$/,
+                            amex: /^3[47][0-9]{13}$/,
+                            diners: /^3(?:0[0-5]|[68][0-9])[0-9]{11}$/,
+                            discover: /^6(?:011|5[0-9]{2})[0-9]{12}$/,
+                            jcb: /^(?:2131|1800|35\d{3})\d{11}$/
+                        };
+
+                        if (re.visa.test($.trim($("#card_number").val()))) {
+                            cardType = 'visa';
+                        } else if (re.mastercard.test($.trim($("#card_number").val()))) {
+                            cardType = 'mastercard';
+                        } else if (re.amex.test($.trim($("#card_number").val()))) {
+                            cardType = 'amex';
+                        } else if (re.diners.test($.trim($("#card_number").val()))) {
+                            cardType = 'diners';
+                        } else if (re.discover.test($.trim($("#card_number").val()))) {
+                            cardType = 'discover';
+                        } else if (re.jcb.test($.trim($("#card_number").val()))) {
+                            cardType = 'jcb';
+                        }
+
+                        $("<input>").attr({
+                            type: "hidden",
+                            id: "card_type",
+                            name: "card_type",
+                            value: cardType
+                        }).appendTo(theForm);
+
+                        $("<input>").attr({
+                            type: "hidden",
+                            id: "exp_month",
+                            name: "exp_month",
+                            value: $.trim($("#exp_month").val())
+                        }).appendTo(theForm);
+
+                        $("<input>").attr({
+                            type: "hidden",
+                            id: "exp_year",
+                            name: "exp_year",
+                            value: $.trim($("#exp_year").val())
+                        }).appendTo(theForm);
+
+                        $("<input>").attr({
+                            type: "hidden",
+                            id: "last_four",
+                            name: "last_four",
+                            value: $("#card_number").val().slice(-4)
+                        }).appendTo(theForm);
 
 		                // success handler provided
 		                if (typeof data.success === 'function') {
