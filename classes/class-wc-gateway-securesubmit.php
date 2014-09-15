@@ -1,9 +1,12 @@
 <?php
-/**
- * WC_Gateway_SecureSubmit class.
- *
- * @extends WC_Payment_Gateway
- */
+/*
+Plugin Name: WooCommerce SecureSubmit Gateway
+Plugin URI: https://developer.heartlandpaymentsystems.com/SecureSubmit/
+Description: Heartland Payment Systems gateway for WooCommerce.
+Version: 1.1.0
+Author: Mark Hagan
+Author URI: https://developer.heartlandpaymentsystems.com/SecureSubmit/
+*/
 class WC_Gateway_SecureSubmit extends WC_Payment_Gateway {
 	function __construct() {
 		require_once 'includes/Hps.php';
@@ -137,9 +140,22 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway {
 			<?php if ( $this->description ) : ?>
 				<p><?php echo $this->description; ?>
 			<?php endif; ?>
+			<?php if (is_user_logged_in() && ($cards = get_user_meta( get_current_user_id(), '_secure_submit_card', false))) : ?>
+				<p class="form-row form-row-wide">
 
+					<a class="button" style="float:right;" href="<?php echo get_permalink( get_option( 'woocommerce_myaccount_page_id' ) ); ?>#saved-cards"><?php _e( 'Saved Cards', 'wc_securesubmit' ); ?></a>
+
+					<?php foreach ( $cards as $i => $card ) : ?>
+						<input type="radio" id="secure_submit_card_<?php echo $i; ?>" name="secure_submit_card" style="width:auto;" value="<?php echo $i; ?>" />
+						<label style="display:inline;" for="secure_submit_card_<?php echo $i; ?>"><?php echo $card['card_type']; ?> ending in <?php echo $card['last_four']; ?> (<?php echo $card['exp_month'] . '/' . $card['exp_year'] ?>)</label><br />
+					<?php endforeach; ?>
+
+					<input type="radio" id="new_card" name="secure_submit_card" style="width:auto;" <?php checked( 1, 1 ) ?> value="new" /> <label style="display:inline;" for="new_card">Use a new card</label>
+
+				</p>
+				<div class="clear"></div>
+			<?php endif; ?>
 			<div class="securesubmit_new_card">
-
 				<p class="form-row form-row-wide">
 					<label for="securesubmit_card_number"><?php _e("Credit Card number", 'wc_securesubmit') ?> <span class="required">*</span></label>
 					<input type="text" autocomplete="off" class="input-text card-number" />
@@ -169,6 +185,10 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway {
 					<label for="securesubmit_card_csc"><?php _e("Card security code", 'wc_securesubmit') ?> <span class="required">*</span></label>
 					<input type="text" id="securesubmit_card_csc" maxlength="4" style="width:4em;" autocomplete="off" class="input-text card-cvc" />
 					<span class="help securesubmit_card_csc_description"></span>
+				</p>
+				<p class="form-row form-row-wide">
+					<input type="checkbox" autocomplete="off" id="save_card" name="save_card" value="true" style="display:inline">
+					<label for="save_card" style="display: inline;"><?php _e("Save Credit Card for Future Use", 'wc_securesubmit') ?></label>
 				</p>
 				<div class="clear"></div>
 			</div>
@@ -204,11 +224,19 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway {
 		$order = new WC_Order($order_id);
 		$securesubmit_token = isset($_POST['securesubmit_token']) ? woocommerce_clean($_POST['securesubmit_token']) : '';
 
+		// used for card saving:
+		$last_four = isset($_POST['last_four']) ? woocommerce_clean($_POST['last_four']) : '';
+		$exp_month = isset($_POST['exp_month']) ? woocommerce_clean($_POST['exp_month']) : '';
+		$exp_year = isset($_POST['exp_year']) ? woocommerce_clean($_POST['exp_year']) : '';
+		$card_type = isset($_POST['card_type']) ? woocommerce_clean($_POST['card_type']) : '';
+
 		try {
 			$post_data = array();
 
-			if (empty( $securesubmit_token ))
-				throw new Exception(__( 'Please make sure your card details have been entered correctly and that your browser supports JavaScript.', 'wc_securesubmit'));
+			if (empty($securesubmit_token)) {
+				if (isset($_POST['secure_submit_card']) && $_POST['secure_submit_card'] === 'new')
+					throw new Exception(__( 'Please make sure your card details have been entered correctly and that your browser supports JavaScript.', 'wc_securesubmit'));
+			}
 
             $config = new HpsConfiguration();
             $config->secretApiKey = $this->secret_key;
@@ -221,7 +249,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway {
             $hpsaddress->address = $order->billing_address_1;
             $hpsaddress->city = $order->billing_city;
             $hpsaddress->state = $order->billing_state;
-            $hpsaddress->zip = preg_replace('/[^0-9]/', '', $order->billing_postcode);
+            $hpsaddress->zip = preg_replace('/[^a-zA-Z0-9]/', '', $order->billing_postcode);
             $hpsaddress->country = $order->billing_country;
 
             $cardHolder = new HpsCardHolder();
@@ -232,9 +260,30 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway {
             $cardHolder->address = $hpsaddress;
 
             $hpstoken = new HpsTokenData();
-            $hpstoken->tokenValue = $securesubmit_token;
+
+            if (is_user_logged_in() && isset($_POST['secure_submit_card']) && $_POST['secure_submit_card'] !== 'new') {
+				$cards = get_user_meta( get_current_user_id(), '_secure_submit_card', false);
+
+				if (isset($cards[$_POST['secure_submit_card']]['token_value']))
+					$hpstoken->tokenValue = $cards[$_POST['secure_submit_card']]['token_value'];
+				else
+					throw new Exception( __( 'Invalid saved card.', 'wc_securesubmit' ) );
+			} else {
+				$hpstoken->tokenValue = $securesubmit_token;
+			}
+
+            
+
+            $details = new HpsTransactionDetails();
+            $details->invoiceNumber = $order->id;
 			
             try	{
+            	if ($_POST['save_card'] === "true") {
+            		$save_card_to_customer = true;
+            	} else {
+            		$save_card_to_customer = false;
+            	}
+
                 if ($this->paymentaction == 'sale')
                 {
                     $response = $chargeService->charge(
@@ -242,18 +291,34 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway {
                         strtolower(get_woocommerce_currency()),
                         $hpstoken,
                         $cardHolder,
-                        false,
-                        null);
+                        $save_card_to_customer,	// multi-use
+                        $details);
                 } else {
                     $response = $chargeService->authorize(
                         $order->order_total,
                         strtolower(get_woocommerce_currency()),
                         $hpstoken,
                         $cardHolder,
-                        false,
-                        null);
+                        $save_card_to_customer,	// multi-use
+                        $details);
                 }
                 
+                if ($save_card_to_customer) {
+					if (is_user_logged_in()) {
+						$tokenval = $response->tokenData->tokenValue;
+
+						if ($response->tokenData->responseCode == '0') {
+							add_user_meta(get_current_user_id(), '_secure_submit_card', array(
+								'last_four' => $last_four,
+								'exp_month' => $exp_month,
+								'exp_year' => $exp_year,
+								'token_value' => (string) $tokenval,
+								'card_type' => $card_type,
+							));
+						}
+					}
+                }
+
                 $order->add_order_note(__('SecureSubmit payment completed', 'hps-securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
                 $order->payment_complete();
                 $woocommerce->cart->empty_cart();

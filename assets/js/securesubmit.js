@@ -18,8 +18,8 @@ jQuery( function() {
 } );
 
 function secureSubmitFormHandler() {
-	if ( jQuery('#payment_method_securesubmit').is(':checked') ) {
-		if ( jQuery( 'input.securesubmit_token' ).size() == 0 ) {
+	if ( jQuery('#payment_method_securesubmit').is(':checked') && (jQuery('input[name=secure_submit_card]:checked').size() == 0 || jQuery('input[name=secure_submit_card]:checked').val() == 'new' ) ) {
+		if (jQuery( 'input.securesubmit_token' ).size() == 0) {
 
 			var card 	= jQuery('.card-number').val().replace(/\D/g, '');
 			var cvc 	= jQuery('.card-cvc').val();
@@ -62,6 +62,11 @@ function secureSubmitResponseHandler( response ) {
         $form.unblock();
     } else {
         $form.append("<input type='hidden' class='securesubmit_token' name='securesubmit_token' value='" + response.token_value + "'/>");
+        $form.append("<input type='hidden' name='last_four' value='" + response.last_four + "'/>");
+        $form.append("<input type='hidden' name='card_type' value='" + response.card_type + "'/>");
+        $form.append("<input type='hidden' name='exp_month' value='" + response.exp_month + "'/>");
+        $form.append("<input type='hidden' name='exp_year' value='" + response.exp_year + "'/>");
+
         $form.submit();
     }
 }
