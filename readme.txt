@@ -35,5 +35,21 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 
 == Changelog ==
 
+= 1.0.5 =
+* Clearing token variable after form submission
+
+= 1.0.4 =
+* Clearing token if it already exists after error
+
+= 1.0.3 =
+* Version only update
+
+= 1.0.2 =
+* Fixed optional card-saving
+
+= 1.0.1 =
+* Made Card-Saving optional
+* Reversed order of Public/Secret Keys
+
 = 1.0.0 =
 * Initial Release
