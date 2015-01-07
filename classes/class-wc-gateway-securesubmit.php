@@ -23,7 +23,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway {
         $this->secret_key           = $this->settings['secret_key'];
         $this->public_key           = $this->settings['public_key'];
         $this->paymentaction        = $this->settings['paymentaction'];
-        $this->allow_card_saving    = (bool)$this->settings['allow_card_saving'];
+        $this->allow_card_saving    = ($this->settings['allow_card_saving'] == 'yes' ? true : false);
         $this->supports             = array(
                                         'products',
                                         'refunds',
@@ -152,7 +152,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway {
             <?php if ( $this->description ) : ?>
                 <p><?php echo $this->description; ?>
             <?php endif; ?>
-            <?php if ( $this->allow_card_saving == 'yes' ) : ?>
+            <?php if ( $this->allow_card_saving ) : ?>
                 <?php if (is_user_logged_in() && ($cards = get_user_meta( get_current_user_id(), '_secure_submit_card', false))) : ?>
                     <p class="form-row form-row-wide">
 
