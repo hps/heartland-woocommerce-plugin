@@ -45,10 +45,6 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
                 }
             }
 
-            if (WC_Subscriptions_Order::order_contains_subscription($orderId) && ($saveCard !== 'true' || $this->allow_card_saving)) {
-                throw new Exception(__('Subscriptions require a saved card.', 'wc_securesubmit'));
-            }
-
             $config = new HpsServicesConfig();
             $config->secretApiKey = $this->secret_key;
             $config->versionNumber = '1510';
