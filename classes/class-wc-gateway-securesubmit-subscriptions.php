@@ -46,6 +46,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
 
         $order = new WC_Order($orderId);
         $securesubmitToken = isset($_POST['securesubmit_token']) ? woocommerce_clean($_POST['securesubmit_token']) : '';
+        $useStoredCard = false;
 
         // used for card saving:
         $last_four = isset($_POST['last_four']) ? woocommerce_clean($_POST['last_four']) : '';
@@ -55,34 +56,11 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
         $saveCard = isset($_POST['save_card']) ? woocommerce_clean($_POST['save_card']) : '';
 
         try {
-            $post_data = array();
-
             if (empty($securesubmitToken)) {
                 if (isset($_POST['secure_submit_card']) && $_POST['secure_submit_card'] === 'new') {
                     throw new Exception(__('Please make sure your card details have been entered correctly and that your browser supports JavaScript.', 'wc_securesubmit'));
                 }
             }
-
-            $config = new HpsServicesConfig();
-            $config->secretApiKey = $this->secret_key;
-            $config->versionNumber = '1510';
-            $config->developerId = '002914';
-
-            $chargeService = new HpsCreditService($config);
-
-            $hpsaddress = new HpsAddress();
-            $hpsaddress->address = $order->billing_address_1;
-            $hpsaddress->city = $order->billing_city;
-            $hpsaddress->state = $order->billing_state;
-            $hpsaddress->zip = preg_replace('/[^a-zA-Z0-9]/', '', $order->billing_postcode);
-            $hpsaddress->country = $order->billing_country;
-
-            $cardHolder = new HpsCardHolder();
-            $cardHolder->firstName = $order->billing_first_name;
-            $cardHolder->lastName = $order->billing_last_name;
-            $cardHolder->phone = preg_replace('/[^0-9]/', '', $order->billing_phone);
-            $cardHolder->emailAddress = $order->billing_email;
-            $cardHolder->address = $hpsaddress;
 
             $hpstoken = new HpsTokenData();
 
@@ -90,7 +68,8 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
                 $cards = get_user_meta(get_current_user_id(), '_secure_submit_card', false);
 
                 if (isset($cards[$_POST['secure_submit_card']]['token_value'])) {
-                    $hpstoken->tokenValue = $cards[$_POST['secure_submit_card']]['token_value'];
+                    $hpstoken->tokenValue = (string)$cards[(int)$_POST['secure_submit_card']]['token_value'];
+                    $useStoredCard = true;
                 } else {
                     throw new Exception(__('Invalid saved card.', 'wc_securesubmit'));
                 }
@@ -98,54 +77,45 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
                 $hpstoken->tokenValue = $securesubmitToken;
             }
 
-            $details = new HpsTransactionDetails();
-            $details->invoiceNumber = $order->id;
-
             try {
-                if ($saveCard === "true") {
-                    $saveCardToCustomer = true;
-                } else {
-                    $saveCardToCustomer = false;
+                $saveCardToCustomer = true;
+                $initialPayment = WC_Subscriptions_Order::get_total_initial_payment($order);
+                $response = null;
+                if ($initialPayment > 0) {
+                    $response = $this->processSubscriptionPayment($order, $initialPayment, $hpstoken, $saveCardToCustomer);
                 }
 
-                if ($this->paymentaction == 'sale') {
-                    $response = $chargeService->charge(
-                        $order->order_total,
-                        strtolower(get_woocommerce_currency()),
-                        $hpstoken,
-                        $cardHolder,
-                        $saveCardToCustomer, // multi-use
-                        $details
-                    );
-                } else {
-                    $response = $chargeService->authorize(
-                        $order->order_total,
-                        strtolower(get_woocommerce_currency()),
-                        $hpstoken,
-                        $cardHolder,
-                        $saveCardToCustomer, // multi-use
-                        $details
-                    );
+                if (isset($response) && is_wp_error($response)) {
+                    throw new Exception($response->get_error_message());
                 }
 
-                if ($saveCardToCustomer) {
+                if ($saveCardToCustomer || $useStoredCard) {
                     if (is_user_logged_in()) {
-                        $tokenval = $response->tokenData->tokenValue;
+                        $tokenval = (string)$response->tokenData->tokenValue;
+                        $saveToOrder = false;
 
-                        if ($response->tokenData->responseCode == '0') {
+                        if ($response->tokenData->responseCode == '0' && !$useStoredCard) {
                             add_user_meta(get_current_user_id(), '_secure_submit_card', array(
                                 'last_four' => $last_four,
                                 'exp_month' => $exp_month,
                                 'exp_year' => $exp_year,
-                                'token_value' => (string) $tokenval,
+                                'token_value' => $tokenval,
                                 'card_type' => $card_type,
                             ));
-                            add_post_meta($order->id, '_securesubmit_card_token', (string)$tokenval, true);
+                            $saveToOrder = true;
+                        }
+
+                        if ($useStoredCard) {
+                            $tokenval = $hpstoken->tokenValue;
+                            $saveToOrder = true;
+                        }
+
+                        if ($saveToOrder) {
+                            add_post_meta($order->id, '_securesubmit_card_token', $tokenval, true);
                         }
                     }
                 }
 
-                $order->add_order_note(__('SecureSubmit payment completed', 'hps-securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
                 $order->payment_complete();
                 $woocommerce->cart->empty_cart();
                 WC_Subscriptions_Manager::activate_subscriptions_for_order($order);
@@ -183,59 +153,44 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
     {
         global $woocommerce;
 
-        $order = new WC_Order($orderId);
-        $token = get_post_meta($new->id, '_securesubmit_card_token', true);
+        if (!is_object($order)) {
+            $order = new WC_Order($order);
+        }
+        $tokenValue = get_post_meta($order->id, '_securesubmit_card_token', true);
+        $token = new HpsTokenData();
+        $token->tokenValue = $tokenValue;
 
-        if (!isset($token)) {
-            return new WP_Error();
+        if (!isset($tokenValue) && $tokenData == null) {
+            return new WP_Error('securesubmit_error', __('SecureSubmit payment token not found', 'hps-securesubmit'));
         }
 
-        if (!isset($this->paymentaction)) {
-            $this->init_settings();
-            $this->paymentaction = $this->settings['paymentaction'];
+        if ($tokenData != null) {
+            $token = $tokenData;
         }
 
         try {
+            $chargeService = $this->getCreditService();
+            $hpsaddress = $this->getOrderAddress($order);
+            $cardHolder = $this->getOrderCardHolder($order, $hpsaddress);
+
             $details = new HpsTransactionDetails();
             $details->invoiceNumber = $order->id;
 
-            $hpsaddress = new HpsAddress();
-            $hpsaddress->address = $order->billing_address_1;
-            $hpsaddress->city = $order->billing_city;
-            $hpsaddress->state = $order->billing_state;
-            $hpsaddress->zip = preg_replace('/[^a-zA-Z0-9]/', '', $order->billing_postcode);
-            $hpsaddress->country = $order->billing_country;
+            $response = $chargeService->charge(
+                $amount,
+                strtolower(get_woocommerce_currency()),
+                $token,
+                $cardHolder,
+                $requestMulti,
+                $details
+            );
 
-            $cardHolder = new HpsCardHolder();
-            $cardHolder->firstName = $order->billing_first_name;
-            $cardHolder->lastName = $order->billing_last_name;
-            $cardHolder->phone = preg_replace('/[^0-9]/', '', $order->billing_phone);
-            $cardHolder->emailAddress = $order->billing_email;
-            $cardHolder->address = $hpsaddress;
+            $order->add_order_note(sprintf(__('SecureSubmit payment completed (Transaction ID: %s)', 'hps-securesubmit'), $response->transactionId));
+            add_post_meta($order->id, '_transaction_id', $response->transactionId, true);
 
-            if ($this->paymentaction == 'sale') {
-                $response = $chargeService->charge(
-                    $amount,
-                    strtolower(get_woocommerce_currency()),
-                    $token,
-                    $cardHolder,
-                    false,
-                    $details
-                );
-            } else {
-                $response = $chargeService->authorize(
-                    $amount,
-                    strtolower(get_woocommerce_currency()),
-                    $token,
-                    $cardHolder,
-                    false,
-                    $details
-                );
-            }
-
-            return true;
+            return $response;
         } catch (Exception $e) {
-            return new WP_Error();
+            return new WP_Error('securesubmit_error', sprintf(__('SecureSubmit payment error: %s', 'hps-securesubmit'), $e->getMessage()));
         }
     }
 

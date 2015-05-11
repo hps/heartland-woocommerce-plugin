@@ -189,26 +189,9 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                 }
             }
 
-            $config = new HpsServicesConfig();
-            $config->secretApiKey = $this->secret_key;
-            $config->versionNumber = '1510';
-            $config->developerId = '002914';
-
-            $chargeService = new HpsCreditService($config);
-
-            $hpsaddress = new HpsAddress();
-            $hpsaddress->address = $order->billing_address_1;
-            $hpsaddress->city = $order->billing_city;
-            $hpsaddress->state = $order->billing_state;
-            $hpsaddress->zip = preg_replace('/[^a-zA-Z0-9]/', '', $order->billing_postcode);
-            $hpsaddress->country = $order->billing_country;
-
-            $cardHolder = new HpsCardHolder();
-            $cardHolder->firstName = $order->billing_first_name;
-            $cardHolder->lastName = $order->billing_last_name;
-            $cardHolder->phone = preg_replace('/[^0-9]/', '', $order->billing_phone);
-            $cardHolder->emailAddress = $order->billing_email;
-            $cardHolder->address = $hpsaddress;
+            $chargeService = $this->getCreditService();
+            $hpsaddress = $this->getOrderAddress($order);
+            $cardHolder = $this->getOrderCardHolder($order, $hpsaddress);
 
             $hpstoken = new HpsTokenData();
 
@@ -328,12 +311,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         }
 
         try {
-            $config = new HpsServicesConfig();
-            $config->secretApiKey = $this->secret_key;
-            $config->versionNumber = '1510';
-            $config->developerId = '002914';
-
-            $chargeService = new HpsCreditService($config);
+            $chargeService = $this->getCreditService();
             try {
                 $response = $chargeService->refundTransaction(
                     $amount,
@@ -354,5 +332,37 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
             }
             return false;
         }
+    }
+
+    protected function getCreditService()
+    {
+        $config = new HpsServicesConfig();
+        $config->secretApiKey = $this->secret_key;
+        $config->versionNumber = '1510';
+        $config->developerId = '002914';
+
+        return new HpsCreditService($config);
+    }
+
+    protected function getOrderAddress($order)
+    {
+        $hpsaddress = new HpsAddress();
+        $hpsaddress->address = $order->billing_address_1;
+        $hpsaddress->city = $order->billing_city;
+        $hpsaddress->state = $order->billing_state;
+        $hpsaddress->zip = preg_replace('/[^a-zA-Z0-9]/', '', $order->billing_postcode);
+        $hpsaddress->country = $order->billing_country;
+        return $hpsaddress;
+    }
+
+    protected function getOrderCardHolder($order, $hpsaddress)
+    {
+        $cardHolder = new HpsCardHolder();
+        $cardHolder->firstName = $order->billing_first_name;
+        $cardHolder->lastName = $order->billing_last_name;
+        $cardHolder->phone = preg_replace('/[^0-9]/', '', $order->billing_phone);
+        $cardHolder->emailAddress = $order->billing_email;
+        $cardHolder->address = $hpsaddress;
+        return $cardHolder;
     }
 }
