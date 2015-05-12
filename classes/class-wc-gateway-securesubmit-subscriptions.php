@@ -18,11 +18,29 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
                             'subscription_date_changes',
                           );
 
-        add_action('scheduled_subscription_payment_' . $this->id, array($this, 'scheduledSubscriptionPayment'), 10, 3);
-        add_action('woocommerce_subscriptions_changed_failing_payment_method_' . $this->id, array($this, 'updateFailingPaymentMethod'), 10, 2);
+        add_action('plugins_loaded', array($this, 'init'));
+    }
+
+    public function init()
+    {
+        if (class_exists('WC_Subscriptions_Order')) {
+            add_action('scheduled_subscription_payment_' . $this->id, array($this, 'scheduledSubscriptionPayment'), 10, 3);
+            add_action('woocommerce_subscriptions_changed_failing_payment_method_' . $this->id, array($this, 'updateFailingPaymentMethod'), 10, 3);
+            add_filter('woocommerce_subscriptions_renewal_order_meta_query', array($this, 'removeRenewalOrderMeta'), 10, 4);
+            add_filter('woocommerce_my_subscriptions_recurring_payment_method', array($this, 'maybeRenderSubscriptionPaymentMethod'), 10, 3);
+        }
     }
 
     public function process_payment($orderId)
+    {
+        if (class_exists('WC_Subscriptions_Order') && WC_Subscriptions_Order::order_contains_subscription($orderId)) {
+            return $this->processSubscription($orderId);
+        } else {
+            return parent::process_payment($orderId);
+        }
+    }
+
+    public function processSubscription($orderId)
     {
         global $woocommerce;
 
@@ -130,6 +148,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
                 $order->add_order_note(__('SecureSubmit payment completed', 'hps-securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
                 $order->payment_complete();
                 $woocommerce->cart->empty_cart();
+                WC_Subscriptions_Manager::activate_subscriptions_for_order($order);
 
                 return array(
                     'result' => 'success',
@@ -149,7 +168,18 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
         }
     }
 
-    public function processSubscriptionPayment($orderId, $amount)
+    public function scheduledSubscriptionPayment($amount, $order, $productId)
+    {
+        $result = $this->processSubscriptionPayment($order, $amount);
+
+        if (is_wp_error($result)) {
+            WC_Subscriptions_Manager::process_subscription_payment_failure_on_order($order, $productId);
+        } else {
+            WC_Subscriptions_Manager::process_subscription_payments_on_order($order);
+        }
+    }
+
+    public function processSubscriptionPayment($order, $amount, $tokenData = null, $requestMulti = false)
     {
         global $woocommerce;
 
@@ -209,19 +239,44 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
         }
     }
 
-    public function scheduledSubscriptionPayment($amount, $order, $productId)
+    public function updateFailingPaymentMethod($old, $new, $subscriptionKey)
     {
-        $result = $this->processSubscriptionPayment($order, $amount);
-
-        if (is_wp_error($result)) {
-            WC_Subscriptions_Manager::process_subscription_payment_failure_on_order($order, $productId);
-        } else {
-            WC_Subscriptions_Manager::process_subscription_payments_on_order($order);
-        }
+        update_post_meta($old->id, '_securesubmit_card_token', get_post_meta($new->id, '_securesubmit_card_token', true));
     }
 
-    public function updateFailingPaymentMethod($old, $new) {
-        update_post_meta($old->id, '_securesubmit_card_token', get_post_meta($new->id, '_securesubmit_card_token', true));
+    public function removeRenewalOrderMeta($orderMetaQuery, $originalOrderId, $renewalOrderId, $newOrderRole)
+    {
+        if ('parent' == $newOrderRole) {
+            $orderMetaQuery .= " AND `meta_key` <> '_securesubmit_card_token' ";
+        }
+        return $orderMetaQuery;
+    }
+
+    public function maybeRenderSubscriptionPaymentMethod($paymentMethodToDisplay, $subscriptionDetails, WC_Order $order)
+    {
+        if ($this->id !== $order->recurring_payment_method || !$order->customer_user) {
+            return $paymentMethodToDisplay;
+        }
+
+        $userId = $order->customer_user;
+        $token  = get_post_meta($order->id, '_securesubmit_card_token', true);
+        $cards  = get_user_meta($userId, '_secure_submit_card', false);
+
+        if ($cards) {
+            $foundCard = false;
+            foreach ($cards as $card) {
+                if ($card['token_value'] === $token) {
+                    $foundCard              = true;
+                    $paymentMethodToDisplay = sprintf(__('Via %s card ending in %s', 'hps-securesubmit'), $card['card_type'], $card['last_four']);
+                    break;
+                }
+            }
+            if (!$foundCard) {
+                $paymentMethodToDisplay = sprintf(__('Via %s card ending in %s', 'hps-securesubmit'), $card[0]['card_type'], $card[0]['last_four']);
+            }
+        }
+
+        return $paymentMethodToDisplay;
     }
 }
 new WC_Gateway_SecureSubmit_Subscriptions();
