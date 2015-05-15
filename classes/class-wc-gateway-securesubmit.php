@@ -309,9 +309,8 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                             'Hello,<br><br>Heartland has determined that you should review order ' . $order_id . ' for the amount of ' . $order->order_total . '.');
                     }
 
-                    //$order->add_order_note(__('<strong>Accepted suspicious transaction.</strong> Please use Virtual Terminal to review.', 'hps-securesubmit'));
                     $order->update_status('on-hold', __('<strong>Accepted suspicious transaction.</strong> Please use Virtual Terminal to review.', 'hps-securesubmit'));
-                    //$order->payment_complete();
+                    $order->reduce_order_stock();
                     $woocommerce->cart->empty_cart();
 
                     return array(
