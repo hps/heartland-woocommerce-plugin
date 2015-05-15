@@ -24,6 +24,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $this->enabled              = $this->settings['enabled'];
         $this->secret_key           = $this->settings['secret_key'];
         $this->public_key           = $this->settings['public_key'];
+        $this->custom_error         = $this->settings['custom_error'];
         $this->paymentaction        = $this->settings['paymentaction'];
         $this->allow_card_saving    = ($this->settings['allow_card_saving'] == 'yes' ? true : false);
         $this->supports             = array(
@@ -115,6 +116,12 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                             'type' => 'text',
                             'description' => __('Get your API keys from your SecureSubmit account.', 'wc_securesubmit'),
                             'default' => ''
+                       ),
+            'custom_error' => array(
+                            'title' => __('Custom Error', 'wc_securesubmit'),
+                            'type' => 'textarea',
+                            'description' => __('To use the default Secure Submit error message use %s in the custom message text, ex. My message. %s -> will be displayed as: My message. Original Secure Submit message.', 'wc_securesubmit'),
+                            'default' => '%s'
                        ),
             'allow_card_saving' => array(
                             'title' => __('Allow Card Saving', 'wc_securesubmit'),
@@ -262,7 +269,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                     'redirect' => $this->get_return_url($order)
                 );
             } catch (HpsException $e) {
-                throw new Exception(__($e->getMessage(), 'wc_securesubmit'));
+                $this->throwUserError(__($e->getMessage(), 'wc_securesubmit'));
             }
         } catch (Exception $e) {
             $error = __('Error:', 'wc_securesubmit') . ' "' . $e->getMessage() . '"';
@@ -321,7 +328,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                 $order->add_order_note(__('SecureSubmit payment refunded', 'hps-securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
                 return true;
             } catch (HpsException $e) {
-                throw new Exception(__($e->getMessage(), 'wc_securesubmit'));
+                $this->throwUserError(__($e->getMessage(), 'wc_securesubmit'));
             }
         } catch (Exception $e) {
             $error = __('Error:', 'wc_securesubmit') . ' "' . $e->getMessage() . '"';
@@ -332,6 +339,14 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
             }
             return false;
         }
+    }
+
+    protected function throwUserError($error) {
+        if ($customMessage = $this->custom_error) {
+            $error = sprintf($customMessage, $error);
+        }
+
+        throw new Exception(__($error, 'wc_securesubmit'));
     }
 
     protected function getCreditService()
