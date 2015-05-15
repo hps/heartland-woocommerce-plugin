@@ -19,14 +19,14 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $this->has_fields           = true;
         $this->initFormFields();
         $this->init_settings();
-        $this->title                = $this->settings['title'];
-        $this->description          = $this->settings['description'];
-        $this->enabled              = $this->settings['enabled'];
-        $this->secret_key           = $this->settings['secret_key'];
-        $this->public_key           = $this->settings['public_key'];
-        $this->custom_error         = $this->settings['custom_error'];
-        $this->paymentaction        = $this->settings['paymentaction'];
-        $this->allow_card_saving    = ($this->settings['allow_card_saving'] == 'yes' ? true : false);
+        $this->title                = $this->getSetting('title');
+        $this->description          = $this->getSetting('description');
+        $this->enabled              = $this->getSetting('enabled');
+        $this->secret_key           = $this->getSetting('secret_key');
+        $this->public_key           = $this->getSetting('public_key');
+        $this->custom_error         = $this->getSetting('custom_error');
+        $this->paymentaction        = $this->getSetting('paymentaction');
+        $this->allow_card_saving    = ($this->getSetting('allow_card_saving') == 'yes' ? true : false);
         $this->supports             = array(
                                         'products',
                                         'refunds',
@@ -379,5 +379,14 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $cardHolder->emailAddress = $order->billing_email;
         $cardHolder->address = $hpsaddress;
         return $cardHolder;
+    }
+
+    protected function getSetting($setting)
+    {
+        $value = null;
+        if (isset($this->settings[$setting])) {
+            $value = $this->settings[$setting];
+        }
+        return $value;
     }
 }
