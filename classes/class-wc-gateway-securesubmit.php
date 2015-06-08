@@ -374,7 +374,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         try {
             $chargeService = $this->getCreditService();
             try {
-                $response = $chargeService->refundTransaction(
+                $response = $chargeService->refund(
                     $amount,
                     strtolower(get_woocommerce_currency()),
                     $transactionId
