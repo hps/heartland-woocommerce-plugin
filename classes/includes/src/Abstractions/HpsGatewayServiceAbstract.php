@@ -80,6 +80,9 @@ abstract class HpsGatewayServiceAbstract
                 throw new HpsException("gateway_time-out");
             }
 
+            //log return message
+            WC_Gateway_SecureSubmit_PayPal::log($curlResponse);
+            
             return $this->processResponse($curlResponse, $curlInfo, $curlError);
         } catch (Exception $e) {
             throw new HpsGatewayException(

@@ -100,6 +100,15 @@ if (!defined('HPS_SDK_LOADED')) {
     require_once 'Entities/PayPlan/HpsPayPlanCustomer.php';
     require_once 'Entities/PayPlan/HpsPayPlanPaymentMethod.php';
     require_once 'Entities/PayPlan/HpsPayPlanSchedule.php';
+    require_once 'Entities/AltPayment/HpsAltPaymentCreateSession.php';
+    require_once 'Entities/AltPayment/HpsAltPaymentSessionInfo.php';
+    require_once 'Entities/AltPayment/HpsAltPaymentSale.php';
+    require_once 'Entities/AltPayment/HpsAltPaymentAuth.php';
+    require_once 'Entities/AltPayment/HpsAltPaymentAddToBatch.php';
+    require_once 'Entities/AltPayment/HpsBuyerData.php';
+    require_once 'Entities/AltPayment/HpsLineItem.php';
+    require_once 'Entities/AltPayment/HpsPaymentData.php';
+    require_once 'Entities/AltPayment/HpsShippingInfo.php';
 
 
     // Services
@@ -112,6 +121,8 @@ if (!defined('HPS_SDK_LOADED')) {
     require_once 'Services/Gateway/HpsDebitService.php';
     require_once 'Services/Gateway/HpsGiftCardService.php';
     require_once 'Services/Gateway/HpsTokenService.php';
+    require_once 'Services/Gateway/AltPayment/HpsAltPaymentService.php';
+    require_once 'Services/Gateway/AltPayment/HpsPayPalService.php';
     require_once 'Services/Gateway/PayPlan/HpsPayPlanCustomerService.php';
     require_once 'Services/Gateway/PayPlan/HpsPayPlanPaymentMethodService.php';
     require_once 'Services/Gateway/PayPlan/HpsPayPlanScheduleService.php';
