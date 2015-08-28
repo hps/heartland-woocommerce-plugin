@@ -248,7 +248,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
             $details->invoiceNumber = $order->id;
 
             try {
-                if ($_POST['save_card'] === "true") {
+                if (isset($_POST['save_card']) && $_POST['save_card'] === "true") {
                     $save_card_to_customer = true;
                 } else {
                     $save_card_to_customer = false;
