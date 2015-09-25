@@ -196,6 +196,8 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         wp_enqueue_script('woocommerce_lib', plugins_url('assets/js/secure.submit-1.0.2.js', dirname(__FILE__)), array('jquery'), '1.0', true);
         // SecureSubmit js controller for WooCommerce
         wp_enqueue_script('woocommerce_securesubmit', plugins_url('assets/js/securesubmit.js', dirname(__FILE__)), array('jquery'), '1.0', true);
+       // SecureSubmit custom CSS
+       wp_enqueue_style('woocommerce_securesubmit', plugins_url('assets/css/securesubmit.css', dirname(__FILE__)), array(), '1.0');
 
         $securesubmit_params = array(
             'key' => $this->public_key
