@@ -20,6 +20,7 @@ Features of SecureSubmit:
 * Enables credit card saving for a friction-reduced checkout.
 
 == Installation ==
+After you have installed and configured the main WooCommerce plugin use the following steps to install the Heartland Payment Systems Gateway addon:
 1. In your WordPress admin, go to Plugins > Add New and search for "WooCommerce SecureSubmit".
 2. Click Install, once installed click Activate.
 3. Configure and Enable the gateway in WooCommerce by adding your public and secret Api Keys.
