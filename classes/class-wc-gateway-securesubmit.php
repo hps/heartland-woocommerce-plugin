@@ -310,16 +310,18 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                     'redirect' => $this->get_return_url($order)
                 );
             } catch (HpsException $e) {
-                if ($this->allow_fraud == 'yes' && $e->getCode() == 27) {
+
+                if ($e->getCode()== HpsExceptionCodes::POSSIBLE_FRAUD_DETECTED && $this->email_fraud == 'yes' && $this->fraud_address != '') {
+                    wc_mail(
+                        $this->fraud_address,
+                        'Suspicious order ' . ($this->allow_fraud == 'yes' ? 'allowed' : 'declined') . ' ' . (' . $order_id . '),
+                        'Hello,<br><br>Heartland has determined that you should review order ' . $order_id . ' for the amount of ' . $order->order_total . '.<p><br></p>'.
+                        '<p>You have received this email because you have configured the \'Email store owner on suspicious orders\' settings in the [WooCommerce | Checkout | SecureSubmit] options page.</p>' .
+                    );
+                }
+
+                if ($this->allow_fraud == 'yes' && $e->getCode() == HpsExceptionCodes::POSSIBLE_FRAUD_DETECTED ) {
                     // we can skip the card saving: if it fails for possible fraud there will be no token.
-
-                    if ($this->email_fraud == 'yes' && $this->fraud_address != '') {
-                        wc_mail(
-                            $this->fraud_address,
-                            'Suspicious order allowed (' . $order_id . ')',
-                            'Hello,<br><br>Heartland has determined that you should review order ' . $order_id . ' for the amount of ' . $order->order_total . '.');
-                    }
-
                     $order->update_status('on-hold', __('<strong>Accepted suspicious transaction.</strong> Please use Virtual Terminal to review.', 'hps-securesubmit'));
                     $order->reduce_order_stock();
                     $woocommerce->cart->empty_cart();
@@ -329,7 +331,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                         'redirect' => $this->get_return_url($order)
                     );
                 } else {
-                    if ($e->getCode() == 27) {
+                    if ($e->getCode() == HpsExceptionCodes::POSSIBLE_FRAUD_DETECTED) {
                         if (function_exists('wc_add_notice')) {
                             wc_add_notice(__($this->fraud_text, 'wc_securesubmit'), 'error');
                         } else {
