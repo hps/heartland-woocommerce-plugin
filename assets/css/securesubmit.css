@@ -2,12 +2,12 @@
 
 .woocommerce-checkout #payment .payment_method_securesubmit div.payment_box {
    background: #fff;
-   font-family: Arial,Helvetica Neue,Helvetica,sans-serif; 
+   font-family: Arial,Helvetica Neue,Helvetica,sans-serif;
    border-radius: 10px;
 }
 
 .woocommerce-checkout #payment .payment_method_securesubmit div.payment_box:before {
-   top: -0.90em; 
+   top: -0.90em;
 }
 
 
@@ -68,7 +68,7 @@
 /* creditc card fields labels */
 
 .payment_method_securesubmit div.payment_box .securesubmit_new_card .securesubmit_new_card_info label {
-    text-transform: uppercase;
+   text-transform: uppercase;
    font-size: 13px;
    letter-spacing: 1px;
 }
@@ -80,20 +80,24 @@
 }
 
 .securesubmit-save-cards {
-   font-size: 14px;  
+   font-size: 14px;
+}
+
+.payment_method_securesubmit input[type="tel"] {
+   padding: 0.5278em;
 }
 
 /* list of saved cards */
 
 .saved-cards-option {
-   padding: 0 10px 10px 10px !important;  
+   padding: 0 10px 10px 10px !important;
 }
 
 
 /* adds extra padding to content sections */
 
 .securesubmit-content {
-   padding: 0 .5em;  
+   padding: 0 .5em;
 }
 
 
@@ -127,10 +131,10 @@
 
 
 
-/* Extra Small Devices, Phones */ 
+/* Extra Small Devices, Phones */
 @media only screen and (max-width : 480px) {
    .half-row {
-      width: 100% !important;  
+      width: 100% !important;
    }
    .saved-cards-option .button {
       width: 100% !important;
