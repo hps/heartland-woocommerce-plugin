@@ -193,11 +193,11 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         }
 
         // SecureSubmit tokenization library
-        wp_enqueue_script('woocommerce_lib', plugins_url('assets/js/secure.submit-1.0.2.js', dirname(__FILE__)), array('jquery'), '1.0', true);
+        wp_enqueue_script('securesubmit', 'https://hps.github.io/token/2.1/securesubmit.js', array(), '2.1', true);
         // SecureSubmit js controller for WooCommerce
         wp_enqueue_script('woocommerce_securesubmit', plugins_url('assets/js/securesubmit.js', dirname(__FILE__)), array('jquery'), '1.0', true);
-       // SecureSubmit custom CSS
-       wp_enqueue_style('woocommerce_securesubmit', plugins_url('assets/css/securesubmit.css', dirname(__FILE__)), array(), '1.0');
+        // SecureSubmit custom CSS
+        wp_enqueue_style('woocommerce_securesubmit', plugins_url('assets/css/securesubmit.css', dirname(__FILE__)), array(), '1.0');
 
         $securesubmit_params = array(
             'key' => $this->public_key
@@ -306,7 +306,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 
                     if ($this->email_fraud == 'yes' && $this->fraud_address != '') {
                         wc_mail(
-                            $this->fraud_address, 
+                            $this->fraud_address,
                             'Suspicious order allowed (' . $order_id . ')',
                             'Hello,<br><br>Heartland has determined that you should review order ' . $order_id . ' for the amount of ' . $order->order_total . '.');
                     }
@@ -352,7 +352,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                 'result'   => 'fail',
                 'redirect' => ''
             );
-            
+
             return;
         }
     }
