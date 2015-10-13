@@ -165,7 +165,7 @@
       publicKey: wc_securesubmit_params.key,
       type: 'iframe',
       fields: {
-        cardNumber: { target: 'securesubmit_card_number', placeholder: '**** **** **** ****' },
+        cardNumber: { target: 'securesubmit_card_number', placeholder: '•••• •••• •••• ••••' },
         cardExpiration: { target: 'securesubmit_card_expiration', placeholder: 'MM / YYYY' },
         cardCvv: { target: 'securesubmit_card_cvv', placeholder: 'CVV' }
       },
