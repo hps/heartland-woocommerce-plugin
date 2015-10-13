@@ -65,7 +65,7 @@
 }
 
 
-/* creditc card fields labels */
+/* credit card fields labels */
 
 .payment_method_securesubmit div.payment_box .securesubmit_new_card .securesubmit_new_card_info label {
    text-transform: uppercase;
@@ -85,6 +85,11 @@
 
 .payment_method_securesubmit input[type="tel"] {
    padding: 0.5278em;
+}
+
+.payment_method_securesubmit iframe {
+   margin-bottom: 0;
+   width: 100%;
 }
 
 /* list of saved cards */

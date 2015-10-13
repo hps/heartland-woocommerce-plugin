@@ -26,9 +26,8 @@
     });
   }
 
-  function secureSubmitFormHandler(e) {
-    console.log('form submit');
-
+  // Handles form submission when not using iframes
+  function formHandler(e) {
     var securesubmitMethod = document.getElementById('payment_method_securesubmit');
     var storedCards = document.querySelectorAll('input[name=secure_submit_card]');
     var storedCardsChecked = filter(storedCards, function (el) { return el.checked; });
@@ -49,31 +48,51 @@
       var month = split[0].replace(/^\s+|\s+$/g, '');
       var year  = split[1].replace(/^\s+|\s+$/g, '');
 
-      console.log('tokenizing');
       (new Heartland.HPS({
         publicKey: wc_securesubmit_params.key,
         cardNumber: card.value.replace(/\D/g, ''),
         cardCvv: cvv.value.replace(/\D/g, ''),
         cardExpMonth: month.replace(/\D/g, ''),
         cardExpYear: year.replace(/\D/g, ''),
-        success: secureSubmitResponseHandler,
-        error: secureSubmitResponseHandler
+        success: responseHandler,
+        error: responseHandler
       })).tokenize();
 
       return false;
     }
 
-    console.log('token present. submitting');
+    return true;
+  }
+
+  // Handles form submission when using iframes
+  function iframeFormHandler(e) {
+    var securesubmitMethod = document.getElementById('payment_method_securesubmit');
+    var storedCards = document.querySelectorAll('input[name=secure_submit_card]');
+    var storedCardsChecked = filter(storedCards, function (el) { return el.checked; });
+    var tokens = document.querySelectorAll('input.securesubmit_token');
+
+    if (securesubmitMethod && securesubmitMethod.checked
+        && (storedCardsChecked.length === 0 || storedCardsChecked[0] && storedCardsChecked[0].value === 'new')
+        && tokens.length === 0) {
+      wc_securesubmit_params.hps.Messages.post(
+        {
+          accumulateData: true,
+          action: 'tokenize',
+          message: wc_securesubmit_params.key
+        },
+        'cardNumber'
+      );
+      return false;
+    }
 
     return true;
   }
 
-  function secureSubmitResponseHandler(response) {
-    console.log('handling response');
+  // Handles tokenization response
+  function responseHandler(response) {
     var form = document.querySelector('form.checkout, form#order_review');
 
     if (response.error) {
-      console.log('tokenization error');
       var ul = document.createElement('ul');
       var li = document.createElement('li');
       clearFields();
@@ -88,7 +107,6 @@
         document.querySelector('.securesubmit_new_card_info')
       );
     } else {
-      console.log('tokenization success');
       var token = document.createElement('input');
       var last4 = document.createElement('input');
       var cType = document.createElement('input');
@@ -123,40 +141,70 @@
       form.appendChild(expMo);
       form.appendChild(expYr);
 
-      console.log('resubmitting');
       Heartland.Events.trigger('submit', form);
 
       toAll(document.querySelectorAll('.securesubmit_token'), function (el) { el.remove(); });
     }
   }
 
+  // Load function to attach event handlers when WC refreshes payment fields
   window.securesubmitLoadEvents = function () {
     if (!Heartland) { return; }
-    if (!document.querySelector('.securesubmit_new_card')) { return; }
+    if (!document.querySelector('.securesubmit_new_card .card-number')) { return; }
 
-    addHandler(document.querySelector('.securesubmit_new_card .card-number'), 'keydown', Heartland.Card.restrictNumberic);
-    addHandler(document.querySelector('.securesubmit_new_card .card-number'), 'input', Heartland.Card.formatNumber);
-    addHandler(document.querySelector('.securesubmit_new_card .card-number'), 'input', Heartland.Card.validateNumber);
-    addHandler(document.querySelector('.securesubmit_new_card .card-number'), 'input', Heartland.Card.addType);
-
-    addHandler(document.querySelector('.securesubmit_new_card .expiry-date'), 'keydown', Heartland.Card.restrictNumberic);
-    addHandler(document.querySelector('.securesubmit_new_card .expiry-date'), 'input', Heartland.Card.formatExpiration);
-    addHandler(document.querySelector('.securesubmit_new_card .expiry-date'), 'input', Heartland.Card.validateExpiration);
-
-    addHandler(document.querySelector('.securesubmit_new_card .card-cvc'), 'keydown', Heartland.Card.restrictNumberic);
-    addHandler(document.querySelector('.securesubmit_new_card .card-cvc'), 'input', Heartland.Card.validateCvv);
+    Heartland.Card.attachNumberEvents('.securesubmit_new_card .card-number');
+    Heartland.Card.attachExpirationEvents('.securesubmit_new_card .expiry-date');
+    Heartland.Card.attachCvvEvents('.securesubmit_new_card .card-cvc');
   };
   window.securesubmitLoadEvents();
 
+  // Load function to build iframes when WC refreshes payment fields
+  window.securesubmitLoadIframes = function () {
+    if (!wc_securesubmit_params.use_iframes) { return; }
+    wc_securesubmit_params.hps = new Heartland.HPS({
+      publicKey: wc_securesubmit_params.key,
+      type: 'iframe',
+      fields: {
+        cardNumber: { target: 'securesubmit_card_number', placeholder: '**** **** **** ****' },
+        cardExpiration: { target: 'securesubmit_card_expiration', placeholder: 'MM / YYYY' },
+        cardCvv: { target: 'securesubmit_card_cvv', placeholder: 'CVV' }
+      },
+      style: {
+        'input': {
+          'background': '#fff',
+          'border': '1px solid',
+          'border-color': '#bbb3b9 #c7c1c6 #c7c1c6',
+          'box-sizing': 'border-box',
+          'font-family': 'serif',
+          'font-size': '16px',
+          'line-height': '1',
+          'margin': '0 .5em 0 0',
+          'max-width': '100%',
+          'outline': '0',
+          'padding': '0.5278em',
+          'vertical-align': 'baseline',
+          'width': '100%'
+        }
+      },
+      onTokenSuccess: responseHandler,
+      onTokenError: responseHandler
+    });
+  };
+
   addHandler(document, 'DOMContentLoaded', function () {
+    var handler = formHandler;
+    if (wc_securesubmit_params.use_iframes) {
+      handler = iframeFormHandler;
+    }
+
     toAll(document.querySelectorAll('form.checkout'), function (element) {
       // WC 'checkout_place_order_securesubmit' event and jquery.triggerHandler
       // (http://api.jquery.com/triggerhandler/) workaround
-      element.oncheckout_place_order_securesubmit = secureSubmitFormHandler;
+      element.oncheckout_place_order_securesubmit = handler;
     });
 
     toAll(document.querySelectorAll('form#order_review'), function (element) {
-      addHandler(element, 'submit', secureSubmitFormHandler);
+      addHandler(element, 'submit', handler);
     });
 
     toAll(document.querySelectorAll('form.checkout, form#order_review'), function (element) {
@@ -166,7 +214,11 @@
     });
 
     toAll(document.querySelectorAll('.card-number, .card-cvc, .expiry-date'), function (element) {
-      // addHandler(element, 'change', clearFields);
+      addHandler(element, 'change', clearFields);
     });
+
+    addHandler(document, 'securesubmitIframeReady', function () {
+      wc_securesubmit_params.hps.setFocus('cardNumber');
+    })
   });
 }(window, document, window.Heartland, window.wc_securesubmit_params));
