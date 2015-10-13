@@ -72,7 +72,7 @@
     console.log('handling response');
     var form = document.querySelector('form.checkout, form#order_review');
 
-    if (response.message) {
+    if (response.error) {
       console.log('tokenization error');
       var ul = document.createElement('ul');
       var li = document.createElement('li');
@@ -80,12 +80,13 @@
 
       ul.classList.add('woocommerce_error');
       ul.classList.add('woocommerce-error');
-      li.appendChild(document.createTextNode(response.message));
+      li.appendChild(document.createTextNode(response.error.message));
       ul.appendChild(li);
 
-      document.getElementById('securesubmit_card_number')
-        .parent.parent
-        .appendChild(ul);
+      document.querySelector('.securesubmit_new_card').insertBefore(
+        ul,
+        document.querySelector('.securesubmit_new_card_info')
+      );
     } else {
       console.log('tokenization success');
       var token = document.createElement('input');
