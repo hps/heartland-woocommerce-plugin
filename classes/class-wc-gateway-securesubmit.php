@@ -31,6 +31,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $this->fraud_address        = $this->getSetting('fraud_address');
         $this->fraud_text           = $this->getSetting('fraud_text');
         $this->allow_card_saving    = ($this->getSetting('allow_card_saving') == 'yes' ? true : false);
+        $this->use_iframes          = ($this->getSetting('use_iframes') == 'yes' ? true : false);
         $this->supports             = array(
                                         'products',
                                         'refunds',
@@ -161,16 +162,23 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                             'default' => __('Please call customer service.', 'wc_securesubmit')
                        ),
             'paymentaction' => array(
-                    'title'       => __('Payment Action', 'wc_securesubmit'),
-                    'type'        => 'select',
-                    'description' => __('Choose whether you wish to capture funds immediately or authorize payment only.', 'wc_securesubmit'),
-                    'default'     => 'sale',
-                    'desc_tip'    => true,
-                    'options'     => array(
-                            'sale'          => __('Capture', 'wc_securesubmit'),
-                            'authorization' => __('Authorize', 'wc_securesubmit')
-                   )
-           )
+                            'title'       => __('Payment Action', 'wc_securesubmit'),
+                            'type'        => 'select',
+                            'description' => __('Choose whether you wish to capture funds immediately or authorize payment only.', 'wc_securesubmit'),
+                            'default'     => 'sale',
+                            'desc_tip'    => true,
+                            'options'     => array(
+                                        'sale'          => __('Capture', 'wc_securesubmit'),
+                                        'authorization' => __('Authorize', 'wc_securesubmit')
+                                    ),
+                       ),
+            'use_iframes' => array(
+                            'title' => __('Use iFrames', 'wc_securesubmit'),
+                            'label' => __('Host the payment fields on Heartland\'s servers', 'wc_securesubmit'),
+                            'type' => 'checkbox',
+                            'description' => 'Note: The customer will remain on your site throughout the checkout process, and there will be no redirect. This option only helps reduce your PCI scope.',
+                            'default' => 'yes'
+                       ),
            );
     }
 
@@ -193,14 +201,15 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         }
 
         // SecureSubmit tokenization library
-        wp_enqueue_script('woocommerce_lib', plugins_url('assets/js/secure.submit-1.0.2.js', dirname(__FILE__)), array('jquery'), '1.0', true);
+        wp_enqueue_script('securesubmit', 'https://hps.github.io/token/2.1/securesubmit.js', array(), '2.1', true);
         // SecureSubmit js controller for WooCommerce
         wp_enqueue_script('woocommerce_securesubmit', plugins_url('assets/js/securesubmit.js', dirname(__FILE__)), array('jquery'), '1.0', true);
-       // SecureSubmit custom CSS
-       wp_enqueue_style('woocommerce_securesubmit', plugins_url('assets/css/securesubmit.css', dirname(__FILE__)), array(), '1.0');
+        // SecureSubmit custom CSS
+        wp_enqueue_style('woocommerce_securesubmit', plugins_url('assets/css/securesubmit.css', dirname(__FILE__)), array(), '1.0');
 
         $securesubmit_params = array(
-            'key' => $this->public_key
+            'key'         => $this->public_key,
+            'use_iframes' => $this->use_iframes,
         );
 
         wp_localize_script('woocommerce_securesubmit', 'wc_securesubmit_params', $securesubmit_params);
@@ -306,7 +315,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 
                     if ($this->email_fraud == 'yes' && $this->fraud_address != '') {
                         wc_mail(
-                            $this->fraud_address, 
+                            $this->fraud_address,
                             'Suspicious order allowed (' . $order_id . ')',
                             'Hello,<br><br>Heartland has determined that you should review order ' . $order_id . ' for the amount of ' . $order->order_total . '.');
                     }
@@ -352,8 +361,6 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                 'result'   => 'fail',
                 'redirect' => ''
             );
-            
-            return;
         }
     }
 
