@@ -1,7 +1,32 @@
+/* make sure default styles display correctly dispite the theme of the blog */
+
+.payment_method_securesubmit fieldset {
+   border: 0;
+   font-family: inherit;
+   font-size: 100%;
+   font-style: inherit;
+   font-weight: inherit;
+   margin: 0;
+   outline: 0;
+   padding: 0;
+   vertical-align: baseline;
+}
+
+
+
+
+/* general styles */
+
+.no-bottom-margin {
+   margin-bottom: 0 !important;  
+}
+
+
+
 /* the entire container */
 
 .woocommerce-checkout #payment .payment_method_securesubmit div.payment_box {
-   font-family: Arial,Helvetica Neue,Helvetica,sans-serif;
+   font-family: Arial,Helvetica Neue,Helvetica,sans-serif !important;
    background: #fff;
    border-radius: 10px;
 }
@@ -9,6 +34,7 @@
 .woocommerce-checkout #payment .payment_method_securesubmit div.payment_box:before {
    top: -0.99em;
 }
+
 
 
 /* secure submit branded header */
@@ -39,6 +65,83 @@
    margin-top: 16px;
 }
 
+/* saved cards */
+
+.saved-card-visa {
+
+}
+
+.saved-card-mastercard {
+
+}
+
+.saved-creditcards-list {
+ 
+}
+
+.saved-creditcards-list h6 {
+   font-family: Arial,Helvetica Neue,Helvetica,sans-serif !important;
+   font-size: 22px !important;
+   color: #6a6a6a !important;
+   margin: 0 !important;
+   padding: 0 !important;
+   text-transform: capitalize !important;
+   float: left;
+   letter-spacing: normal !important;
+}
+
+.saved-creditcards-list .button {
+    font-size: 12px !important; 
+}
+
+.saved-card {
+   border: 1px #ccc solid;
+   padding: 0px;
+   margin: 5px 0px;
+   height: 63px;
+   clear: both;
+}
+.saved-card p {
+   margin: 0;
+   padding: 0;
+   display: block;
+   line-height: 20px;
+}
+
+.saved-card label {
+   font-size: 16px;
+   font-weight: bold;  
+}
+
+.saved-card label span {
+   font-size: 12px;
+   font-weight: normal;
+   color: #999999;
+   text-transform: uppercase;
+   letter-spacing: 1px;
+}
+
+.saved-card-selector {
+   display: inline-block;
+   float: left;
+   width: 45px;
+   padding: 9px 0px 11px 0px;
+   text-align: center;
+   border-right: 1px #e4e4e3 solid;
+   margin-top: 11px;
+}
+
+.saved-card-selector input {
+   margin: 0 !important;
+}
+
+.saved-card-info {
+   display: inline-block;
+   float: left;
+   padding-left: 15px;
+   height: 51px;
+   padding-top: 12px;
+}
 
 /* custom description paragraph */
 
@@ -48,7 +151,6 @@
 
 }
 
-
 /* horizontal break */
 
 .woocommerce-checkout #payment .payment_method_securesubmit hr {
@@ -57,13 +159,11 @@
    margin: 20px 0px;
 }
 
-
 /* take out some of the space next to radio buttons */
 
 .woocommerce-checkout #payment ul.payment_methods li input {
    margin: 0 .5em 0 0;
 }
-
 
 /* credit card fields labels */
 
@@ -77,6 +177,14 @@
 
 .payment_method_securesubmit input {
    font-family: Arial,Helvetica Neue,Helvetica,sans-serif;
+   border: 1px solid #666;
+   font-size: 18px;
+}
+
+input:focus,
+textarea:focus {
+   border: 1px solid #3989e3 !important;
+   outline: 0;
 }
 
 .payment_method_securesubmit div.payment_box input {
@@ -87,14 +195,47 @@
    font-size: 14px;
 }
 
+
+.payment_method_securesubmit input {
+   padding: 0;
+   vertical-align: middle;
+   line-height: 1.6842 !important;
+}
+
+
 .payment_method_securesubmit input[type="tel"] {
    padding: 0.5278em;
 }
 
-.payment_method_securesubmit iframe {
-   margin-bottom: 0;
-   width: 100%;
+
+.payment_method_securesubmit input::-webkit-input-placeholder {
+   vertical-align: center;
+   position: relative;
+   top: 3px;
+   color: #999;
 }
+
+.payment_method_securesubmit input:-moz-placeholder { /* Firefox 18- */
+   vertical-align: center;
+   position: relative;
+   top: 3px;
+   color: #999;
+}
+
+.payment_method_securesubmit input::-moz-placeholder {  /* Firefox 19+ */
+   vertical-align: center;
+   position: relative;
+   top: 3px;
+   color: #999;
+}
+
+.payment_method_securesubmit input:-ms-input-placeholder {  
+   vertical-align: center;
+   position: relative;
+   top: 3px;
+   color: #999;
+}
+
 
 /* list of saved cards */
 

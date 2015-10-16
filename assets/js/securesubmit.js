@@ -1,3 +1,12 @@
+/*========================*/
+/* Highlight select boxes */
+
+(".saved-card-selector input").on('selected', function () {
+   (this).parent().toggleClass('selected');
+});
+
+
+
 (function (window, document, Heartland, wc_securesubmit_params) {
   var addHandler = Heartland.Events.addHandler;
   function toAll(elements, fun) {
