@@ -175,7 +175,7 @@
           'border': '1px solid',
           'border-color': '#bbb3b9 #c7c1c6 #c7c1c6',
           'box-sizing': 'border-box',
-          'font-family': 'serif',
+          'font-family': 'Arial,Helvetica Neue,Helvetica,sans-serif',
           'font-size': '16px',
           'line-height': '1',
           'margin': '0 .5em 0 0',
