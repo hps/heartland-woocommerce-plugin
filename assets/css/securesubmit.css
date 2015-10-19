@@ -1,4 +1,4 @@
-/* make sure default styles display correctly dispite the theme of the blog */
+/* remove styles from fieldsets */
 
 .payment_method_securesubmit fieldset {
    border: 0;
@@ -12,16 +12,23 @@
    vertical-align: baseline;
 }
 
-
-
-
 /* general styles */
 
 .no-bottom-margin {
    margin-bottom: 0 !important;  
 }
 
+.no-bottom-padding {
+   padding-bottom: 0 !important;  
+}
 
+.no-top-margin {
+   margin-top: 0 !important;  
+}
+
+.no-top-padding {
+   padding-top: 0 !important;  
+}
 
 /* the entire container */
 
@@ -34,8 +41,6 @@
 .woocommerce-checkout #payment .payment_method_securesubmit div.payment_box:before {
    top: -0.99em;
 }
-
-
 
 /* secure submit branded header */
 
@@ -65,21 +70,23 @@
    margin-top: 16px;
 }
 
-/* saved cards */
+/* custom description paragraph */
 
-.saved-card-visa {
-
-}
-
-.saved-card-mastercard {
+.securesubmit-description {
+   font-size: 14px;
+   padding-top: 5px;
 
 }
 
-.saved-creditcards-list {
- 
+/* section headers */
+
+.section-header {
+   display: block;
+   width: 100%;
+   clear: both;
 }
 
-.saved-creditcards-list h6 {
+.section-header h6 {
    font-family: Arial,Helvetica Neue,Helvetica,sans-serif !important;
    font-size: 22px !important;
    color: #6a6a6a !important;
@@ -90,8 +97,10 @@
    letter-spacing: normal !important;
 }
 
+/* saved cards */
+
 .saved-creditcards-list .button {
-    font-size: 12px !important; 
+   font-size: 12px !important; 
 }
 
 .saved-card {
@@ -100,20 +109,21 @@
    margin: 5px 0px;
    height: 63px;
    clear: both;
+   background-size: 101px 52px;  
+   background-repeat: no-repeat;
+   background-position: center right;
 }
+
 .saved-card p {
    margin: 0;
    padding: 0;
    display: block;
    line-height: 20px;
-}
-
-.saved-card label {
    font-size: 16px;
-   font-weight: bold;  
+   font-weight: bold; 
 }
 
-.saved-card label span {
+.saved-card p span {
    font-size: 12px;
    font-weight: normal;
    color: #999999;
@@ -143,12 +153,41 @@
    padding-top: 12px;
 }
 
-/* custom description paragraph */
+.saved-card-visa {
+   background-image: url(../images/ss-visa@2x.png);
+}
 
-.securesubmit-description {
-   font-size: 14px;
-   padding-top: 5px;
+.saved-card-mastercard {
+   background-image: url(../images/ss-mastercard@2x.png);
+}
 
+.saved-card-amex {
+   background-image: url(../images/ss-amex@2x.png);
+}
+
+.saved-card-discover {
+   background-image: url(../images/ss-discover@2x.png);
+}
+
+.saved-card-jcb {
+   background-image: url(../images/ss-jcb@2x.png);
+}
+
+
+/* saved cards - smaller screens */
+@media only screen and (max-width : 530px) {
+   .saved-card {
+      background-size: 50px auto;
+   }
+   .saved-card p {
+      font-size: 14px;  
+   }
+}
+
+@media only screen and (max-width : 445px) {
+   .saved-card {
+      background: none;
+   }
 }
 
 /* horizontal break */
@@ -195,18 +234,15 @@ textarea:focus {
    font-size: 14px;
 }
 
-
 .payment_method_securesubmit input {
    padding: 0;
    vertical-align: middle;
    line-height: 1.6842 !important;
 }
 
-
 .payment_method_securesubmit input[type="tel"] {
    padding: 0.5278em;
 }
-
 
 .payment_method_securesubmit input::-webkit-input-placeholder {
    vertical-align: center;
@@ -236,20 +272,24 @@ textarea:focus {
    color: #999;
 }
 
-
-/* list of saved cards */
-
-.saved-cards-option {
-   padding: 0 10px 10px 10px !important;
+/* arrow */
+.arrow {
+   display: inline-block;
+   float: left;
+   background-image: url(../images/arrow@2x.png);
+   background-size: 12px 12px;
+   width: 12px;
+   height: 12px;
+   position: relative;
+   top: 7px;
+   margin-right: 7px;
 }
-
 
 /* adds extra padding to content sections */
 
 .securesubmit-content {
-   padding: 0 .5em;
+   padding: 0 10px;
 }
-
 
 /* screen reader for logo */
 
@@ -290,4 +330,19 @@ textarea:focus {
       width: 100% !important;
       margin-bottom: 25px !important;
    }
+   .form-row-last {
+      margin-top: 15px;  
+   }
+   .securesubmit-content {
+      margin: 0px -15px;  
+   }
+   .securesubmit-description {
+      padding: inherit 15px;
+      text-align: center;
+   }
 }
+
+
+
+
+
