@@ -17,7 +17,7 @@
                <?php $cards = get_user_meta(get_current_user_id(), '_secure_submit_card', false); ?>
                   <?php if (is_user_logged_in() && isset($cards)): ?>
                      <div class="saved-creditcards-list form-row form-row-wide no-bottom-margin no-bottom-padding">
-                        <div class="section-header clearfix">
+                        <div class="ss-section-header clearfix">
                            <h6><span class="arrow"></span>Use a Saved Card</h6>
                            <a class="button" style="float:right;" href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')); ?>#saved-cards">
                               <?php _e('Manage Cards', 'wc_securesubmit'); ?>
@@ -58,7 +58,7 @@
                   <div class="securesubmit_new_card">
                      <div class="securesubmit_new_card_info">
                         <div class="form-row form-row-wide no-bottom-margin no-bottom-padding">
-                           <div class="section-header clearfix" style="margin-bottom: 5px;">
+                           <div class="ss-section-header clearfix" style="margin-bottom: 5px;">
                               <h6><span class="arrow"></span>Use New Card</h6>
                            </div>
                         </div>
