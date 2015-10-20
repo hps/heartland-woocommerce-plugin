@@ -236,42 +236,48 @@ textarea:focus {
 }
 
 .payment_method_securesubmit input {
-   padding: 0;
+   padding: 15px 13px 13px 13px !important;
    vertical-align: middle;
-   line-height: 1.6842 !important;
+   font-size: 18px !important;
+   line-height: 18px !important;
+   border-radius: 0 !important;
 }
 
 .payment_method_securesubmit input[type="tel"] {
    padding: 0.5278em;
 }
 
+/*
+
 .payment_method_securesubmit input::-webkit-input-placeholder {
-   vertical-align: center;
-   position: relative;
-   top: 3px;
-   color: #999;
+   vertical-align: center !important;
+   position: relative !important;
+   top: 3px !important;
+   color: #999 !important;
 }
 
-.payment_method_securesubmit input:-moz-placeholder { /* Firefox 18- */
-   vertical-align: center;
-   position: relative;
-   top: 3px;
-   color: #999;
+.payment_method_securesubmit input:-moz-placeholder { /* Firefox 18- */ /*
+   vertical-align: center !important;
+   position: relative !important;
+   top: 3px !important;
+   color: #999 !important;
 }
 
-.payment_method_securesubmit input::-moz-placeholder {  /* Firefox 19+ */
-   vertical-align: center;
-   position: relative;
-   top: 3px;
-   color: #999;
+.payment_method_securesubmit input::-moz-placeholder {  /* Firefox 19+ */ /*
+   vertical-align: center !important;
+   position: relative !important;
+   top: 3px !important;
+   color: #999 !important;
 }
 
 .payment_method_securesubmit input:-ms-input-placeholder {  
-   vertical-align: center;
-   position: relative;
-   top: 3px;
-   color: #999;
+   vertical-align: center !important;
+   position: relative !important;
+   top: 3px !important;
+   color: #999 !important;
 }
+
+*/
 
 /* arrow */
 .arrow {
