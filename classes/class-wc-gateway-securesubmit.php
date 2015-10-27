@@ -243,7 +243,10 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 
             $hpstoken = new HpsTokenData();
 
-            if (is_user_logged_in() && isset($_POST['secure_submit_card']) && $_POST['secure_submit_card'] !== 'new') {
+            if (
+                is_user_logged_in() && isset($_POST['secure_submit_card']) &&
+                isset($_POST['new_secure_submit_card']) && $_POST['new_secure_submit_card'] == 'false'
+            ) {
                 $cards = get_user_meta(get_current_user_id(), '_secure_submit_card', false);
 
                 if (isset($cards[$_POST['secure_submit_card']]['token_value'])) {
@@ -290,6 +293,14 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                         $tokenval = $response->tokenData->tokenValue;
 
                         if ($response->tokenData->responseCode == '0') {
+                            switch (strtolower($card_type)) {
+                            case 'mastercard':
+                                $card_type = 'MasterCard';
+                                break;
+                            default:
+                                $card_type = ucfirst($card_type);
+                                break;
+                            }
                             add_user_meta(get_current_user_id(), '_secure_submit_card', array(
                                 'last_four' => $last_four,
                                 'exp_month' => $exp_month,
