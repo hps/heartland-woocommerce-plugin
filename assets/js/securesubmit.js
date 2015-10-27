@@ -216,9 +216,5 @@
       toAll(document.querySelectorAll('.card-number, .card-cvc, .expiry-date'), function (element) {
          addHandler(element, 'change', clearFields);
       });
-
-      addHandler(document, 'securesubmitIframeReady', function () {
-         wc_securesubmit_params.hps.setFocus('cardNumber');
-      })
    });
 }(window, document, window.Heartland, window.wc_securesubmit_params));
