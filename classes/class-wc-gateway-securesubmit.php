@@ -310,7 +310,6 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                     'redirect' => $this->get_return_url($order)
                 );
             } catch (HpsException $e) {
-
                 if ($e->getCode()== HpsExceptionCodes::POSSIBLE_FRAUD_DETECTED && $this->email_fraud == 'yes' && $this->fraud_address != '') {
                     wc_mail(
                         $this->fraud_address,
