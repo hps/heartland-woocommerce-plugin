@@ -36,6 +36,7 @@
    font-family: Arial,Helvetica Neue,Helvetica,sans-serif !important;
    background: #fff !important;
    border-radius: 10px;
+   border: 1px solid #dfdcde;
 }
 
 
@@ -46,10 +47,11 @@
 /* secure submit branded header */
 
 .securesubmit-header {
-   background: #bfbfbf;
+   background: #fff;
    margin: -1em -1em 1em -1em;
    padding: 1em;
    border-radius: 10px 10px 0 0;
+   border-bottom: 1px solid #dfdcde;
 }
 
 .securesubmit-header .secure {
@@ -65,9 +67,9 @@
    display: block;
    float: right;
    width: 145px;
-   height: 17px;
-   background-image: url(../images/securesubmit-logo.png);
-   background-size: 145px 17px;
+   height: 18px;
+   background-image: url(../images/heartland-logo.png);
+   background-size: 145px 18px;
    margin-top: 16px;
 }
 
