@@ -249,37 +249,6 @@ textarea:focus {
    padding: 0.5278em;
 }
 
-/*
-
-.payment_method_securesubmit input::-webkit-input-placeholder {
-   vertical-align: center !important;
-   position: relative !important;
-   top: 3px !important;
-   color: #999 !important;
-}
-
-.payment_method_securesubmit input:-moz-placeholder { /* Firefox 18- */ /*
-   vertical-align: center !important;
-   position: relative !important;
-   top: 3px !important;
-   color: #999 !important;
-}
-
-.payment_method_securesubmit input::-moz-placeholder {  /* Firefox 19+ */ /*
-   vertical-align: center !important;
-   position: relative !important;
-   top: 3px !important;
-   color: #999 !important;
-}
-
-.payment_method_securesubmit input:-ms-input-placeholder {  
-   vertical-align: center !important;
-   position: relative !important;
-   top: 3px !important;
-   color: #999 !important;
-}
-
-*/
 
 /* arrow */
 .arrow {
