@@ -228,7 +228,10 @@
                     'padding': '0.5278em',
                     'vertical-align': 'baseline',
                     'width': '100%'
-                }
+                },
+               '#heartland-field-body': {
+                  'width': '100%'
+               }
             },
             onTokenSuccess: responseHandler,
             onTokenError: responseHandler

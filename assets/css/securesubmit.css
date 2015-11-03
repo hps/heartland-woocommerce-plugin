@@ -1,4 +1,9 @@
+/* iframes */
 
+.payment_method_securesubmit iframe {
+   width: 100%;
+   margin-bottom: 0;
+}
 
 /* remove styles from fieldsets */
 
