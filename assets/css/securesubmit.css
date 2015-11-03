@@ -1,4 +1,4 @@
-/* iframes */
+/* iframe style fix */
 
 .payment_method_securesubmit iframe {
    width: 100%;
@@ -227,6 +227,35 @@
 #heartland-field-body, #heartland-field-wrapper {
    width: 100%;  
 }
+
+
+#securesubmit_card_number {
+   background-image: url(../../assets/images/ss-inputcard-blank@2x.png); 
+   background-position: right;
+   background-repeat: no-repeat;
+   background-size: 77px 40px;
+}
+
+#securesubmit_card_number.card-type-visa {
+   background-image: url(../../assets/images/ss-inputcard-visa@2x.png); 
+}
+
+#securesubmit_card_number.card-type-jcb {
+   background-image: url(../../assets/images/ss-inputcard-jcb@2x.png); 
+}
+
+#securesubmit_card_number.card-type-discover {
+   background-image: url(../../assets/images/ss-inputcard-discover@2x.png); 
+}
+
+#securesubmit_card_number.card-type-amex {
+   background-image: url(../../assets/images/ss-inputcard-amex@2x.png); 
+}
+
+#securesubmit_card_number.card-type-mastercard {
+   background-image: url(../../assets/images/ss-inputcard-mc@2x.png); 
+}
+
 
 /* inputs */
 
