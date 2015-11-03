@@ -58,7 +58,7 @@
 
 .securesubmit-header {
    background: #fff;
-   padding: 1em;
+   padding: 1em 2em;
    border-radius: 10px 10px 0 0;
    border-bottom: 1px solid #dfdcde;
    margin-bottom: 1em;
@@ -69,18 +69,19 @@
    float: left;
    width: 50px;
    height: 50px;
-   background-image: url(../images/ss-lock.png);
+   background-image: url(../images/ss-lock@2x.png);
    background-size: 50px 50px;
+   margin-left: -8px;
 }
 
 .securesubmit-header .securesubmit-logo {
    display: block;
    float: right;
-   width: 145px;
-   height: 18px;
-   background-image: url(../images/heartland-logo.png);
-   background-size: 145px 18px;
-   margin-top: 16px;
+   width: 140px;
+   height: 26px;
+   background-image: url(../images/heartland-logo@1x.png);
+   background-size: 140px 26px;
+   margin-top: 12px;
 }
 
 /* custom description paragraph */
@@ -375,6 +376,14 @@ textarea:focus {
 }
 
 
+/* ALL RETINA DEVICES */
 
+@media only screen and (-moz-min-device-pixel-ratio: 1.5), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min-devicepixel-ratio: 1.5), only screen and (min-resolution: 1.5dppx) {
+
+   .securesubmit-header .securesubmit-logo {
+      background-image: url(../images/heartland-logo@2x.png);
+   }
+
+}
 
 
