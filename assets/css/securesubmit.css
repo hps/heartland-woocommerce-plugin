@@ -1,3 +1,5 @@
+
+
 /* remove styles from fieldsets */
 
 .payment_method_securesubmit fieldset {
@@ -10,6 +12,8 @@
    outline: 0;
    padding: 0;
    vertical-align: baseline;
+   padding: 0;
+   margin: 0;
 }
 
 /* general styles */
@@ -37,6 +41,7 @@
    background: #fff !important;
    border-radius: 10px;
    border: 1px solid #dfdcde;
+   padding: 0;
 }
 
 
@@ -48,10 +53,10 @@
 
 .securesubmit-header {
    background: #fff;
-   margin: -1em -1em 1em -1em;
    padding: 1em;
    border-radius: 10px 10px 0 0;
    border-bottom: 1px solid #dfdcde;
+   margin-bottom: 1em;
 }
 
 .securesubmit-header .secure {
@@ -77,8 +82,7 @@
 
 .securesubmit-description {
    font-size: 14px;
-   padding-top: 5px;
-
+   padding: 5px 1em 0 1em;
 }
 
 /* section headers */
@@ -197,7 +201,7 @@
 
 .woocommerce-checkout #payment .payment_method_securesubmit hr {
    width: 100%;
-   background-color: #bfbfbf;
+   background-color: #dfdcde;
    margin: 20px 0px;
 }
 
@@ -213,6 +217,10 @@
    text-transform: uppercase;
    font-size: 13px;
    letter-spacing: 1px;
+}
+
+#heartland-field-body, #heartland-field-wrapper {
+   width: 100%;  
 }
 
 /* inputs */
@@ -266,8 +274,20 @@ textarea:focus {
 /* adds extra padding to content sections */
 
 .securesubmit-content {
-   padding: 0 10px;
+   padding: 0 1.5em;
 }
+
+/*
+.securesubmit-content .saved-creditcards-list {
+   margin: 0 !important;
+   padding: 0 !important;
+}
+
+.securesubmit_new_card_info .form-row {
+   margin: 0 !important;
+   padding: 0 !important;
+}
+*/
 
 /* screen reader for logo */
 
