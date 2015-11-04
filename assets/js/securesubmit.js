@@ -161,17 +161,13 @@
 
         toAll(document.querySelectorAll('.saved-selector'), function(element) {
             addHandler(element, 'click', function(e) {
+                var display = 'none';
                 if (document.getElementById('secure_submit_card_new').checked) {
-                    document.querySelector('[name="new_secure_submit_card"]').value = 'true';
-
-                    toAll(document.querySelectorAll('.new-card-content'), function (el) {
-                        el.style.display = 'block';
-                    });
-                } else {
-                    toAll(document.querySelectorAll('.new-card-content'), function (el) {
-                        el.style.display = 'none';
-                    });
+                    display = 'block';
                 }
+                toAll(document.querySelectorAll('.new-card-content'), function (el) {
+                    el.style.display = display;
+                });
             });
         });
 

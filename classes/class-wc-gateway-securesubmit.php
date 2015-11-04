@@ -246,7 +246,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 
             if (
                 is_user_logged_in() && isset($_POST['secure_submit_card']) &&
-                isset($_POST['new_secure_submit_card']) && $_POST['new_secure_submit_card'] == 'false'
+                $_POST['secure_submit_card'] !== 'new'
             ) {
                 $cards = get_user_meta(get_current_user_id(), '_secure_submit_card', false);
 

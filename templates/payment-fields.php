@@ -46,20 +46,18 @@
                   </div>
                   <?php $checked = ""; ?>
                <?php endforeach; ?>
-                  <div class="saved-card saved-card-new">
-                     <div class="saved-card-selector">
-                        <input <?php echo $checked; ?> type="radio" class="saved-selector" id="secure_submit_card_new" name="secure_submit_card" style="width:auto;" value="<?php echo $i + 1; ?>" />
-                     </div>
-                     <div class="saved-card-info">
-                        <label style="display:inline;" for="secure_submit_card_new">
-                           <p>
-                              Pay with a new credit card
-                           </p>
-                        </label>
-                     </div>
-                  </div>
-
-               <input type="hidden" id="new_card" name="new_secure_submit_card" value="false" />
+                <div class="saved-card saved-card-new">
+                   <div class="saved-card-selector">
+                      <input <?php echo $checked; ?> type="radio" class="saved-selector" id="secure_submit_card_new" name="secure_submit_card" style="width:auto;" value="new" />
+                   </div>
+                   <div class="saved-card-info">
+                      <label style="display:inline;" for="secure_submit_card_new">
+                         <p>
+                            Pay with a new credit card
+                         </p>
+                      </label>
+                   </div>
+                </div>
             </div>
             <div class="clear"></div>
          <?php endif; ?>
