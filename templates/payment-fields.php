@@ -50,7 +50,7 @@
                    <div class="saved-card-selector">
                       <input <?php echo $checked; ?> type="radio" class="saved-selector" id="secure_submit_card_new" name="secure_submit_card" style="width:auto;" value="new" />
                    </div>
-                   <div class="saved-card-info">
+                   <div class="saved-card-info-new">
                       <label for="secure_submit_card_new">
                          <p>
                             Pay with a new credit card

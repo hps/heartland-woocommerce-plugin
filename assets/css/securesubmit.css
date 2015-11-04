@@ -158,6 +158,14 @@
    margin: 0 !important;
 }
 
+.saved-card-info-new {
+   display: inline-block;
+   float: left;
+   padding-left: 15px;
+   height: 51px;
+   padding-top: 22px;   
+}
+
 .saved-card-info {
    display: inline-block;
    float: left;
