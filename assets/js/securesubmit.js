@@ -1,6 +1,17 @@
 (function(window, document, Heartland, wc_securesubmit_params) {
     var addHandler = Heartland.Events.addHandler;
 
+    function addClass(element, klass) {
+      if (element.className.indexOf(klass) === -1) {
+        element.className = element.className + ' ' + klass;
+      }
+    }
+
+    function removeClass(element, klass) {
+      if (element.className.indexOf(klass) === -1) return;
+      element.className.replace(klass, '');
+    }
+
     function toAll(elements, fun) {
         var i = 0;
         var length = elements.length;
@@ -97,8 +108,8 @@
             var li = document.createElement('li');
             clearFields();
 
-            ul.classList.add('woocommerce_error');
-            ul.classList.add('woocommerce-error');
+            addClass(ul, 'woocommerce_error');
+            addClass(ul, 'woocommerce-error');
             li.appendChild(document.createTextNode(response.error.message));
             ul.appendChild(li);
 
@@ -115,7 +126,7 @@
 
             token.type = 'hidden';
             token.id = 'securesubmit_token';
-            token.classList.add('securesubmit_token');
+            addClass(token, 'securesubmit_token');
             token.name = 'securesubmit_token';
             token.value = response.token_value;
 
@@ -171,9 +182,9 @@
 
                 // Set active flag
                 toAll(document.querySelectorAll('.saved-card'), function (el) {
-                  el.classList.remove('active');
+                  removeClass(el, 'active');
                 });
-                element.parentNode.parentNode.classList.add('active');
+                addClass(element.parentNode.parentNode, 'active');
             });
         });
 
