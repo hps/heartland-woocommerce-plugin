@@ -194,6 +194,10 @@
    background-image: url(../images/ss-jcb@2x.png);
 }
 
+.saved-card-new p {
+   padding-top: 10px !important;
+}
+
 
 /* saved cards - smaller screens */
 @media only screen and (max-width : 530px) {
