@@ -168,6 +168,12 @@
                 toAll(document.querySelectorAll('.new-card-content'), function (el) {
                     el.style.display = display;
                 });
+
+                // Set active flag
+                toAll(document.querySelectorAll('.saved-card'), function (el) {
+                  el.classList.remove('active');
+                });
+                element.parentNode.parentNode.classList.add('active');
             });
         });
 

@@ -26,16 +26,16 @@
             </div>
             <div class="saved-creditcards-list form-row form-row-wide no-bottom-margin">
             <?php
-               $checked = " checked ";
+               $checked = ' checked="checked" ';
                $totalcards = 0;
             ?>
                <?php foreach ($cards as $i => $card): ?>
-                  <div class="saved-card saved-card-<?php echo strtolower($card['card_type']); ?>">
+                  <div class="saved-card saved-card-<?php echo strtolower($card['card_type']); ?><?php echo ($checked != '' ? ' active' : '');?>">
                      <div class="saved-card-selector">
                         <input <?php echo $checked; ?> class="saved-selector" type="radio" id="secure_submit_card_<?php echo $i; ?>" name="secure_submit_card" style="width:auto;" value="<?php echo $i; ?>" />
                      </div>
                      <div class="saved-card-info">
-                        <label style="display:inline;" for="secure_submit_card_<?php echo $i; ?>">
+                        <label for="secure_submit_card_<?php echo $i; ?>">
                            <p>
                               <?php echo $card['card_type']; ?> ending in
                               <?php echo $card['last_four']; ?>
@@ -46,12 +46,12 @@
                   </div>
                   <?php $checked = ""; ?>
                <?php endforeach; ?>
-                <div class="saved-card saved-card-new">
+                <div class="saved-card saved-card-new<?php echo ($checked != '' ? ' active' : '');?>">
                    <div class="saved-card-selector">
                       <input <?php echo $checked; ?> type="radio" class="saved-selector" id="secure_submit_card_new" name="secure_submit_card" style="width:auto;" value="new" />
                    </div>
                    <div class="saved-card-info">
-                      <label style="display:inline;" for="secure_submit_card_new">
+                      <label for="secure_submit_card_new">
                          <p>
                             Pay with a new credit card
                          </p>
