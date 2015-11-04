@@ -221,9 +221,30 @@
                     'vertical-align': 'baseline',
                     'width': '100%'
                 },
-               '#heartland-field-body': {
-                  'width': '100%'
-               }
+                '#heartland-field-body': {
+                    'width': '100%'
+                },
+                '#heartland-field[name="cardNumber"]': {
+                  'background-image': 'url("' + wc_securesubmit_params.images_dir + '/ss-inputcard-blank@2x.png")',
+                  'background-position': 'right',
+                  'background-repeat': 'no-repeat',
+                  'background-size': '77px 40px'
+                },
+                '#heartland-field.card-type-visa': {
+                  'background-image': 'url("' + wc_securesubmit_params.images_dir + '/ss-inputcard-visa@2x.png")'
+                },
+                '#heartland-field.card-type-jcb': {
+                  'background-image': 'url("' + wc_securesubmit_params.images_dir + '/ss-inputcard-jcb@2x.png")'
+                },
+                '#heartland-field.card-type-discover': {
+                  'background-image': 'url("' + wc_securesubmit_params.images_dir + '/ss-inputcard-discover@2x.png")'
+                },
+                '#heartland-field.card-type-amex': {
+                  'background-image': 'url("' + wc_securesubmit_params.images_dir + '/ss-inputcard-amex@2x.png")'
+                },
+                '#heartland-field.card-type-mastercard': {
+                  'background-image': 'url("' + wc_securesubmit_params.images_dir + '/ss-inputcard-mastercard@2x.png")'
+                }
             },
             onTokenSuccess: responseHandler,
             onTokenError: responseHandler

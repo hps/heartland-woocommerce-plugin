@@ -210,6 +210,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $securesubmit_params = array(
             'key'         => $this->public_key,
             'use_iframes' => $this->use_iframes,
+            'images_dir'  => plugins_url('assets/images', dirname(__FILE__)),
         );
 
         wp_localize_script('woocommerce_securesubmit', 'wc_securesubmit_params', $securesubmit_params);
