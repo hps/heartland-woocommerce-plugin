@@ -87,7 +87,7 @@
                <?php endif; ?>
             </div>
             <div class="clear"></div>
-            <div class="form-row hideable">
+            <div class="form-row hideable no-bottom-margin">
                <div class="form-row-first half-row">
                   <label for="securesubmit_card_expiration">
                      <?php _e("Expiration date", 'wc_securesubmit') ?>

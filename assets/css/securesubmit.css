@@ -198,6 +198,11 @@
    padding-top: 10px !important;
 }
 
+.securesubmit_new_card_info {
+   border: 1px #ccc solid;
+   margin: -14px 1em 0px 1em;
+}
+
 
 /* saved cards - smaller screens */
 @media only screen and (max-width : 530px) {
