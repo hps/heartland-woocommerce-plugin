@@ -159,27 +159,19 @@
             addHandler(element, 'change', clearFields);
         });
 
-        toAll(document.querySelectorAll('.saved-creditcards-list .ss-section-header h6'), function(element) {
+        toAll(document.querySelectorAll('.saved-selector'), function(element) {
             addHandler(element, 'click', function(e) {
-                document.querySelector('[name="new_secure_submit_card"]').value = 'false';
-                toAll(document.querySelectorAll('.securesubmit-save-cards, .securesubmit_new_card_info .form-row.hideable'), function(el) {
-                    el.style.display = 'none';
-                });
-                toAll(document.querySelectorAll('.saved-creditcards-list .saved-card'), function (el) {
-                    el.style.display = 'block';
-                });
-            });
-        });
+                if (document.getElementById('secure_submit_card_new').checked) {
+                    document.querySelector('[name="new_secure_submit_card"]').value = 'true';
 
-        toAll(document.querySelectorAll('.securesubmit_new_card_info .ss-section-header h6'), function(element) {
-            addHandler(element, 'click', function(e) {
-                document.querySelector('[name="new_secure_submit_card"]').value = 'true';
-                toAll(document.querySelectorAll('.securesubmit-save-cards, .securesubmit_new_card_info .form-row.hideable'), function(el) {
-                    el.style.display = 'block';
-                });
-                toAll(document.querySelectorAll('.saved-creditcards-list .saved-card'), function (el) {
-                    el.style.display = 'none';
-                });
+                    toAll(document.querySelectorAll('.new-card-content'), function (el) {
+                        el.style.display = 'block';
+                    });
+                } else {
+                    toAll(document.querySelectorAll('.new-card-content'), function (el) {
+                        el.style.display = 'none';
+                    });
+                }
             });
         });
 
