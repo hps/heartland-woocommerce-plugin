@@ -65,7 +65,16 @@
          <?php endif; ?>
       </div>
    <?php endif; ?>
-   <div class="securesubmit-content new-card-content" style="display:none;">
+
+   <?php
+   if ($checked = " checked ") {
+      $styletag = "display:none;";
+   } else {
+      $styletag = "display:block;";
+   }
+   ?>
+
+   <div class="securesubmit-content new-card-content" style="<?php echo $styletag; ?>">
       <div class="securesubmit_new_card">
          <div class="securesubmit_new_card_info">
             <div class="form-row form-row-wide no-bottom-margin no-bottom-padding hideable">
