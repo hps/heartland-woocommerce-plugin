@@ -127,6 +127,10 @@
    background-position: center right;
 }
 
+.saved-card.active {
+   border-color: #337ab7;
+}
+
 .saved-card p {
    margin: 0 !important;
    padding: 0 !important;
@@ -192,10 +196,6 @@
 
 .saved-card-jcb {
    background-image: url(../images/ss-jcb@2x.png);
-}
-
-.saved-card-new p {
-   padding-top: 10px !important;
 }
 
 .securesubmit_new_card_info {
