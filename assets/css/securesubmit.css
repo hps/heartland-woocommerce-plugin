@@ -211,6 +211,13 @@
 
 }
 
+/* logged out, no saved cards */
+
+.no-saved-cards .securesubmit_new_card .securesubmit_new_card_info {
+   border: 0;
+   margin: 0;
+   padding: 0;
+}
 
 /* saved cards - smaller screens */
 @media only screen and (max-width : 530px) {
