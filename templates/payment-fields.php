@@ -75,8 +75,8 @@
     <?php endif; ?>
 
     <?php $styletag = is_user_logged_in() && isset($cards) ? 'display:none;' : 'display:bock;'; ?>
-    <?php $class = is_user_logged_in() && isset($cards) ? 'no-saved-cards' : ''; ?>
-    <div class="securesubmit-content new-card-content <?php echo $class;?>" style="<?php echo $styletag; ?>">
+    <?php $newClass = (!is_user_logged_in() || !isset($cards) ? 'no-saved-cards' : ''); ?>
+    <div class="securesubmit-content new-card-content <?php echo $newClass;?>" style="<?php echo $styletag; ?>">
         <div class="securesubmit_new_card">
             <div class="securesubmit_new_card_info">
                 <div class="form-row form-row-wide no-bottom-margin no-bottom-padding hideable">
