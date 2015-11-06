@@ -74,8 +74,10 @@
         </div>
     <?php endif; ?>
 
-    <?php $styletag = is_user_logged_in() && isset($cards) ? 'display:none;' : 'display:bock;'; ?>
-    <?php $newClass = (!is_user_logged_in() || !isset($cards) ? 'no-saved-cards' : ''); ?>
+    <?php error_log(print_r(is_user_logged_in(), true)); ?>
+    <?php error_log(print_r($cards, true)); ?>
+    <?php $styletag = (!is_user_logged_in() || !isset($cards) || empty($cards) ? 'display:block;' : 'display:none;' ); ?>
+    <?php $newClass = (!is_user_logged_in() || !isset($cards) || empty($cards) ? 'no-saved-cards' : ''); ?>
     <div class="securesubmit-content new-card-content <?php echo $newClass;?>" style="<?php echo $styletag; ?>">
         <div class="securesubmit_new_card">
             <div class="securesubmit_new_card_info">
