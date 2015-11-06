@@ -17,7 +17,6 @@
 
     <!-- Start "if card saving is allowed" -->
     <?php $checked = ''; ?>
-    <?php $styletag = ''; ?>
     <?php if ($this->allow_card_saving): ?>
         <div class="securesubmit-content">
             <!-- Start LOGGED IN SAVED CARDS -->
@@ -75,14 +74,7 @@
         </div>
     <?php endif; ?>
 
-    <?php
-    if ($checked != "") {
-        $styletag = "display:none;";
-    } else {
-        $styletag = "display:block;";
-    }
-    ?>
-
+    <?php $styletag = is_user_logged_in() && isset($cards) ? 'display:none;' : 'display:bock;'; ?>
     <div class="securesubmit-content new-card-content" style="<?php echo $styletag; ?>">
         <div class="securesubmit_new_card">
             <div class="securesubmit_new_card_info">

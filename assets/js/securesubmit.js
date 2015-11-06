@@ -9,7 +9,7 @@
 
     function removeClass(element, klass) {
       if (element.className.indexOf(klass) === -1) return;
-      element.className.replace(klass, '');
+      element.className = element.className.replace(klass, '');
     }
 
     function toAll(elements, fun) {
