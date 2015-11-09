@@ -51,6 +51,7 @@
                                     <p><span>Expires on <?php echo $card['exp_month'] . '/' . $card['exp_year']; ?></span></p>
                                 </label>
                             </div>
+                           <div class="card-type-logo"></div>
                         </div>
                         <?php $checked = ""; ?>
                     <?php endforeach; ?>
