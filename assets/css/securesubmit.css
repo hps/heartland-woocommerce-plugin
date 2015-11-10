@@ -225,6 +225,7 @@
 
 }
 
+
 /* logged out, no saved cards */
 
 .no-saved-cards .securesubmit_new_card .securesubmit_new_card_info {
@@ -283,24 +284,47 @@
    background-size: 77px 40px;
 }
 
-#securesubmit_card_number.card-type-visa {
+.securesubmit_new_card .card-type-logo {
+   display: block;
+   width: 56px;
+   height: 44px;
+   position: absolute;
+   top: 4px;
+   right: 4px;
+   background-position: bottom;
+   background-repeat: no-repeat;
+   background-size: 56px auto;
+}
+
+.cc-number {
+   display: block;
+   background: blue;
+   width: 100%;
+   position: relative;
+}
+
+#securesubmit_card_number.valid + .card-type-logo {
+   background-position: top;
+}
+
+#securesubmit_card_number.card-type-visa + .card-type-logo {
    background-image: url(../../assets/images/ss-inputcard-visa@2x.png);
 }
 
-#securesubmit_card_number.card-type-jcb {
+#securesubmit_card_number.card-type-jcb + .card-type-logo {
    background-image: url(../../assets/images/ss-inputcard-jcb@2x.png);
 }
 
-#securesubmit_card_number.card-type-discover {
+#securesubmit_card_number.card-type-discover + .card-type-logo {
    background-image: url(../../assets/images/ss-inputcard-discover@2x.png);
 }
 
-#securesubmit_card_number.card-type-amex {
+#securesubmit_card_number.card-type-amex + .card-type-logo {
    background-image: url(../../assets/images/ss-inputcard-amex@2x.png);
 }
 
-#securesubmit_card_number.card-type-mastercard {
-   background-image: url(../../assets/images/ss-inputcard-mc@2x.png);
+#securesubmit_card_number.card-type-mastercard + .card-type-logo {
+   background-image: url(../../assets/images/ss-inputcard-mastercard@2x.png);
 }
 
 
