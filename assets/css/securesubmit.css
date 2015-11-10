@@ -103,7 +103,7 @@
 .ss-section-header h6 {
    font-family: Arial,Helvetica Neue,Helvetica,sans-serif !important;
    font-size: 22px !important;
-   color: #6a6a6a !important;
+   color: #acacac !important;
    margin: 0 !important;
    padding: 0 !important;
    text-transform: capitalize !important;
@@ -115,6 +115,19 @@
 
 .saved-creditcards-list .button {
    font-size: 12px !important;
+   background-color: #acacac !important;
+   border: 1px #878686 solid !important;
+   color: #fff !important;
+   line-height: normal !important;
+   height: auto !important;
+   -webkit-border-radius: 0px !important;
+   -moz-border-radius: 0px !important;
+   border-radius: 0px !important;
+   font-weight: lighter !important;
+   }
+
+.saved-creditcards-list .button:hover {
+   background-color: #878686 !important;  
 }
 
 .saved-card {
@@ -270,6 +283,11 @@
    text-transform: uppercase;
    font-size: 13px;
    letter-spacing: 1px;
+   white-space: nowrap;
+}
+
+.securesubmit-save-cards label {
+   white-space: normal !important;
 }
 
 #heartland-field-body, #heartland-field-wrapper {
@@ -460,10 +478,29 @@ textarea:focus {
    }
 }
 
-@media only screen and (max-width : 750px) {
+@media only screen and (max-width : 768px) {
    .saved-card .card-type-logo { 
       display: none;
    }
+   
+   .ss-section-header h6 {
+      width: 100%;  
+      text-align: center;
+      font-size: 20px !important;
+   }
+   
+   .saved-creditcards-list .button {
+      width: 100%;
+      text-align: center;
+      margin-top: 10px !important;
+   }
+   .securesubmit_new_card_info {
+      padding: 0 .5em .1em .5em;
+   }
+   .payment_method_securesubmit div.payment_box .securesubmit_new_card .securesubmit_new_card_info label {
+      font-size: 11px;
+   }
+   
 }
 
 
@@ -511,6 +548,11 @@ textarea:focus {
    .saved-card p {
       line-height: 16px !important;
    }
+   
+   .payment_method_securesubmit div.payment_box .securesubmit_new_card .securesubmit_new_card_info label {
+      white-space: normal;
+   }
+
 }
 
 
