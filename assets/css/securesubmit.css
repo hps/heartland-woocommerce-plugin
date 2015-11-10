@@ -451,7 +451,22 @@ textarea:focus {
 
 
 
-/* Extra Small Devices, Phones */
+@media only screen and (max-width : 800px) {
+   .saved-card p {
+      font-size: 13px !important;  
+   }
+   .saved-card p span {
+      letter-spacing: 0;  
+   }
+}
+
+@media only screen and (max-width : 750px) {
+   .saved-card .card-type-logo { 
+      display: none;
+   }
+}
+
+
 @media only screen and (max-width : 480px) {
    .half-row {
       width: 100% !important;
@@ -469,6 +484,32 @@ textarea:focus {
    .securesubmit-description {
       padding: inherit 15px;
       text-align: center;
+   }
+   .saved-card, .saved-card-new {
+      height: auto;
+      padding-bottom: 5px;
+   }
+   .saved-card-selector {
+      padding: 0px 2%;
+      width: 13%;
+      border-right: 0;
+      margin-top: 12px;
+   }
+   .saved-card-info {
+      padding-left: 1px;
+      height: auto;
+      padding-top: 7px;
+      width: 80%;
+   }
+   .saved-card-info-new {
+      padding-left: 1px;
+      height: 41px;
+      padding-top: 7px;
+      width: 80%;
+      line-height: 10px;
+   }
+   .saved-card p {
+      line-height: 16px !important;
    }
 }
 

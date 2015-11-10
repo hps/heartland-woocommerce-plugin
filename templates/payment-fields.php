@@ -38,7 +38,7 @@
                     $totalcards = 0;
                     ?>
                     <?php foreach ($cards as $i => $card): ?>
-                        <div class="saved-card saved-card-<?php echo strtolower($card['card_type']); ?><?php echo ($checked != '' ? ' active' : '');?>">
+                        <div class="clearfix saved-card saved-card-<?php echo strtolower($card['card_type']); ?><?php echo ($checked != '' ? ' active' : '');?>">
                             <div class="saved-card-selector">
                                 <input <?php echo $checked; ?> class="saved-selector" type="radio" id="secure_submit_card_<?php echo $i; ?>" name="secure_submit_card" style="width:auto;" value="<?php echo $i; ?>" />
                             </div>
@@ -57,7 +57,7 @@
                     <?php endforeach; ?>
 
                     <!-- START NEW CARD -->
-                    <div class="saved-card saved-card-new<?php echo ($checked != '' ? ' active' : '');?>">
+                    <div class="clearfix saved-card saved-card-new<?php echo ($checked != '' ? ' active' : '');?>">
                         <div class="saved-card-selector">
                             <input <?php echo $checked; ?> type="radio" class="saved-selector" id="secure_submit_card_new" name="secure_submit_card" style="width:auto;" value="new" />
                         </div>
