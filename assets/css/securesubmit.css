@@ -238,6 +238,19 @@
    background: #fff;
 }
 
+/* error */
+
+.securesubmit_new_card .woocommerce_error { 
+   margin: -1px 1em 0 1em !important;
+   border: 1px #ce1025 solid !important;
+   background: #ce1025;
+   color: #fff;
+}
+
+.securesubmit_new_card .woocommerce-error:before {
+   color: #fff !important;
+   top: 22px !important;
+}
 
 /* logged out, no saved cards */
 
