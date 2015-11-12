@@ -120,7 +120,10 @@
                         <?php if ($this->use_iframes): ?>
                             <div id="securesubmit_card_cvv"></div>
                         <?php else: ?>
+                           <div class="ss-cvv">
                             <input type="tel" id="securesubmit_card_cvv" maxlength="4" autocomplete="off" class="input-text card-cvc" placeholder="CVV" />
+                             <div class="ss-cvv-icon"></div>
+                           </div>
                         <?php endif; ?>
                         <span class="help securesubmit_card_csc_description"></span>
                     </div>

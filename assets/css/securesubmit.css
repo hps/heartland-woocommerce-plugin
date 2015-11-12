@@ -359,6 +359,26 @@
    background-image: url(../../assets/images/ss-inputcard-mastercard@2x.png);
 }
 
+.ss-cvv {
+   position: relative;
+}
+
+.ss-cvv-icon {
+   display: block;
+   width: 59px;
+   height: 39px;
+   background-image: url(../images/ss-cvv@2x.png);
+   background-size: 59px auto;
+   background-position: top;
+   position: absolute;
+   top: 6px;
+   right: 7px;
+}
+
+.cvv-amex {
+   background-position: bottom;
+}
+
 
 /* inputs */
 
