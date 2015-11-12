@@ -70,7 +70,7 @@
    float: left;
    width: 50px;
    height: 50px;
-   background-image: url(../images/ss-lock@2x.png);
+   background-image: url(../images/ss-shield@2x.png);
    background-size: 50px 50px;
    margin-left: -8px;
 }
@@ -169,7 +169,7 @@
    padding: 9px 0px 11px 0px;
    text-align: center;
    border-right: 1px #e4e4e3 solid;
-   margin-top: 11px;
+   margin-top: 9px;
 }
 
 .saved-card-selector input {
@@ -233,9 +233,9 @@
 .securesubmit_new_card_info {
    border: 1px #337ab7 solid;
    margin: -1px 1em 0 1em;
-   border-top: 1px #fff solid;
+   border-top: 0;
    padding: .4em 2.5em 1.2em 2.5em;
-
+   background: #fff;
 }
 
 
@@ -245,6 +245,7 @@
    border: 0;
    margin: 0;
    padding: 0;
+   background: none;
 }
 
 /* saved cards - smaller screens */
