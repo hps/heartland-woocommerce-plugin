@@ -221,42 +221,71 @@
             style: {
                 'input': {
                     'background': '#fff',
-                    'border': '1px solid',
+                    'border': '1px solid #666',
                     'border-color': '#bbb3b9 #c7c1c6 #c7c1c6',
                     'box-sizing': 'border-box',
-                    'font-family': 'Verdana',
-                    'font-size': '18px',
-                    'line-height': '1',
+                    'font-family': 'Arial, Helvetica Neue, Helvetica, sans-serif',
+                    'font-size': '18px !important',
+                    'line-height': '18px !important',
                     'margin': '0 .5em 0 0',
                     'max-width': '100%',
                     'outline': '0',
-                    'padding': '0.5278em',
-                    'vertical-align': 'baseline',
+                    'padding': '15px 13px 13px 13px',
+                    'vertical-align': 'middle',
                     'width': '100%'
                 },
                 '#heartland-field-body': {
                     'width': '100%'
                 },
-                '#heartland-field[name="cardNumber"]': {
-                  'background-image': 'url("' + wc_securesubmit_params.images_dir + '/ss-inputcard-blank@2x.png")',
-                  'background-position': 'right',
-                  'background-repeat': 'no-repeat',
-                  'background-size': '77px 40px'
+                '#heartland-field-wrapper': {
+                    'position': 'relative'
                 },
-                '#heartland-field.card-type-visa': {
-                  'background-image': 'url("' + wc_securesubmit_params.images_dir + '/ss-inputcard-visa@2x.png")'
+                // Card Number
+                '#heartland-field[name="cardNumber"] + .extra-div-1': {
+                    'display': 'block',
+                    'width': '56px',
+                    'height': '44px',
+                    'position': 'absolute',
+                    'top': '4px',
+                    'right': '10px',
+                    'background-position': 'bottom',
+                    'background-repeat': 'no-repeat',
+                    'background-size': '56px auto'
                 },
-                '#heartland-field.card-type-jcb': {
-                  'background-image': 'url("' + wc_securesubmit_params.images_dir + '/ss-inputcard-jcb@2x.png")'
+                '#heartland-field[name="cardNumber"].valid + .extra-div-1': {
+                    'background-position': 'top'
                 },
-                '#heartland-field.card-type-discover': {
-                  'background-image': 'url("' + wc_securesubmit_params.images_dir + '/ss-inputcard-discover@2x.png")'
+                '#heartland-field.card-type-visa + .extra-div-1': {
+                    'background-image': 'url("' + wc_securesubmit_params.images_dir + '/ss-inputcard-visa@2x.png")'
                 },
-                '#heartland-field.card-type-amex': {
-                  'background-image': 'url("' + wc_securesubmit_params.images_dir + '/ss-inputcard-amex@2x.png")'
+                '#heartland-field.card-type-jcb + .extra-div-1': {
+                    'background-image': 'url("' + wc_securesubmit_params.images_dir + '/ss-inputcard-jcb@2x.png")'
                 },
-                '#heartland-field.card-type-mastercard': {
-                  'background-image': 'url("' + wc_securesubmit_params.images_dir + '/ss-inputcard-mastercard@2x.png")'
+                '#heartland-field.card-type-discover + .extra-div-1': {
+                    'background-image': 'url("' + wc_securesubmit_params.images_dir + '/ss-inputcard-discover@2x.png")'
+                },
+                '#heartland-field.card-type-amex + .extra-div-1': {
+                    'background-image': 'url("' + wc_securesubmit_params.images_dir + '/ss-inputcard-amex@2x.png")'
+                },
+                '#heartland-field.card-type-mastercard + .extra-div-1': {
+                    'background-image': 'url("' + wc_securesubmit_params.images_dir + '/ss-inputcard-mastercard@2x.png")'
+                },
+                '@media only screen and (max-width : 290px)': {
+                    '#heartland-field[name="cardNumber"] + .extra-div-1': {
+                        'display': 'none'
+                    }
+                },
+                // Card CVV
+                '#heartland-field[name="cardCvv"] + .extra-div-1': {
+                    'display': 'block',
+                    'width': '59px',
+                    'height': '39px',
+                    'background-image': 'url("' + wc_securesubmit_params.images_dir + '/ss-cvv@2x.png")',
+                    'background-size': '59px auto',
+                    'background-position': 'top',
+                    'position': 'absolute',
+                    'top': '6px',
+                    'right': '7px'
                 }
             },
             onTokenSuccess: responseHandler,
