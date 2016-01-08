@@ -229,6 +229,12 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $exp_year = isset($_POST['exp_year']) ? woocommerce_clean($_POST['exp_year']) : '';
         $card_type = isset($_POST['card_type']) ? woocommerce_clean($_POST['card_type']) : '';
 
+        if (isset($_POST['save_card']) && $_POST['save_card'] === "true") {
+            $save_card_to_customer = true;
+        } else {
+            $save_card_to_customer = false;
+        }
+
         try {
             $post_data = array();
 
@@ -252,6 +258,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 
                 if (isset($cards[$_POST['secure_submit_card']]['token_value'])) {
                     $hpstoken->tokenValue = $cards[$_POST['secure_submit_card']]['token_value'];
+                    $save_card_to_customer = false;
                 } else {
                     throw new Exception(__('Invalid saved card.', 'wc_securesubmit'));
                 }
@@ -263,12 +270,6 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
             $details->invoiceNumber = $order->id;
 
             try {
-                if (isset($_POST['save_card']) && $_POST['save_card'] === "true") {
-                    $save_card_to_customer = true;
-                } else {
-                    $save_card_to_customer = false;
-                }
-
                 if ($this->paymentaction == 'sale') {
                     $response = $chargeService->charge(
                         $order->order_total,
@@ -344,9 +345,9 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                 } else {
                     if ($e->getCode() == HpsExceptionCodes::POSSIBLE_FRAUD_DETECTED) {
                         if (function_exists('wc_add_notice')) {
-                            wc_add_notice(__($this->fraud_text, 'wc_securesubmit'), 'error');
+                            wc_add_notice(__((string)$this->fraud_text, 'wc_securesubmit'), 'error');
                         } else {
-                            $woocommerce->add_error(__($this->fraud_text, 'wc_securesubmit'));
+                            $woocommerce->add_error(__((string)$this->fraud_text, 'wc_securesubmit'));
                         }
                     } else {
                         if (function_exists('wc_add_notice')) {

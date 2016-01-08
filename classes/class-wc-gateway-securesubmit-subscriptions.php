@@ -41,11 +41,27 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
 
     public function process_payment($orderId)
     {
-        if (class_exists('WC_Subscriptions_Order') && WC_Subscriptions_Order::order_contains_subscription($orderId)) {
+        if (class_exists('WC_Subscriptions_Order') && $this->orderHasSubscription($orderId)) {
             return $this->processSubscription($orderId);
         } else {
             return parent::process_payment($orderId);
         }
+    }
+
+    protected function orderHasSubscription($order)
+    {
+        if (function_exists('wcs_order_contains_subscription')) {
+            return wcs_order_contains_subscription($order);
+        }
+        return WC_Subscriptions_Order::order_contains_subscription($order);
+    }
+
+    protected function orderGetTotal($order)
+    {
+        if (method_exists($order, 'get_total')) {
+            return $order->get_total();
+        }
+        return WC_Subscriptions_Order::get_total_initial_payment($order);
     }
 
     public function processSubscription($orderId)
@@ -86,8 +102,8 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
             }
 
             try {
-                $saveCardToCustomer = true;
-                $initialPayment = WC_Subscriptions_Order::get_total_initial_payment($order);
+                $saveCardToCustomer = !$useStoredCard;
+                $initialPayment = $this->orderGetTotal($order);
                 $response = null;
                 if ($initialPayment > 0) {
                     $response = $this->processSubscriptionPayment($order, $initialPayment, $hpstoken, $saveCardToCustomer);
@@ -97,7 +113,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
                     throw new Exception($response->get_error_message());
                 }
 
-                if ($saveCardToCustomer || $useStoredCard) {
+                if ($saveCardToCustomer) {
                     if (is_user_logged_in()) {
                         $tokenval = (string)$response->tokenData->tokenValue;
                         $saveToOrder = false;
@@ -112,16 +128,16 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
                             ));
                             $saveToOrder = true;
                         }
-
-                        if ($useStoredCard) {
-                            $tokenval = $hpstoken->tokenValue;
-                            $saveToOrder = true;
-                        }
-
-                        if ($saveToOrder) {
-                            add_post_meta($order->id, '_securesubmit_card_token', $tokenval, true);
-                        }
                     }
+                }
+
+                if ($useStoredCard) {
+                    $tokenval = $hpstoken->tokenValue;
+                    $saveToOrder = true;
+                }
+
+                if ($saveToOrder) {
+                    add_post_meta($order->id, '_securesubmit_card_token', $tokenval, true);
                 }
 
                 $order->payment_complete();
@@ -133,10 +149,10 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
                     'redirect' => $this->get_return_url($order)
                 );
             } catch (HpsException $e) {
-                throw new Exception(__($e->getMessage(), 'wc_securesubmit'));
+                throw new Exception(__((string)$e->getMessage(), 'wc_securesubmit'));
             }
         } catch (Exception $e) {
-            $error = __('Error:', 'wc_securesubmit') . ' "' . $e->getMessage() . '"';
+            $error = __('Error:', 'wc_securesubmit') . ' "' . (string)$e->getMessage() . '"';
             if (function_exists('wc_add_notice')) {
                 wc_add_notice($error, 'error');
             } else {
@@ -195,10 +211,11 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
 
             $order->add_order_note(sprintf(__('SecureSubmit payment completed (Transaction ID: %s)', 'hps-securesubmit'), $response->transactionId));
             add_post_meta($order->id, '_transaction_id', $response->transactionId, true);
+            error_log($response->transactionId);
 
             return $response;
         } catch (Exception $e) {
-            return new WP_Error('securesubmit_error', sprintf(__('SecureSubmit payment error: %s', 'hps-securesubmit'), $e->getMessage()));
+            return new WP_Error('securesubmit_error', sprintf(__('SecureSubmit payment error: %s', 'hps-securesubmit'), (string)$e->getMessage()));
         }
     }
 
