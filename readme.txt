@@ -1,7 +1,7 @@
 === WooCommerce SecureSubmit Gateway ===
 Contributors: markhagan
 Tags: woocommerce, woo, commerce, heartland, payment, systems, gateway, token, tokenize, save cards
-Tested up to: 4.2.2
+Tested up to: 4.4.1
 Stable tag: trunk
 License: Custom
 License URI: https://github.com/hps/heartland-woocommerce-plugin/blob/master/LICENSE
@@ -35,6 +35,24 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section.
 
 == Changelog ==
+
+= 1.3.0 =
+* New option to use gateway-hosted iframes for credit card form fields
+* New user experience changes in credit card form
+* Fixed basic compatibility issues with WooCommerce Subscriptions 2.0. Support for new features has not been completed.
+
+= 1.2.5 =
+* Change CERT gateway url
+
+= 1.2.4 =
+* Remove possible failure point of using saved card while requesting to save a card. Uses saved card in this instance.
+* Fix SimpleXMLElement serialization error when catching HpsException with gateway faultstring
+
+= 1.2.3 =
+* Update certification url to support PCI DSS 3.1
+
+= 1.2.2 =
+* Changed how errors are reported back
 
 = 1.2.1 =
 * Fix bug with refund method name

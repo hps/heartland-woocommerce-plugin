@@ -351,9 +351,9 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                         }
                     } else {
                         if (function_exists('wc_add_notice')) {
-                            wc_add_notice(__($e->getMessage(), 'wc_securesubmit'), 'error');
+                            wc_add_notice(__((string)$e->getMessage(), 'wc_securesubmit'), 'error');
                         } else {
-                            $woocommerce->add_error(__($e->getMessage(), 'wc_securesubmit'));
+                            $woocommerce->add_error(__((string)$e->getMessage(), 'wc_securesubmit'));
                         }
                     }
 
@@ -364,7 +364,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                 }
             }
         } catch (Exception $e) {
-            $error = __('Error:', 'wc_securesubmit') . ' "' . $e->getMessage() . '"';
+            $error = __('Error:', 'wc_securesubmit') . ' "' . (string)$e->getMessage() . '"';
             if (function_exists('wc_add_notice')) {
                 wc_add_notice($error, 'error');
             } else {
