@@ -201,7 +201,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         }
 
         // SecureSubmit tokenization library
-        wp_enqueue_script('securesubmit', 'https://hps.github.io/token/2.1/securesubmit.js', array(), '2.1', true);
+        wp_enqueue_script('securesubmit', 'https://api.heartlandportico.com/SecureSubmit.v1/token/2.1/securesubmit.js', array(), '2.1', true);
         // SecureSubmit js controller for WooCommerce
         wp_enqueue_script('woocommerce_securesubmit', plugins_url('assets/js/securesubmit.js', dirname(__FILE__)), array('jquery'), '1.0', true);
         // SecureSubmit custom CSS
@@ -351,9 +351,9 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                         }
                     } else {
                         if (function_exists('wc_add_notice')) {
-                            wc_add_notice(__($e->getMessage(), 'wc_securesubmit'), 'error');
+                            wc_add_notice(__((string)$e->getMessage(), 'wc_securesubmit'), 'error');
                         } else {
-                            $woocommerce->add_error(__($e->getMessage(), 'wc_securesubmit'));
+                            $woocommerce->add_error(__((string)$e->getMessage(), 'wc_securesubmit'));
                         }
                     }
 
@@ -364,7 +364,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                 }
             }
         } catch (Exception $e) {
-            $error = __('Error:', 'wc_securesubmit') . ' "' . $e->getMessage() . '"';
+            $error = __('Error:', 'wc_securesubmit') . ' "' . (string)$e->getMessage() . '"';
             if (function_exists('wc_add_notice')) {
                 wc_add_notice($error, 'error');
             } else {

@@ -16,3 +16,57 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+Changelog
+------------
+####1.3.0
+* New option to use gateway-hosted iframes for credit card form fields
+* New user experience changes in credit card form
+* Fixed basic compatibility issues with WooCommerce Subscriptions 2.0. Support for new features has not been completed.
+
+####1.2.5
+* Change CERT gateway url
+
+####1.2.4
+* Remove possible failure point of using saved card while requesting to save a card. Uses saved card in this instance.
+* Fix SimpleXMLElement serialization error when catching HpsException with gateway faultstring
+
+####1.2.3
+* Update certification url to support PCI DSS 3.1
+
+####1.2.2
+* Changed how errors are reported back
+
+####1.2.1
+* Fix bug with refund method name
+* Fix SDK bug with older PHP versions
+
+####1.2.0
+* Updated SDK
+* Added support for recurring payments through WooCommerce Subscriptions
+* Added capability for setting custom error messages
+
+####1.1.1
+* Ensure SDK isn't already loaded
+
+####1.1.0
+* Adding refund capabilities
+
+####1.0.5
+* Clearing token variable after form submission
+
+####1.0.4
+* Clearing token if it already exists after error
+
+####1.0.3
+* Version only update
+
+####1.0.2
+* Fixed optional card-saving
+
+####1.0.1
+* Made Card-Saving optional
+* Reversed order of Public/Secret Keys
+
+####1.0.0
+* Initial Release
