@@ -19,6 +19,9 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+####1.3.1
+* Fix bug with Javascript removing single-use token too soon after form submission
+
 ####1.3.0
 * New option to use gateway-hosted iframes for credit card form fields
 * New user experience changes in credit card form

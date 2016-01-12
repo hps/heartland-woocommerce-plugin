@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce SecureSubmit Gateway
 Plugin URI: https://developer.heartlandpaymentsystems.com/SecureSubmit/
 Description: Heartland Payment Systems gateway for WooCommerce.
-Version: 1.2.1
+Version: 1.3.1
 Author: SecureSubmit
 Author URI: https://developer.heartlandpaymentsystems.com/SecureSubmit/
 */
@@ -56,7 +56,7 @@ class WooCommerceSecureSubmitGateway
         if (!$cards) {
             return;
         }
-        
+
         $path = plugin_dir_path(__FILE__);
         include $path . 'templates/saved-cards.php';
     }
