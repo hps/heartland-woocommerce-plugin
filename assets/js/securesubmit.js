@@ -103,6 +103,10 @@
     function responseHandler(response) {
         var form = document.querySelector('form.checkout, form#order_review');
 
+        toAll(document.querySelectorAll('.securesubmit_token'), function(el) {
+            el.remove();
+        });
+
         if (response.error) {
             var ul = document.createElement('ul');
             var li = document.createElement('li');
@@ -153,10 +157,6 @@
             form.appendChild(expYr);
 
             Heartland.Events.trigger('submit', form);
-
-            toAll(document.querySelectorAll('.securesubmit_token'), function(el) {
-                el.remove();
-            });
         }
     }
 

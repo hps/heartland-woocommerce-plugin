@@ -36,6 +36,9 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 
 == Changelog ==
 
+= 1.3.1 =
+* Fix bug with Javascript removing single-use token too soon after form submission
+
 = 1.3.0 =
 * New option to use gateway-hosted iframes for credit card form fields
 * New user experience changes in credit card form
