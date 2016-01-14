@@ -105,7 +105,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
                 $saveCardToCustomer = !$useStoredCard;
                 $initialPayment = $this->orderGetTotal($order);
                 $response = null;
-                if ($initialPayment > 0) {
+                if ($initialPayment >= 0) {
                     $response = $this->processSubscriptionPayment($order, $initialPayment, $hpstoken, $saveCardToCustomer);
                 }
 
@@ -200,18 +200,30 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
             $details = new HpsTransactionDetails();
             $details->invoiceNumber = $order->id;
 
-            $response = $chargeService->charge(
-                $amount,
-                strtolower(get_woocommerce_currency()),
-                $token,
-                $cardHolder,
-                $requestMulti,
-                $details
-            );
+            $response = null;
+            if ($amount == 0) {
+                $response = $chargeService->verify(
+                    $token,
+                    $cardHolder,
+                    $requestMulti
+                );
+            } else {
+                $response = $chargeService->charge(
+                    $amount,
+                    strtolower(get_woocommerce_currency()),
+                    $token,
+                    $cardHolder,
+                    $requestMulti,
+                    $details
+                );
+            }
 
-            $order->add_order_note(sprintf(__('SecureSubmit payment completed (Transaction ID: %s)', 'hps-securesubmit'), $response->transactionId));
+            $order->add_order_note(sprintf(
+                __('SecureSubmit %s completed (Transaction ID: %s)', 'hps-securesubmit'),
+                ($amount == 0 ? 'verify' : 'payment'),
+                $response->transactionId
+            ));
             add_post_meta($order->id, '_transaction_id', $response->transactionId, true);
-            error_log($response->transactionId);
 
             return $response;
         } catch (Exception $e) {
