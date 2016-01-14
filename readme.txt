@@ -35,6 +35,9 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section.
 
 == Changelog ==
+= 1.3.2 =
+* Fix bug with WooCommerce checkout form submit handlers
+* Add support for subscriptions with free trials ($0 initial payment)
 
 = 1.3.1 =
 * Fix bug with Javascript removing single-use token too soon after form submission
