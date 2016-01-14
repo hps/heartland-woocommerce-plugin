@@ -33,7 +33,7 @@
     }
 
     function clearFields() {
-        toAll(document.querySelectorAll('.woocommerce_error, .woocommerce-error, .woocommerce-message, .woocommerce_message, .securesubmit_token'), function(element) {
+        toAll(document.querySelectorAll('.woocommerce_error, .woocommerce-error, .woocommerce-message, .woocommerce_message'), function(element) {
             element.remove();
         });
     }
@@ -45,9 +45,9 @@
         var storedCardsChecked = filter(storedCards, function(el) {
             return el.checked;
         });
-        var tokens = document.querySelectorAll('input.securesubmit_token');
+        var token = document.getElementById('securesubmit_token');
 
-        if (securesubmitMethod && securesubmitMethod.checked && (storedCardsChecked.length === 0 || storedCardsChecked[0] && storedCardsChecked[0].value === 'new') && tokens.length === 0) {
+        if (securesubmitMethod && securesubmitMethod.checked && (storedCardsChecked.length === 0 || storedCardsChecked[0] && storedCardsChecked[0].value === 'new') && token.value === '') {
             var card = document.getElementById('securesubmit_card_number');
             var cvv = document.getElementById('securesubmit_card_cvv');
             var expiration = document.getElementById('securesubmit_card_expiration');
@@ -83,9 +83,9 @@
         var storedCardsChecked = filter(storedCards, function(el) {
             return el.checked;
         });
-        var tokens = document.querySelectorAll('input.securesubmit_token');
+        var token = document.getElementById('securesubmit_token');
 
-        if (securesubmitMethod && securesubmitMethod.checked && (storedCardsChecked.length === 0 || storedCardsChecked[0] && storedCardsChecked[0].value === 'new') && tokens.length === 0) {
+        if (securesubmitMethod && securesubmitMethod.checked && (storedCardsChecked.length === 0 || storedCardsChecked[0] && storedCardsChecked[0].value === 'new') && tokens.value === '') {
             wc_securesubmit_params.hps.Messages.post({
                     accumulateData: true,
                     action: 'tokenize',
@@ -103,9 +103,7 @@
     function responseHandler(response) {
         var form = document.querySelector('form.checkout, form#order_review');
 
-        toAll(document.querySelectorAll('.securesubmit_token'), function(el) {
-            el.remove();
-        });
+        document.getElementById('securesubmit_token').value = '';
 
         if (response.error) {
             var ul = document.createElement('ul');
@@ -122,16 +120,12 @@
                 document.querySelector('.securesubmit_new_card_info')
             );
         } else {
-            var token = document.createElement('input');
+            var token = document.getElementById('securesubmit_token');
             var last4 = document.createElement('input');
             var cType = document.createElement('input');
             var expMo = document.createElement('input');
             var expYr = document.createElement('input');
 
-            token.type = 'hidden';
-            token.id = 'securesubmit_token';
-            addClass(token, 'securesubmit_token');
-            token.name = 'securesubmit_token';
             token.value = response.token_value;
 
             last4.type = 'hidden';
@@ -150,7 +144,6 @@
             expYr.name = 'exp_year';
             expYr.value = response.exp_year;
 
-            form.appendChild(token);
             form.appendChild(last4);
             form.appendChild(cType);
             form.appendChild(expMo);
@@ -299,20 +292,7 @@
             handler = iframeFormHandler;
         }
 
-        toAll(document.querySelectorAll('form.checkout'), function(element) {
-            // WC 'checkout_place_order_securesubmit' event and jquery.triggerHandler
-            // (http://api.jquery.com/triggerhandler/) workaround
-            element.oncheckout_place_order_securesubmit = handler;
-        });
-
-        toAll(document.querySelectorAll('form#order_review'), function(element) {
-            addHandler(element, 'submit', handler);
-        });
-
-        toAll(document.querySelectorAll('form.checkout, form#order_review'), function(element) {
-            addHandler(element, 'change', function() {
-                // jQuery('div.securesubmit_new_card').slideDown(200);
-            });
-        });
+        jQuery('form.checkout, form#order_review').on('submit', handler);
+        jQuery('form.checkout').on('checkout_place_order_securesubmit', handler);
     });
 }(window, document, window.Heartland, window.wc_securesubmit_params));
