@@ -144,6 +144,7 @@
             <div class="clear"></div>
         </div>
     </div>
+    <input type="hidden" name="securesubmit_token" id="securesubmit_token" />
 </fieldset>
 
 <?php if ($this->use_iframes): // Create the iframes when WC refreshes the payment fields ?>
