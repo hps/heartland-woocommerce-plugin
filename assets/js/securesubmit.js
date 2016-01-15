@@ -200,7 +200,7 @@
             fields: {
                 cardNumber: {
                     target: 'securesubmit_card_number',
-                    placeholder: '•••• •••• •••• ••••'
+                    placeholder: '···· ···· ···· ····'
                 },
                 cardExpiration: {
                     target: 'securesubmit_card_expiration',
