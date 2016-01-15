@@ -19,6 +19,9 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+####1.3.3
+* Change bullet to middle dot
+
 ####1.3.2
 * Fix bug with WooCommerce checkout form submit handlers
 * Add support for subscriptions with free trials ($0 initial payment)

@@ -94,7 +94,7 @@
                         <div id="securesubmit_card_number"></div>
                     <?php else: ?>
                     <div class="cc-number">
-                      <input id="securesubmit_card_number" type="tel" autocomplete="off" class="input-text card-number" placeholder="•••• •••• •••• ••••" />
+                      <input id="securesubmit_card_number" type="tel" autocomplete="off" class="input-text card-number" placeholder="···· ···· ···· ····" />
                       <div class="card-type-logo"></div>
                    </div>
                     <?php endif; ?>
