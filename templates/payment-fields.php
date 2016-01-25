@@ -1,6 +1,5 @@
 <div class="securesubmit-header clearfix">
     <div class="secure"></div>
-    <div class="securesubmit-logo"><span class="sr-only">SecureSubmit</span></div>
 </div>
 
 <fieldset>
