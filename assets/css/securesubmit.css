@@ -75,16 +75,6 @@
    margin-left: -8px;
 }
 
-.securesubmit-header .securesubmit-logo {
-   display: block;
-   float: right;
-   width: 140px;
-   height: 26px;
-   background-image: url(../images/heartland-logo@1x.png);
-   background-size: 140px 26px;
-   margin-top: 12px;
-}
-
 /* custom description paragraph */
 
 .securesubmit-description {
@@ -594,8 +584,5 @@ textarea:focus {
 
 @media only screen and (-moz-min-device-pixel-ratio: 1.5), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min-devicepixel-ratio: 1.5), only screen and (min-resolution: 1.5dppx) {
 
-   .securesubmit-header .securesubmit-logo {
-      background-image: url(../images/heartland-logo@2x.png);
-   }
 
 }
