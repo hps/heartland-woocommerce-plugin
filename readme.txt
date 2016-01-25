@@ -35,6 +35,9 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section.
 
 == Changelog ==
+= 1.3.4 =
+* Removed Heartland logo
+
 = 1.3.3 =
 * Change bullet to middle dot
 
