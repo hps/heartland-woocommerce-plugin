@@ -85,7 +85,7 @@
         });
         var token = document.getElementById('securesubmit_token');
 
-        if (securesubmitMethod && securesubmitMethod.checked && (storedCardsChecked.length === 0 || storedCardsChecked[0] && storedCardsChecked[0].value === 'new') && tokens.value === '') {
+        if (securesubmitMethod && securesubmitMethod.checked && (storedCardsChecked.length === 0 || storedCardsChecked[0] && storedCardsChecked[0].value === 'new') && token.value === '') {
             wc_securesubmit_params.hps.Messages.post({
                     accumulateData: true,
                     action: 'tokenize',
