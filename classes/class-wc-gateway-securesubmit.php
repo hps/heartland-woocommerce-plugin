@@ -41,6 +41,15 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         add_action('admin_notices', array($this, 'checks'));
         add_action('woocommerce_update_options_payment_gateways', array($this, 'process_admin_options'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
+        add_filter('script_loader_tag', array($this, 'utf8'), 10, 2);
+    }
+
+    public function utf8($tag, $handle)
+    {
+        if (!in_array($handle, array('securesubmit', 'woocommerce_securesubmit'))) {
+            return $tag;
+        }
+        return str_replace(' src', ' charset="utf-8" src', $tag);
     }
 
     public function checks()
