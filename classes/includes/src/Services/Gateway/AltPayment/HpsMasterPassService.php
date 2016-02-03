@@ -336,6 +336,10 @@ class HpsMasterPassService
             $lineItems,
             $orderData
         );
+        if (null === $orderData) {
+            $orderData = new HpsOrderData();
+        }
+        $orderData->currencyCode = $currency;
         $capture = $this->capture(
             $orderId,
             $amount,
@@ -343,7 +347,7 @@ class HpsMasterPassService
         );
         return (object)array(
             'authorization' => $authorization,
-            'capture' => $capture,
+            'capture'       => $capture,
         );
     }
 
