@@ -39,8 +39,8 @@ class WooCommerceSecureSubmitGateway
         add_action('wp_ajax_securesubmit_masterpass_lookup', array($masterpass, 'lookupCallback'));
         add_action('wp_ajax_nopriv_securesubmit_masterpass_lookup', array($masterpass, 'lookupCallback'));
         add_shortcode('woocommerce_masterpass_review_order', array($masterpass, 'reviewOrderShortcode'));
-        // add_action('woocommerce_order_actions', array($masterpass->capture, 'addOrderAction'));
-        // add_action('woocommerce_order_action_' . $masterpass->id . '_capture', array($masterpass, 'process_capture'));
+        add_action('woocommerce_order_actions', array($masterpass->capture, 'addOrderAction'));
+        add_action('woocommerce_order_action_' . $masterpass->id . '_capture', array($masterpass, 'process_capture'));
         add_action('woocommerce_after_my_account', array($masterpass, 'myaccountConnect'));
     }
 

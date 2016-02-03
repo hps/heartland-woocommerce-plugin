@@ -23,15 +23,16 @@ class WC_Gateway_SecureSubmit_MasterPass_Refund
             }
 
             $masterpassOrderId = get_post_meta($order->id, '_masterpass_order_id', true);
-
             if (!$masterpassOrderId) {
                 throw new Exception(__('MasterPass order id cannot be found', 'wc_securesubmit'));
             }
 
             $masterpassPaymentStatus = get_post_meta($order->id, '_masterpass_payment_status', true);
-
             if ($masterpassPaymentStatus === 'authorized') {
-                throw new Exception(__('Transaction has not be captured', 'wc_securesubmit'));
+                throw new Exception(__(sprintf('Transaction has not been captured'), 'wc_securesubmit'));
+            }
+            if ($masterpassPaymentStatus !== 'captured') {
+                throw new Exception(__(sprintf('Transaction has already been %s', $masterpassPaymentStatus), 'wc_securesubmit'));
             }
 
             $orderData = new HpsOrderData();
@@ -44,6 +45,8 @@ class WC_Gateway_SecureSubmit_MasterPass_Refund
                 $amount,
                 $orderData
             );
+
+            update_post_meta($order->id, '_masterpass_payment_status', 'refunded', 'captured');
             $order->add_order_note(__('MasterPass payment refunded', 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
             return true;
         } catch (Exception $e) {

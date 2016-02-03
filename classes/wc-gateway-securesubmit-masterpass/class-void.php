@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
     exit();
 }
 
-class WC_Gateway_SecureSubmit_MasterPass_Capture
+class WC_Gateway_SecureSubmit_MasterPass_Void
 {
     protected $masterpass = null;
 
@@ -32,18 +32,13 @@ class WC_Gateway_SecureSubmit_MasterPass_Capture
 
             $service = $this->masterpass->getService();
 
-            $orderData = new HpsOrderData();
-            $orderData->currencyCode = strtolower(get_woocommerce_currency());
-
-            $response = $service->capture(
-                $masterpassOrderId,
-                $order->get_total(),
-                $orderData
+            $response = $service->void(
+                $masterpassOrderId
             );
 
-            update_post_meta($order->id, '_masterpass_payment_status', 'captured', 'authorized');
+            update_post_meta($order->id, '_masterpass_payment_status', 'voided', 'authorized');
 
-            $order->add_order_note(__('MasterPass payment captured', 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
+            $order->add_order_note(__('MasterPass payment voided', 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
             return true;
         } catch (Exception $e) {
             $error = __('Error:', 'wc_securesubmit') . ' "' . (string)$e->getMessage() . '"';
@@ -54,18 +49,5 @@ class WC_Gateway_SecureSubmit_MasterPass_Capture
             }
             return false;
         }
-    }
-
-    /**
-     * Adds delayed capture functionality to the "Edit Order" screen
-     *
-     * @param array $actions
-     *
-     * @return array
-     */
-    public function addOrderAction($actions)
-    {
-        $actions[$this->masterpass->id . '_capture'] = __('Capture MasterPass authorization', 'wc_securesubmit');
-        return $actions;
     }
 }

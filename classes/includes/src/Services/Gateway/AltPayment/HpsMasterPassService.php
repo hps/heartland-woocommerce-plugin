@@ -507,14 +507,14 @@ class HpsMasterPassService
     protected function processGatewayResponse($response)
     {
         $gatewayRspCode = isset($response->ErrorNo)
-                        ? $response->ErrorNo
+                        ? (string)$response->ErrorNo
                         : null;
 
         if ($gatewayRspCode == '0') {
             return;
         }
 
-        throw new HpsException($response->ErrorDesc);
+        throw new HpsException((string)$response->ErrorDesc);
     }
 
     /**
@@ -527,14 +527,14 @@ class HpsMasterPassService
     protected function processProcessorResponse($response)
     {
         $statusCode = isset($response->StatusCode)
-                    ? $response->StatusCode
+                    ? (string)$response->StatusCode
                     : null;
 
-        if ($statusCode == 'Y') {
+        if ($statusCode == null || $statusCode == 'Y') {
             return;
         }
 
-        throw new HpsException('processing error');
+        throw new HpsException((string)$response->ErrorDesc);
     }
 
     /**
@@ -552,8 +552,8 @@ class HpsMasterPassService
         $request = array_merge($request, array('MsgType' => $txnType));
         $response = $this->doRequest($request);
 
-        // $this->processGatewayResponse($response);
-        // $this->processProcessorResponse($response);
+        $this->processGatewayResponse($response);
+        $this->processProcessorResponse($response);
 
         $result = null;
 

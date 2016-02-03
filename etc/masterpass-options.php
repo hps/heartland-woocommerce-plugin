@@ -67,7 +67,7 @@ return array(
         'desc_tip'    => true,
         'options'     => array(
             'sale'          => __('Capture', 'wc_securesubmit'),
-            // 'authorization' => __('Authorize', 'wc_securesubmit'),
+            'authorization' => __('Authorize', 'wc_securesubmit'),
         ),
     ),
 );
