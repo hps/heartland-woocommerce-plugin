@@ -42,6 +42,7 @@ class WooCommerceSecureSubmitGateway
         add_action('woocommerce_order_actions', array($masterpass->capture, 'addOrderAction'));
         add_action('woocommerce_order_action_' . $masterpass->id . '_capture', array($masterpass, 'process_capture'));
         add_action('woocommerce_after_my_account', array($masterpass, 'myaccountConnect'));
+        add_action('wp_loaded', array($masterpass->reviewOrder, 'processCheckout'));
     }
 
     /**

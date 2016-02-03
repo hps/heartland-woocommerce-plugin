@@ -95,13 +95,15 @@ class WC_Gateway_SecureSubmit_MasterPass_Data
         $data = new HpsShippingInfo();
         $data->address = new HpsAddress();
 
-        if (isset($checkoutForm['ship_to_different_address']) && $checkoutForm['ship_to_different_address'] === true) {
-            $data->firstName = WC()->customer->shiptoname;
-            $data->address->address = WC()->customer->get_address() . ' ' . WC()->customer->get_address_2();
-            $data->address->city = WC()->customer->get_city();
-            $data->address->state = WC()->customer->get_state();
-            $data->address->postcode = WC()->customer->get_postcode();
-            $data->address->country = WC()->customer->get_country();
+        if (isset($checkoutForm['ship_to_different_address']) && $checkoutForm['ship_to_different_address']) {
+            $data->firstName = $checkoutForm['shipping_first_name'];
+            $data->lastName = $checkoutForm['shipping_last_name'];
+            // $data->address->company => $checkoutForm['shipping_company'];
+            $data->address->address = $checkoutForm['shipping_address_1'] . ' ' . $checkoutForm['shipping_address_2'];
+            $data->address->city = $checkoutForm['shipping_city'];
+            $data->address->state = $checkoutForm['shipping_state'];
+            $data->address->zip = $checkoutForm['shipping_postcode'];
+            $data->countryCode = $checkoutForm['shipping_country'];
         } else {
             $data->firstName = $checkoutForm['billing_first_name'];
             $data->lastName = $checkoutForm['billing_last_name'];
