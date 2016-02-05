@@ -136,7 +136,7 @@ class HpsMasterPassService
     ) {
         $payload = array(
             'TransactionType' => 'WT',
-            'Amount' => $amount,
+            'Amount' => $this->formatAmount($amount),
             'OrderId' => $orderId,
             'CurrencyCode' => $this->currencyStringToNumeric($currency),
         );
@@ -173,7 +173,7 @@ class HpsMasterPassService
         HpsOrderData $orderData = null
     ) {
         $payload = array(
-            'Amount' => $amount,
+            'Amount' => $this->formatAmount($amount),
             'CurrencyCode' => $this->currencyStringToNumeric($orderData->currencyCode),
             'OrderId' => $orderId,
             'OrderNumber' => $orderData->orderNumber,
@@ -217,7 +217,7 @@ class HpsMasterPassService
         $payload = array(
             'TransactionType' => 'WT',
             'OverridePaymentMethod' => 'MPPWLT',
-            'Amount' => $amount,
+            'Amount' => $this->formatAmount($amount),
             'CurrencyCode' => $this->currencyStringToNumeric($currency),
             'OverrideCheckoutType' => $this->getCheckoutType($orderData),
             'ConnectTimeout' => '10000',
@@ -287,7 +287,7 @@ class HpsMasterPassService
         HpsOrderData $orderData = null
     ) {
         $payload = array(
-            'Amount' => $amount,
+            'Amount' => $this->formatAmount($amount),
             'CurrencyCode' => $this->currencyStringToNumeric($orderData->currencyCode),
             'OrderId' => $orderId,
             'TransactionType' => 'WT',
@@ -342,7 +342,7 @@ class HpsMasterPassService
         $orderData->currencyCode = $currency;
         $capture = $this->capture(
             $orderId,
-            $amount,
+            $this->formatAmount($amount),
             $orderData
         );
         return (object)array(
@@ -450,7 +450,7 @@ class HpsMasterPassService
                 array(
                     'Item_Name_'     . $i => $item->name,
                     'Item_Desc_'     . $i => $item->description,
-                    'Item_Price_'    . $i => $item->amount,
+                    'Item_Price_'    . $i => $this->formatAmount($item->amount),
                     'Item_Quantity_' . $i => $item->quantity,
                     'Item_SKU_'      . $i => $item->number,
                 )
@@ -470,8 +470,8 @@ class HpsMasterPassService
     protected function hydratePaymentData(HpsPaymentData $payment)
     {
         return array(
-            'TaxAmount'      => $payment->taxAmount,
-            'ShippingAmount' => $payment->shippingAmount,
+            'TaxAmount'      => $this->formatAmount($payment->taxAmount),
+            'ShippingAmount' => $this->formatAmount($payment->shippingAmount),
         );
     }
 
@@ -495,6 +495,19 @@ class HpsMasterPassService
             'ShippingPostalCode'  => $shipping->address->zip,
             'ShippingState'       => $shipping->address->state,
         );
+    }
+
+    /**
+     * Formats the amount in form of cents
+     *
+     * @param mixed $amount
+     *
+     * @return string
+     */
+    protected function formatAmount($amount)
+    {
+        return sprintf('%s', ceil(intval($amount) * 100));
+        // return $amount;
     }
 
     /**

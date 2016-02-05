@@ -33,6 +33,13 @@ class WC_Gateway_SecureSubmit_MasterPass_ReviewOrder
         if ($action && 'review_order' === $action) {
             $this->authenticateAndDisplayReviewOrder();
         }
+
+        if ($action && 'process_payment' === $action) {
+            // if this point is reached, error
+            // headers already sent at this point. redirect with js
+            echo '<script type="text/javascript">window.location.href = \'' . WC()->cart->get_checkout_url() . '\';</script>';
+            wp_die();
+        }
     }
 
     /**
