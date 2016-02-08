@@ -50,14 +50,14 @@ class HpsSoapGatewayService extends HpsGatewayServiceAbstract implements HpsGate
             'Content-length: '.strlen($xml->saveXML()),
         );
         $data = $xml->saveXML();
-        print "\n" . $data;
+        // print "\n" . $data;
 
         return $this->submitRequest($url, $header, $data);
     }
 
     public function processResponse($curlResponse, $curlInfo, $curlError)
     {
-        print "\n" . $curlResponse;
+        // print "\n" . $curlResponse;
         switch ($curlInfo['http_code']) {
             case '200':
                 $responseObject = $this->_XML2Array($curlResponse);
