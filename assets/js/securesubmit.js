@@ -103,8 +103,6 @@
     function responseHandler(response) {
         var form = document.querySelector('form.checkout, form#order_review');
 
-        document.getElementById('securesubmit_token').value = '';
-
         if (response.error) {
             var ul = document.createElement('ul');
             var li = document.createElement('li');
@@ -151,6 +149,10 @@
 
             Heartland.Events.trigger('submit', form);
         }
+
+        setTimeout(function () {
+            document.getElementById('securesubmit_token').value = '';
+        }, 50);
     }
 
     // Load function to attach event handlers when WC refreshes payment fields
@@ -292,7 +294,7 @@
             handler = iframeFormHandler;
         }
 
-        jQuery('form.checkout, form#order_review').on('submit', handler);
+        jQuery('form#order_review').on('submit', handler);
         jQuery('form.checkout').on('checkout_place_order_securesubmit', handler);
     });
 }(window, document, window.Heartland, window.wc_securesubmit_params));
