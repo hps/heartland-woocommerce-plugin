@@ -19,6 +19,15 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+####1.3.5
+* Force scripts to be loaded with UTF-8 character set
+* Fix JS typo in iframe tokenization
+* Remove double tokenization
+* Remove token value after resubmitting
+
+####1.3.4
+* Remove Heartland logo
+
 ####1.3.3
 * Change bullet to middle dot
 
