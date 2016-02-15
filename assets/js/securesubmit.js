@@ -147,12 +147,12 @@
             form.appendChild(expMo);
             form.appendChild(expYr);
 
-            Heartland.Events.trigger('submit', form);
+            jQuery(form).submit();
         }
 
         setTimeout(function () {
             document.getElementById('securesubmit_token').value = '';
-        }, 50);
+        }, 500);
     }
 
     // Load function to attach event handlers when WC refreshes payment fields
