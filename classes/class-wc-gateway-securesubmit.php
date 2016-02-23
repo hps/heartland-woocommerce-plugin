@@ -345,7 +345,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                     // we can skip the card saving: if it fails for possible fraud there will be no token.
                     $order->update_status('on-hold', __('<strong>Accepted suspicious transaction.</strong> Please use Virtual Terminal to review.', 'hps-securesubmit'));
                     $order->reduce_order_stock();
-                    $woocommerce->cart->empty_cart();
+                    $cart->empty_cart();
 
                     return array(
                         'result' => 'success',

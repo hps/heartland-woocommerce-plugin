@@ -38,7 +38,7 @@ class HpsReportTransactionDetails extends HpsAuthorization
 
         if (isset($reportResponse->Data->TokenizationMsg)) {
             $details->tokenData = new HpsTokenData();
-            $details->tokenData->responseMessage = $reportResponse->Data->TokenizationMsg;
+            $details->tokenData->responseMessage = (string)$reportResponse->Data->TokenizationMsg;
         }
 
         if (isset($reportResponse->Data->AdditionalTxnFields)) {
@@ -48,15 +48,15 @@ class HpsReportTransactionDetails extends HpsAuthorization
             $details->customerId = (isset($additionalTxnFields->CustomerId) ? (string)$additionalTxnFields->CustomerId : null);
         }
 
-        if ($reportResponse->Data->RspCode != '00') {
+        if ((string)$reportResponse->Data->RspCode != '00') {
             if ($details->exceptions == null) {
                 $details->exceptions = new HpsChargeExceptions();
             }
 
             $details->exceptions->issuerException = HpsIssuerResponseValidation::getException(
-                $rsp->Header->GatewayTxnId,
-                $reportResponse->Data->RspCode,
-                $reportResponse->Data->RspText
+                (string)$rsp->Header->GatewayTxnId,
+                (string)$reportResponse->Data->RspCode,
+                (string)$reportResponse->Data->RspText
             );
         }
 

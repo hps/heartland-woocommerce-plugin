@@ -12,7 +12,7 @@ class HpsTokenService extends HpsRestGatewayService
 
         $components = explode("_", $publicAPIKey);
         if (count($components) == 3 && strtolower($components[1]) == "prod") {
-            $this->_url = "https://api.heartlandportico.com/SecureSubmit.v1/api/token";
+            $this->_url = "https://api2.heartlandportico.com/SecureSubmit.v1/api/token";
         } else {
             $this->_url = "https://cert.api2.heartlandportico.com/Hps.Exchange.PosGateway.Hpf.v1/api/token";
         }

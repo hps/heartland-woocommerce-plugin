@@ -40,7 +40,6 @@ class HpsIssuerResponseValidation
         '91' => HpsExceptionCodes::ISSUER_TIMEOUT,
         'EB' => HpsExceptionCodes::INCORRECT_CVC,
         'N7' => HpsExceptionCodes::INCORRECT_CVC,
-        'FR' => HpsExceptionCodes::POSSIBLE_FRAUD_DETECTED,
     );
 
     public static $_creditExceptionCodeToMessage = array(
@@ -55,8 +54,7 @@ class HpsIssuerResponseValidation
         HpsExceptionCodes::INCORRECT_CVC        => "The card's security code is incorrect.",
         HpsExceptionCodes::ISSUER_TIMEOUT       => "The card issuer timed-out.",
         HpsExceptionCodes::UNKNOWN_CREDIT_ERROR => "An unknown issuer error has occurred.",
-        HpsExceptionCodes::INCORRECT_NUMBER     => "The card number is incorrect.",
-        HpsExceptionCodes::POSSIBLE_FRAUD_DETECTED => "Possible fraud detected."
+        HpsExceptionCodes::INCORRECT_NUMBER     => "The card number is incorrect."
     );
 
     public static function checkResponse($transactionId, $responseCode, $responseText)
@@ -70,8 +68,9 @@ class HpsIssuerResponseValidation
 
     public static function getException($transactionId, $responseCode, $responseText)
     {
+        $acceptedCodes = array('85', '00', '0', '10');
         $responseCode = (string)$responseCode;
-        if ($responseCode == '85' || $responseCode == '00') {
+        if (in_array($responseCode, $acceptedCodes)) {
             return null;
         }
 
