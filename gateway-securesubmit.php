@@ -11,8 +11,6 @@ Author URI: https://developer.heartlandpaymentsystems.com/SecureSubmit/
 class WooCommerceSecureSubmitGateway
 {
     const SECURESUBMIT_GATEWAY_CLASS = 'WC_Gateway_SecureSubmit';
-    const MASTERPASS_GATEWAY_CLASS = self::SECURESUBMIT_GATEWAY_CLASS . '_MasterPass';
-    const SUBSCRIPTIONS_GATEWAY_CLASS = self::SECURESUBMIT_GATEWAY_CLASS . '_Subscriptions';
 
     public function __construct()
     {
@@ -35,7 +33,7 @@ class WooCommerceSecureSubmitGateway
         add_filter('woocommerce_payment_gateways', array($this, 'addGateways'));
         add_action('woocommerce_after_my_account', array($this, 'savedCards'));
 
-        $masterpass = call_user_func(array(self::MASTERPASS_GATEWAY_CLASS, 'instance'));
+        $masterpass = call_user_func(array(self::SECURESUBMIT_GATEWAY_CLASS . '_MasterPass', 'instance'));
         add_action('wp_ajax_securesubmit_masterpass_lookup', array($masterpass, 'lookupCallback'));
         add_action('wp_ajax_nopriv_securesubmit_masterpass_lookup', array($masterpass, 'lookupCallback'));
         add_shortcode('woocommerce_masterpass_review_order', array($masterpass, 'reviewOrderShortcode'));
@@ -50,7 +48,7 @@ class WooCommerceSecureSubmitGateway
      */
     public function activate()
     {
-        call_user_func(array(self::MASTERPASS_GATEWAY_CLASS, 'createOrderReviewPage'));
+        call_user_func(array(self::SECURESUBMIT_GATEWAY_CLASS . '_MasterPass', 'createOrderReviewPage'));
     }
 
     /**
@@ -62,9 +60,9 @@ class WooCommerceSecureSubmitGateway
      */
     public function addGateways($methods)
     {
-        $methods[] = self::MASTERPASS_GATEWAY_CLASS;
+        $methods[] = self::SECURESUBMIT_GATEWAY_CLASS . '_MasterPass';
         if (class_exists('WC_Subscriptions_Order')) {
-            $methods[] = self::SUBSCRIPTIONS_GATEWAY_CLASS;
+            $methods[] = self::SECURESUBMIT_GATEWAY_CLASS . '_Subscriptions';
         } else {
             $methods[] = self::SECURESUBMIT_GATEWAY_CLASS;
         }
