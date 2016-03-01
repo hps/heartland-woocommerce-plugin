@@ -35,6 +35,10 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section.
 
 == Changelog ==
+= 1.4.0 =
+* MasterPass as a payment method
+* Fix issue with submitting order review page
+
 = 1.3.5 =
 * Force scripts to be loaded with UTF-8 character set
 * Fix JS typo in iframe tokenization

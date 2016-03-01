@@ -19,6 +19,10 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+####1.4.0
+* MasterPass as a payment method
+* Fix issue with submitting order review page
+
 ####1.3.5
 * Force scripts to be loaded with UTF-8 character set
 * Fix JS typo in iframe tokenization
