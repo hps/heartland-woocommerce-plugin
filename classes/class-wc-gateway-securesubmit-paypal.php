@@ -27,7 +27,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         $this->id                 = 'paypal';
         $this->has_fields         = false;
         $this->order_button_text  = __( 'Proceed to PayPal', 'woocommerce' );
-        $this->method_title       = __( 'PayPal Secure Submit', 'woocommerce' );
+        $this->method_title       = __( 'Heartland Paypal', 'woocommerce' );
         $this->method_description = __( 'PayPal works by sending customers to PayPal where they can enter their payment information.', 'woocommerce' );
         $this->supports           = array(
             'products',
@@ -519,40 +519,48 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         {
             $token = $_GET['token'];                    
         }
-        
+
+        $chosen_shipping_methods = WC()->session->get('chosen_shipping_methods');
+        error_log('$chosen_shipping_methods = ' . print_r($chosen_shipping_methods,true));
+
         $order_id = WC()->checkout()->create_order();
-        $order = wc_get_order( $order_id );   
-        
+        $order = wc_get_order( $order_id );
+
         $porticoService = $this->getPorticoService();
+        $checkoutForm = $this->get_session('checkout_form');
         $porticoSessionInfo = unserialize( $this->get_session('RESULT') );
+
                     
         $payment = $porticoSessionInfo->payment;
         $orderTotal = $payment->subtotal + $payment->shippingAmount + $payment->taxAmount;
         $currency = strtolower(get_woocommerce_currency());
-        
+
+
         //update order total and billing/shipping address
         $order->set_total($orderTotal);
         $order->set_address( array(
-				'first_name'    => $porticoSessionInfo->shipping->name,
-				//'last_name'     => $porticoSessionInfo->buyer->lastName,
-				'company'       => '',
-				'address_1'     => $porticoSessionInfo->shipping->address->address,
-				'address_2'     => '',
-				'city'          => $porticoSessionInfo->shipping->address->city,
-				'state'         => $porticoSessionInfo->shipping->address->state,
-				'postcode'      => $porticoSessionInfo->shipping->address->zip,
-				'country'       => $porticoSessionInfo->shipping->address->country));
+				'first_name'    => $checkoutForm["billing_first_name"],
+				'last_name'     => $checkoutForm["billing_last_name"],
+				'company'       => $checkoutForm["billing_company"],
+				'address_1'     => $checkoutForm["billing_address_1"],
+				'address_2'     => $checkoutForm["billing_address_2"],
+				'city'          => $checkoutForm["billing_city"],
+				'state'         => $checkoutForm["billing_state"],
+				'postcode'      => $checkoutForm["billing_postcode"],
+				'country'       => $checkoutForm["billing_country"],
+                'email'         => $checkoutForm["billing_email"],
+                'phone'         => $checkoutForm["billing_phone"]));
                       
         $order->set_address( array(
-				'first_name'    => $porticoSessionInfo->shipping->name,
-				//'last_name'     => $porticoSessionInfo->buyer->lastName,
-				'company'       => '',
-				'address_1'     => $porticoSessionInfo->shipping->address->address,
-				'address_2'     => '',
-				'city'          => $porticoSessionInfo->shipping->address->city,
-				'state'         => $porticoSessionInfo->shipping->address->state,
-				'postcode'      => $porticoSessionInfo->shipping->address->zip,
-				'country'       => $porticoSessionInfo->shipping->address->country), 'shipping');
+                'first_name'    => $checkoutForm["shipping_first_name"],
+                'last_name'     => $checkoutForm["shipping_last_name"],
+                'company'       => $checkoutForm["shipping_company"],
+                'address_1'     => $checkoutForm["shipping_address_1"],
+                'address_2'     => $checkoutForm["shipping_address_2"],
+                'city'          => $checkoutForm["shipping_city"],
+                'state'         => $checkoutForm["shipping_state"],
+                'postcode'      => $checkoutForm["shipping_postcode"],
+                'country'       => $checkoutForm["shipping_country"]), 'shipping');
         
         //call portico with sale
         $response = null;
@@ -595,6 +603,12 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         
         if($response->responseCode == '0')
         {
+            $payment_method = get_post_meta($order->id, '_payment_method');
+            if( !isset($payment_method) || empty($payment_method)  ) {
+                update_post_meta($order_id, '_payment_method', $this->id);
+                update_post_meta($order_id, '_payment_method_title', $this->title);
+            }
+
             $order->add_order_note( __( 'SecureSubmit PayPal payment completed. Transaction id: ' . $response->transactionId, 'paypal-for-woocommerce' ));
             $order->payment_complete($response->transactionId);
                     

@@ -31,50 +31,72 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
 
 <?php endif; ?>
 
+<div class="title">
+    <h2><?php _e( 'Customer details', 'woocommerce' ); ?></h2>
+</div>
+
+<div class="col2-set addresses">
+    <div class="col-1">
+        <div class="title">
+            <h3><?php _e( 'Billing Address', 'woocommerce' ); ?></h3>
+        </div>
+        <div class="address">
+            <p>
+                <?php
+                $checkoutForm = maybe_unserialize(WC()->session->checkout_form);
+                $myresult = maybe_unserialize(WC()->session->result);
+
+                $address = array(
+                    'first_name' 	=> $checkoutForm['billing_first_name'],
+                    'last_name' 	=> $checkoutForm['billing_last_name'],
+                    'company'		=> $checkoutForm['billing_company'],
+                    'address_1'		=> $checkoutForm['billing_address_1'],
+                    'address_2'		=> $checkoutForm['billing_address_2'],
+                    'city'			=> $checkoutForm['billing_city'],
+                    'state'			=> $checkoutForm['billing_state'],
+                    'postcode'		=> $checkoutForm['billing_postcode'],
+                    'country'		=> $checkoutForm['billing_country']
+                ) ;
+                echo WC()->countries->get_formatted_address( $address );
+                ?>
+            </p>
+        </div>
+
+    </div><!-- /.col-1 -->
 
 <?php if ( WC()->cart->needs_shipping()&& WC()->cart->show_shipping()  ) : ?>
 
-    <div class="title">
-        <h2><?php _e( 'Customer details', 'woocommerce' ); ?></h2>
+    <div class="col-2">
+        <div class="title">
+            <h3><?php _e( 'Shipping Address', 'woocommerce' ); ?></h3>
+        </div>
+        <div class="address">
+            <p>
+                <?php
+                $checkoutForm = maybe_unserialize(WC()->session->checkout_form);
+                $myresult = maybe_unserialize(WC()->session->result);
+
+                error_log('$myresult = ' . print_r($myresult,true));
+                error_log('$checkoutForm = ' . print_r($checkoutForm,true));
+                error_log("defined vars : " . print_r(get_defined_vars(),true));
+
+                $address = array(
+                    'first_name' 	=> $myresult->shipping->name,
+                    'company'		=> isset($checkoutForm["shipping_company"]) ? $checkoutForm["shipping_company"] : '',
+                    'address_1'		=> $myresult->shipping->address->address,
+                    'city'			=> $myresult->shipping->address->city,
+                    'state'			=> $myresult->shipping->address->state,
+                    'postcode'		=> $myresult->shipping->address->zip,
+                    'country'		=> $myresult->shipping->address->country
+                ) ;
+
+                echo WC()->countries->get_formatted_address( $address );
+                ?>
+            </p>
+        </div>
     </div>
-
-    <div class="col2-set addresses">
-
-        <div class="col-1">
-
-            <div class="title">
-                <h3><?php _e( 'Shipping Address', 'woocommerce' ); ?></h3>
-            </div>
-            <div class="address">
-                <p>
-                    <?php
-                    $checkoutForm = maybe_unserialize(WC()->session->checkout_form);
-                    $myresult = maybe_unserialize(WC()->session->result);
-
-                    error_log('$myresult = ' . print_r($myresult,true));
-                    error_log('$checkoutForm = ' . print_r($checkoutForm,true));
-                    error_log("defined vars : " . print_r(get_defined_vars(),true));
-
-                    $address = array(
-                        'first_name' 	=> $myresult->shipping->name,
-                        'company'		=> isset($checkoutForm["shipping_company"]) ? $checkoutForm["shipping_company"] : '',
-                        'address_1'		=> $myresult->shipping->address->address,
-                        'city'			=> $myresult->shipping->address->city,
-                        'state'			=> $myresult->shipping->address->state,
-                        'postcode'		=> $myresult->shipping->address->zip,
-                        'country'		=> $myresult->shipping->address->country
-                    ) ;
-
-                    echo WC()->countries->get_formatted_address( $address );
-                    ?>
-                </p>
-            </div>
-
-        </div><!-- /.col-1 -->
-        <div class="col-2">
-        </div><!-- /.col-2 -->
-    </div><!-- /.col2-set -->
 <?php endif; ?>
+</div>
 <?php if ( $show_login ):  ?>
 </form>
     <style type="text/css">
