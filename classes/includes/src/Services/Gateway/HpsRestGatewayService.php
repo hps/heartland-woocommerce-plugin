@@ -91,7 +91,7 @@ class HpsRestGatewayService extends HpsGatewayServiceAbstract
 
     protected function hydrateObject($result, $type)
     {
-        return $type::fromStdClass($result);
+        return call_user_func(array($type, 'fromStdClass'), $result);
     }
 
     protected function hydrateSearchResults($resultSet, $type)
