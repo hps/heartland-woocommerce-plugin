@@ -14,8 +14,8 @@ class WooCommerceSecureSubmitGateway
 
     public function __construct()
     {
-            add_action('plugins_loaded', array($this, 'init'), 0);
-            register_activation_hook(__FILE__, array($this, 'activate'));
+        add_action('plugins_loaded', array($this, 'init'), 0);
+        add_action('woocommerce_load', array($this, 'activate'));
     }
 
     public function init()
@@ -26,9 +26,7 @@ class WooCommerceSecureSubmitGateway
 
         load_plugin_textdomain('wc_securesubmit', false, dirname(plugin_basename(__FILE__)) . '/languages');
 
-        include_once('classes/class-wc-gateway-securesubmit.php');
-        include_once('classes/class-wc-gateway-securesubmit-subscriptions.php');
-        include_once('classes/class-wc-gateway-securesubmit-masterpass.php');
+        $this->loadClasses();
 
         add_filter('woocommerce_payment_gateways', array($this, 'addGateways'));
         add_action('woocommerce_after_my_account', array($this, 'savedCards'));
@@ -48,6 +46,11 @@ class WooCommerceSecureSubmitGateway
      */
     public function activate()
     {
+        if (!class_exists('WC_Payment_Gateway')) {
+            return;
+        }
+
+        $this->loadClasses();
         call_user_func(array(self::SECURESUBMIT_GATEWAY_CLASS . '_MasterPass', 'createOrderReviewPage'));
     }
 
@@ -91,6 +94,13 @@ class WooCommerceSecureSubmitGateway
 
         $path = plugin_dir_path(__FILE__);
         include $path . 'templates/saved-cards.php';
+    }
+
+    protected function loadClasses()
+    {
+        include_once('classes/class-wc-gateway-securesubmit.php');
+        include_once('classes/class-wc-gateway-securesubmit-subscriptions.php');
+        include_once('classes/class-wc-gateway-securesubmit-masterpass.php');
     }
 }
 new WooCommerceSecureSubmitGateway();

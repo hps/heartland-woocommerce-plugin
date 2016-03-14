@@ -208,8 +208,8 @@ class HpsMasterPassService
     public function createSession(
         $amount,
         $currency,
-        HpsBuyerData $buyer,
-        HpsPaymentData $payment,
+        HpsBuyerData $buyer = null,
+        HpsPaymentData $payment = null,
         HpsShippingInfo $shippingAddress = null,
         $lineItems = null,
         HpsOrderData $orderData = null
@@ -320,8 +320,8 @@ class HpsMasterPassService
         $orderId,
         $amount,
         $currency,
-        HpsBuyerData $buyer,
-        HpsPaymentData $payment,
+        HpsBuyerData $buyer = null,
+        HpsPaymentData $payment = null,
         HpsShippingInfo $shippingAddress = null,
         $lineItems = null,
         HpsOrderData $orderData = null
