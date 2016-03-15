@@ -34,7 +34,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $this->use_iframes          = ($this->getSetting('use_iframes') == 'yes' ? true : false);
         $this->supports             = array(
                                         'products',
-                                        'refunds',
+                                        'refunds'
                                      );
 
         add_action('wp_enqueue_scripts', array($this, 'payment_scripts'));
@@ -324,7 +324,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                 }
 
                 $order->add_order_note(__('SecureSubmit payment completed', 'hps-securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
-                $order->payment_complete();
+                $order->payment_complete($response->transactionId);
                 $woocommerce->cart->empty_cart();
 
                 return array(
