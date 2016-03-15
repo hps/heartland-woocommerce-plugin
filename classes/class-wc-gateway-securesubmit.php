@@ -210,7 +210,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         }
 
         // SecureSubmit tokenization library
-        wp_enqueue_script('securesubmit', 'https://api.heartlandportico.com/SecureSubmit.v1/token/2.1/securesubmit.js', array(), '2.1', true);
+        wp_enqueue_script('hps_wc_securesubmit_library', 'https://api.heartlandportico.com/SecureSubmit.v1/token/2.1/securesubmit.js', array(), '2.1', true);
         // SecureSubmit js controller for WooCommerce
         wp_enqueue_script('woocommerce_securesubmit', plugins_url('assets/js/securesubmit.js', dirname(__FILE__)), array('jquery'), '1.0', true);
         // SecureSubmit custom CSS
