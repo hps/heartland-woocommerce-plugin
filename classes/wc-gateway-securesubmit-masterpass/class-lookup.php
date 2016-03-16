@@ -48,8 +48,8 @@ class WC_Gateway_SecureSubmit_MasterPass_Lookup
                 $orderData->checkoutType = HpsCentinelCheckoutType::PAIRING;
             }
 
-            $buyer = !$pair ? $this->masterpass->getBuyerData($checkoutForm) : new HpsBuyerData();
-            $shipping = !$pair ? $this->masterpass->getShippingInfo($checkoutForm) : new HpsShippingInfo();
+            $buyer = !$pair ? $this->masterpass->getBuyerData($checkoutForm) : null;
+            $shipping = !$pair ? $this->masterpass->getShippingInfo($checkoutForm) : null;
             $lines = !$pair ? $this->masterpass->getLineItems($cart) : array();
             $response = $service->createSession(
                 $cart->total,
@@ -94,9 +94,6 @@ class WC_Gateway_SecureSubmit_MasterPass_Lookup
             }
             if ('' !== $cardId) {
                 $payload['data']['cardId'] = $cardId;
-            }
-            if (false !== $shipId) {
-                $payload['data']['shipId'] = $shipId;
             }
             if (false !== $preCheckoutTransactionId) {
                 $payload['data']['preCheckoutTransactionId'] = $preCheckoutTransactionId;
