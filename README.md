@@ -19,6 +19,18 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+####1.5.0
+* Improve WooCommerce Subscriptions 2.0 support to support new features
+* Fix MasterPass lightbox firing when MasterPass not selected
+* Fix MasterPass warnings with missing variable and missing address
+* Fix Javascript library collision with slug used in `wp_enqueue_script`
+* Fix PHP 5.2 compatibility issues with MasterPass feature
+
+####1.4.1
+* Fix for character encoding issue in card number field when 'Use iFrames' option was enabled
+* Fix for expiration year needing four digits. Customers can now enter two digits for the year
+* Fix for HpsGatewayServiceInterface issue on certain systems
+
 ####1.4.0
 * MasterPass as a payment method
 * Fix issue with submitting order review page
