@@ -19,6 +19,8 @@ class WC_Gateway_SecureSubmit_MasterPass_ReviewOrder
       $action = (isset($_POST['mp_action']) ? $_POST['mp_action'] : (isset($_GET['mp_action']) ? $_GET['mp_action'] : null));
       if ($action && 'process_payment' === $action) {
         $_POST = array_merge($_POST, maybe_unserialize(WC()->session->checkout_form));
+        // force payment method to MasterPass since hitting MasterPass review order page
+        $_POST['payment_method'] = $this->masterpass->id;
         WC()->checkout->process_checkout();
       }
     }
