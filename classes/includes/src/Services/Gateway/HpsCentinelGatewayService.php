@@ -28,14 +28,14 @@ class HpsCentinelGatewayService
             'Accept: text/xml',
             'Content-length: '.strlen($data),
         );
-        error_log($xmlData);
+        // error_log($xmlData);
 
         return $this->submitRequest($url, $header, $data);
     }
 
     public function processResponse($curlResponse, $curlInfo, $curlError)
     {
-        error_log($curlResponse);
+        // error_log($curlResponse);
         switch ($curlInfo['http_code']) {
             case '200':
                 return simplexml_load_string($curlResponse);

@@ -65,7 +65,11 @@ class WooCommerceSecureSubmitGateway
     {
         $methods[] = self::SECURESUBMIT_GATEWAY_CLASS . '_MasterPass';
         if (class_exists('WC_Subscriptions_Order')) {
-            $methods[] = self::SECURESUBMIT_GATEWAY_CLASS . '_Subscriptions';
+            $klass = self::SECURESUBMIT_GATEWAY_CLASS . '_Subscriptions';
+            if (!function_exists('wcs_create_renewal_order')) {
+                $klass .= '_Deprecated';
+            }
+            $methods[] = $klass;
         } else {
             $methods[] = self::SECURESUBMIT_GATEWAY_CLASS;
         }
@@ -100,6 +104,7 @@ class WooCommerceSecureSubmitGateway
     {
         include_once('classes/class-wc-gateway-securesubmit.php');
         include_once('classes/class-wc-gateway-securesubmit-subscriptions.php');
+        include_once('classes/class-wc-gateway-securesubmit-subscriptions-deprecated.php');
         include_once('classes/class-wc-gateway-securesubmit-masterpass.php');
     }
 }

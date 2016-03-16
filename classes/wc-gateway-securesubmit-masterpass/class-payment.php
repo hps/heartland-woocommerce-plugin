@@ -59,7 +59,7 @@ class WC_Gateway_SecureSubmit_MasterPass_Payment
             }
 
             $order->add_order_note(__('MasterPass payment completed', 'wc_securesubmit') . ' (Transaction ID: ' . $transactionId . ')');
-            $order->payment_complete();
+            $order->payment_complete($transactionId);
             $cart->empty_cart();
 
             update_post_meta($order->id, '_transaction_id', $transactionId);
