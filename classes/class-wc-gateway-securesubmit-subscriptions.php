@@ -37,7 +37,6 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
 
     public function process_payment($orderId)
     {
-      error_log('process_payment ' . $orderId);
         if (class_exists('WC_Subscriptions_Order') && $this->orderHasSubscription($orderId)) {
             return $this->processSubscription($orderId);
         } else {
@@ -60,7 +59,6 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
 
     public function processSubscription($orderId)
     {
-      error_log('processSubscription ' . $orderId);
         global $woocommerce;
 
         $order = new WC_Order($orderId);
@@ -132,7 +130,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
                 }
 
                 if ($saveToOrder) {
-                  $this->saveTokenMeta($order, $tokenval);
+                    $this->saveTokenMeta($order, $tokenval);
                 }
 
                 $woocommerce->cart->empty_cart();
@@ -166,7 +164,11 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
 
     public function scheduledSubscriptionPayment($amount, $order, $productId = null)
     {
-      error_log('scheduledSubscriptionPayment ' . $order->id);
+        // TODO: why is this necessary to prevent double authorization?
+        if ($order->post_status !== 'wc-pending') {
+            return;
+        }
+
         $result = $this->processSubscriptionPayment($order, $amount);
 
         if (is_wp_error($result)) {
@@ -181,7 +183,6 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
         if (!is_object($order)) {
             $order = new WC_Order($order);
         }
-      error_log('processSubscriptionPayment ' . $order->id);
         $tokenValue = get_post_meta($order->id, '_securesubmit_card_token', true);
         $token = new HpsTokenData();
         $token->tokenValue = $tokenValue;
@@ -226,7 +227,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
                 ($amount == 0 ? 'verify' : 'payment'),
                 $response->transactionId
             ));
-            // add_post_meta($order->id, '_transaction_id', $response->transactionId, true);
+            add_post_meta($order->id, '_transaction_id', $response->transactionId, true);
 
             return $response;
         } catch (Exception $e) {
