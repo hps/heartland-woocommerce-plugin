@@ -52,7 +52,7 @@ html body .woocommerce .payment_method_securesubmit iframe{
     position: relative;
     height: 100%;
     border-radius: 0px;
-    background: url(/wp-content/plugins/heartland-woocommerce-plugin/assets/images/delete.svg) no-repeat center center transparent;
+    background: url(../images/delete.svg) no-repeat center center transparent;
     background-size: 40%;
     cursor: pointer;
     outline: none;
@@ -61,7 +61,7 @@ html body .woocommerce .payment_method_securesubmit iframe{
 }
 
 .account-saved-cards-list form input[type="submit"]:hover{
-    background-image:url(/wp-content/plugins/heartland-woocommerce-plugin/assets/images/delete-hover.svg);
+    background-image:url(../images/delete-hover.svg);
 }
 
 /* remove styles from fieldsets */
@@ -176,7 +176,7 @@ html body .woocommerce .payment_method_securesubmit iframe{
    }
 
 .saved-creditcards-list .button:hover {
-   background-color: #878686 !important;  
+   background-color: #878686 !important;
 }
 
 .saved-card {
@@ -252,7 +252,7 @@ html body .woocommerce .payment_method_securesubmit iframe{
 }
 
 .saved-card.active .card-type-logo {
-   background-position: top;  
+   background-position: top;
 }
 
 .saved-card-visa .card-type-logo {
@@ -289,7 +289,7 @@ html body .woocommerce .payment_method_securesubmit iframe{
 
 /* error */
 
-.securesubmit_new_card .woocommerce_error { 
+.securesubmit_new_card .woocommerce_error {
    margin: -1px 1em 0 1em !important;
    border: 1px #ce1025 solid !important;
    background: #ce1025;
@@ -553,24 +553,24 @@ textarea:focus {
 
 @media only screen and (max-width : 800px) {
    .saved-card p {
-      font-size: 13px !important;  
+      font-size: 13px !important;
    }
    .saved-card p span {
-      letter-spacing: 0;  
+      letter-spacing: 0;
    }
 }
 
 @media only screen and (max-width : 768px) {
-   .saved-card .card-type-logo { 
+   .saved-card .card-type-logo {
       display: none;
    }
-   
+
    .ss-section-header h6 {
-      width: 100%;  
+      width: 100%;
       text-align: center;
       font-size: 20px !important;
    }
-   
+
    .saved-creditcards-list .button {
       width: 100%;
       text-align: center;
@@ -582,7 +582,7 @@ textarea:focus {
    .payment_method_securesubmit div.payment_box .securesubmit_new_card .securesubmit_new_card_info label {
       font-size: 11px;
    }
-   
+
 }
 
 
@@ -630,7 +630,7 @@ textarea:focus {
    .saved-card p {
       line-height: 16px !important;
    }
-   
+
    .payment_method_securesubmit div.payment_box .securesubmit_new_card .securesubmit_new_card_info label {
       white-space: normal;
    }
