@@ -5,6 +5,65 @@
    margin-bottom: 0;
 }
 
+html body .woocommerce .payment_method_securesubmit iframe{
+    opacity:1 !important;
+}
+
+/* Account Page Saved Cards */
+
+.account-saved-card-logo {
+    float: left;
+    margin: 0 15px;
+    position: relative;
+    height: 100%;
+}
+
+.account-saved-cards-list .saved-card:hover .card-type-logo{
+    background-position:top !important;
+}
+
+.account-saved-card-logo:after,
+.account-saved-card-logo::after{
+    content: '';
+    position: absolute;
+    height: 70%;
+    width: 1px;
+    background: #e4e4e3;
+    right: -10px;
+    top: 15%;
+}
+
+.account-saved-cards-list{
+    margin-bottom:60px;
+}
+
+.account-saved-cards-list .saved-card:hover{
+    border-color:#337ab7;
+}
+
+.account-saved-cards-list form {
+    float: right;
+    position: relative;
+    height: 100%;
+}
+
+.account-saved-cards-list form input[type="submit"] {
+    text-indent: -100000px;
+    position: relative;
+    height: 100%;
+    border-radius: 0px;
+    background: url(/wp-content/plugins/heartland-woocommerce-plugin/assets/images/delete.svg) no-repeat center center transparent;
+    background-size: 40%;
+    cursor: pointer;
+    outline: none;
+    padding: 0px;
+    width: 60px;
+}
+
+.account-saved-cards-list form input[type="submit"]:hover{
+    background-image:url(/wp-content/plugins/heartland-woocommerce-plugin/assets/images/delete-hover.svg);
+}
+
 /* remove styles from fieldsets */
 
 .payment_method_securesubmit fieldset {
@@ -368,7 +427,6 @@
 .cvv-amex {
    background-position: bottom;
 }
-
 
 /* inputs */
 
