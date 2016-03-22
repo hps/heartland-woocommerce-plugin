@@ -1,18 +1,23 @@
 <?php
-/*
-Plugin Name: WooCommerce SecureSubmit Gateway
-Plugin URI: https://developer.heartlandpaymentsystems.com/SecureSubmit/
-Description: Heartland Payment Systems gateway for WooCommerce.
-Version: 1.2.1
-Author: SecureSubmit
-Author URI: https://developer.heartlandpaymentsystems.com/SecureSubmit/
-*/
+
 class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 {
+    private static $_instance = null;
+    public $capture = null;
+    public $payment = null;
+    public $refund  = null;
+    public $void    = null;
+
     public function __construct()
     {
+        // includes
         require_once 'includes/Hps.php';
+        require_once 'wc-gateway-securesubmit/class-capture.php';
+        require_once 'wc-gateway-securesubmit/class-payment.php';
+        require_once 'wc-gateway-securesubmit/class-refund.php';
+        require_once 'wc-gateway-securesubmit/class-void.php';
 
+        // properties
         $this->id                   = 'securesubmit';
         $this->method_title         = __('SecureSubmit', 'wc_securesubmit');
         $this->icon                 = plugins_url('/assets/images/cards.png', dirname(__FILE__));
@@ -37,11 +42,26 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                                         'refunds'
                                      );
 
+        // actions
         add_action('wp_enqueue_scripts', array($this, 'payment_scripts'));
         add_action('admin_notices', array($this, 'checks'));
         add_action('woocommerce_update_options_payment_gateways', array($this, 'process_admin_options'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_filter('script_loader_tag', array($this, 'utf8'), 10, 2);
+
+        // class references
+        $this->capture = new WC_Gateway_SecureSubmit_Capture($this);
+        $this->payment = new WC_Gateway_SecureSubmit_Payment($this);
+        $this->refund  = new WC_Gateway_SecureSubmit_Refund($this);
+        $this->void    = new WC_Gateway_SecureSubmit_Void($this);
+    }
+
+    public static function instance()
+    {
+        if (null === self::$_instance) {
+            self::$_instance = new self();
+        }
+        return self::$_instance;
     }
 
     public function utf8($tag, $handle)
@@ -99,96 +119,8 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 
     public function initFormFields()
     {
-        $this->form_fields = array(
-            'enabled' => array(
-                            'title' => __('Enable/Disable', 'wc_securesubmit'),
-                            'label' => __('Enable SecureSubmit', 'wc_securesubmit'),
-                            'type' => 'checkbox',
-                            'description' => '',
-                            'default' => 'no'
-                       ),
-            'title' => array(
-                            'title' => __('Title', 'wc_securesubmit'),
-                            'type' => 'text',
-                            'description' => __('This controls the title the user sees during checkout.', 'wc_securesubmit'),
-                            'default' => __('Credit Card', 'wc_securesubmit')
-                       ),
-            'description' => array(
-                            'title' => __('Description', 'wc_securesubmit'),
-                            'type' => 'textarea',
-                            'description' => __('This controls the description the user sees during checkout.', 'wc_securesubmit'),
-                            'default' => 'Pay with your credit card via SecureSubmit.'
-                       ),
-            'public_key' => array(
-                            'title' => __('Public Key', 'wc_securesubmit'),
-                            'type' => 'text',
-                            'description' => __('Get your API keys from your SecureSubmit account.', 'wc_securesubmit'),
-                            'default' => ''
-                       ),
-            'secret_key' => array(
-                            'title' => __('Secret Key', 'wc_securesubmit'),
-                            'type' => 'text',
-                            'description' => __('Get your API keys from your SecureSubmit account.', 'wc_securesubmit'),
-                            'default' => ''
-                       ),
-            'custom_error' => array(
-                            'title' => __('Custom Error', 'wc_securesubmit'),
-                            'type' => 'textarea',
-                            'description' => __('To use the default Secure Submit error message use %s in the custom message text, ex. My message. %s -> will be displayed as: My message. Original Secure Submit message.', 'wc_securesubmit'),
-                            'default' => '%s'
-                       ),
-            'allow_card_saving' => array(
-                            'title' => __('Allow Card Saving', 'wc_securesubmit'),
-                            'label' => __('Allow Card Saving', 'wc_securesubmit'),
-                            'type' => 'checkbox',
-                            'description' => 'Note: to use the card saving feature, you must have multi-use tokenization enabled on your Heartland account.',
-                            'default' => 'no'
-                       ),
-            'allow_fraud' => array(
-                            'title' => __('Allow Suspicious', 'wc_securesubmit'),
-                            'label' => __('Do not fail suspicious orders', 'wc_securesubmit'),
-                            'type' => 'checkbox',
-                            'description' => 'Note: You will have 72 hours from the original authorization date to manually review suspicious orders in the virtual terminal and make a final decision (either to accept the gateway fraud decision or to manually override).',
-                            'default' => 'no'
-                       ),
-            'email_fraud' => array(
-                            'title' => __('Email Suspicious', 'wc_securesubmit'),
-                            'label' => __('Email store owner on suspicious orders', 'wc_securesubmit'),
-                            'type' => 'checkbox',
-                            'description' => '',
-                            'default' => 'no'
-                       ),
-            'fraud_address' => array(
-                            'title' => __('Notification Email Address', 'wc_securesubmit'),
-                            'type' => 'text',
-                            'description' => __('This email address will be notified of suspicious orders.', 'wc_securesubmit'),
-                            'default' => __('', 'wc_securesubmit')
-                       ),
-            'fraud_text' => array(
-                            'title' => __('Fraud Text', 'wc_securesubmit'),
-                            'type' => 'text',
-                            'description' => __('This is the text that will display to the customer when fraud is detected and the transaction fails.', 'wc_securesubmit'),
-                            'default' => __('Please call customer service.', 'wc_securesubmit')
-                       ),
-            'paymentaction' => array(
-                            'title'       => __('Payment Action', 'wc_securesubmit'),
-                            'type'        => 'select',
-                            'description' => __('Choose whether you wish to capture funds immediately or authorize payment only.', 'wc_securesubmit'),
-                            'default'     => 'sale',
-                            'desc_tip'    => true,
-                            'options'     => array(
-                                        'sale'          => __('Capture', 'wc_securesubmit'),
-                                        'authorization' => __('Authorize', 'wc_securesubmit')
-                                    ),
-                       ),
-            'use_iframes' => array(
-                            'title' => __('Use iFrames', 'wc_securesubmit'),
-                            'label' => __('Host the payment fields on Heartland\'s servers', 'wc_securesubmit'),
-                            'type' => 'checkbox',
-                            'description' => 'Note: The customer will remain on your site throughout the checkout process, and there will be no redirect. This option only helps reduce your PCI scope.',
-                            'default' => 'yes'
-                       ),
-           );
+        $path = dirname(plugin_dir_path(__FILE__));
+        $this->form_fields = include $path . '/etc/securesubmit-options.php';
     }
 
     public function admin_options()
@@ -225,180 +157,32 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         wp_localize_script('woocommerce_securesubmit', 'wc_securesubmit_params', $securesubmit_params);
     }
 
-    public function process_payment($order_id)
+    public function process_payment($orderId)
     {
-        global $woocommerce;
+        return $this->payment->call($orderId);
+    }
 
-        $order = new WC_Order($order_id);
-        $securesubmit_token = isset($_POST['securesubmit_token']) ? woocommerce_clean($_POST['securesubmit_token']) : '';
-
-        // used for card saving:
-        $last_four = isset($_POST['last_four']) ? woocommerce_clean($_POST['last_four']) : '';
-        $exp_month = isset($_POST['exp_month']) ? woocommerce_clean($_POST['exp_month']) : '';
-        $exp_year = isset($_POST['exp_year']) ? woocommerce_clean($_POST['exp_year']) : '';
-        $card_type = isset($_POST['card_type']) ? woocommerce_clean($_POST['card_type']) : '';
-
-        if (isset($_POST['save_card']) && $_POST['save_card'] === "true") {
-            $save_card_to_customer = true;
-        } else {
-            $save_card_to_customer = false;
+    public function process_capture($order)
+    {
+        if ($this->isTransactionActiveOnGateway($order->id)) {
+            $this->displayUserError('Payment already captured');
+            return;
         }
+        return $this->capture->call($order);
+    }
 
-        try {
-            $post_data = array();
-
-            if (empty($securesubmit_token)) {
-                if (isset($_POST['secure_submit_card']) && $_POST['secure_submit_card'] === 'new') {
-                    throw new Exception(__('Please make sure your card details have been entered correctly and that your browser supports JavaScript.', 'wc_securesubmit'));
-                }
-            }
-
-            $chargeService = $this->getCreditService();
-            $hpsaddress = $this->getOrderAddress($order);
-            $cardHolder = $this->getOrderCardHolder($order, $hpsaddress);
-
-            $hpstoken = new HpsTokenData();
-
-            if (
-                is_user_logged_in() && isset($_POST['secure_submit_card']) &&
-                $_POST['secure_submit_card'] !== 'new'
-            ) {
-                $cards = get_user_meta(get_current_user_id(), '_secure_submit_card', false);
-
-                if (isset($cards[$_POST['secure_submit_card']]['token_value'])) {
-                    $hpstoken->tokenValue = $cards[$_POST['secure_submit_card']]['token_value'];
-                    $save_card_to_customer = false;
-                } else {
-                    throw new Exception(__('Invalid saved card.', 'wc_securesubmit'));
-                }
-            } else {
-                $hpstoken->tokenValue = $securesubmit_token;
-            }
-
-            $details = new HpsTransactionDetails();
-            $details->invoiceNumber = $order->id;
-
-            try {
-                if ($this->paymentaction == 'sale') {
-                    $response = $chargeService->charge(
-                        $order->order_total,
-                        strtolower(get_woocommerce_currency()),
-                        $hpstoken,
-                        $cardHolder,
-                        $save_card_to_customer, // multi-use
-                        $details
-                    );
-                } else {
-                    $response = $chargeService->authorize(
-                        $order->order_total,
-                        strtolower(get_woocommerce_currency()),
-                        $hpstoken,
-                        $cardHolder,
-                        $save_card_to_customer, // multi-use
-                        $details
-                    );
-                }
-
-                if ($save_card_to_customer) {
-                    if (is_user_logged_in()) {
-                        $tokenval = $response->tokenData->tokenValue;
-
-                        if ($response->tokenData->responseCode == '0') {
-                            switch (strtolower($card_type)) {
-                            case 'mastercard':
-                                $card_type = 'MasterCard';
-                                break;
-                            default:
-                                $card_type = ucfirst($card_type);
-                                break;
-                            }
-                            add_user_meta(get_current_user_id(), '_secure_submit_card', array(
-                                'last_four' => $last_four,
-                                'exp_month' => $exp_month,
-                                'exp_year' => $exp_year,
-                                'token_value' => (string) $tokenval,
-                                'card_type' => $card_type,
-                            ));
-                        }
-                    }
-                }
-
-                $order->add_order_note(__('SecureSubmit payment completed', 'hps-securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
-                $order->payment_complete($response->transactionId);
-                $woocommerce->cart->empty_cart();
-
-                return array(
-                    'result' => 'success',
-                    'redirect' => $this->get_return_url($order)
-                );
-            } catch (HpsException $e) {
-                if ($e->getCode()== HpsExceptionCodes::POSSIBLE_FRAUD_DETECTED && $this->email_fraud == 'yes' && $this->fraud_address != '') {
-                    wc_mail(
-                        $this->fraud_address,
-                        'Suspicious order ' . ($this->allow_fraud == 'yes' ? 'allowed' : 'declined') . ' (' . $order_id . ')',
-                        'Hello,<br><br>Heartland has determined that you should review order ' . $order_id . ' for the amount of ' . $order->order_total . '.<p><br></p>'.
-                        '<p>You have received this email because you have configured the \'Email store owner on suspicious orders\' settings in the [WooCommerce | Checkout | SecureSubmit] options page.</p>'
-                    );
-                }
-
-                if ($this->allow_fraud == 'yes' && $e->getCode() == HpsExceptionCodes::POSSIBLE_FRAUD_DETECTED ) {
-                    // we can skip the card saving: if it fails for possible fraud there will be no token.
-                    $order->update_status('on-hold', __('<strong>Accepted suspicious transaction.</strong> Please use Virtual Terminal to review.', 'hps-securesubmit'));
-                    $order->reduce_order_stock();
-                    $cart->empty_cart();
-
-                    return array(
-                        'result' => 'success',
-                        'redirect' => $this->get_return_url($order)
-                    );
-                } else {
-                    if ($e->getCode() == HpsExceptionCodes::POSSIBLE_FRAUD_DETECTED) {
-                        if (function_exists('wc_add_notice')) {
-                            wc_add_notice(__((string)$this->fraud_text, 'wc_securesubmit'), 'error');
-                        } else {
-                            $woocommerce->add_error(__((string)$this->fraud_text, 'wc_securesubmit'));
-                        }
-                    } else {
-                        if (function_exists('wc_add_notice')) {
-                            wc_add_notice(__((string)$e->getMessage(), 'wc_securesubmit'), 'error');
-                        } else {
-                            $woocommerce->add_error(__((string)$e->getMessage(), 'wc_securesubmit'));
-                        }
-                    }
-
-                    return array(
-                        'result'   => 'fail',
-                        'redirect' => ''
-                    );
-                }
-            }
-        } catch (Exception $e) {
-            $error = __('Error:', 'wc_securesubmit') . ' "' . (string)$e->getMessage() . '"';
-            if (function_exists('wc_add_notice')) {
-                wc_add_notice($error, 'error');
-            } else {
-                $woocommerce->add_error($error);
-            }
-
-            return array(
-                'result'   => 'fail',
-                'redirect' => ''
-            );
+    public function process_refund($orderId, $amount = null, $reason = '')
+    {
+        if ($this->isTransactionActiveOnGateway($orderId)) {
+            return $this->void->call($orderId, $amount);
+        } else {
+            return $this->refund->call($orderId, $amount, $reason);
         }
     }
 
-    public function process_refund($order_id, $amount = null, $reason = '')
+    public function getOrderTransactionId($order)
     {
-        global $woocommerce;
-        $log = new WC_Logger();
-
-        $order = wc_get_order($order_id);
-
-        if (!$order) {
-            return false;
-        }
-
-        $transactionId = null;
+        $transactionId = false;
         $args = array(
             'post_id' => $order->id,
             'approve' => 'approve',
@@ -417,36 +201,10 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         unset($comment);
 
         add_filter('comments_clauses', array('WC_Comments', 'exclude_order_comments'));
-
-        if (!$transactionId) {
-            return false;
-        }
-
-        try {
-            $chargeService = $this->getCreditService();
-            try {
-                $response = $chargeService->refund(
-                    $amount,
-                    strtolower(get_woocommerce_currency()),
-                    $transactionId
-                );
-                $order->add_order_note(__('SecureSubmit payment refunded', 'hps-securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
-                return true;
-            } catch (HpsException $e) {
-                $this->throwUserError(__($e->getMessage(), 'wc_securesubmit'));
-            }
-        } catch (Exception $e) {
-            $error = __('Error:', 'wc_securesubmit') . ' "' . $e->getMessage() . '"';
-            if (function_exists('wc_add_notice')) {
-                wc_add_notice($error, 'error');
-            } else {
-                $woocommerce->add_error($error);
-            }
-            return false;
-        }
+        return $transactionId;
     }
 
-    protected function throwUserError($error) {
+    public function throwUserError($error) {
         if ($customMessage = $this->custom_error) {
             $error = sprintf($customMessage, $error);
         }
@@ -454,7 +212,18 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         throw new Exception(__($error, 'wc_securesubmit'));
     }
 
-    protected function getCreditService()
+    public function displayUserError($message)
+    {
+        global $woocommerce;
+        $message = __((string)$message, 'wc_securesubmit');
+        if (function_exists('wc_add_notice')) {
+            wc_add_notice($message, 'error');
+        } else if (isset($woocommerce) && property_exists($woocommerce, 'add_error')) {
+            $woocommerce->add_error($message);
+        }
+    }
+
+    public function getCreditService()
     {
         $config = new HpsServicesConfig();
         $config->secretApiKey = $this->secret_key;
@@ -464,7 +233,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         return new HpsCreditService($config);
     }
 
-    protected function getOrderAddress($order)
+    public function getOrderAddress($order)
     {
         $hpsaddress = new HpsAddress();
         $hpsaddress->address = $order->billing_address_1;
@@ -475,7 +244,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         return $hpsaddress;
     }
 
-    protected function getOrderCardHolder($order, $hpsaddress)
+    public function getOrderCardHolder($order, $hpsaddress)
     {
         $cardHolder = new HpsCardHolder();
         $cardHolder->firstName = $order->billing_first_name;
@@ -484,6 +253,14 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $cardHolder->emailAddress = $order->billing_email;
         $cardHolder->address = $hpsaddress;
         return $cardHolder;
+    }
+
+    protected function isTransactionActiveOnGateway($orderId)
+    {
+        $order = wc_get_order($orderId);
+        $transactionId = $this->getOrderTransactionId($order);
+        $transaction = $this->getCreditService()->get($transactionId);
+        return $transaction->transactionStatus == 'A';
     }
 
     protected function getSetting($setting)

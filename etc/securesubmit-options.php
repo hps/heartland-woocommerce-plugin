@@ -1,0 +1,96 @@
+<?php
+
+if (!defined('ABSPATH')) {
+    exit();
+}
+
+return array(
+    'enabled' => array(
+        'title'       => __('Enable/Disable', 'wc_securesubmit'),
+        'label'       => __('Enable SecureSubmit', 'wc_securesubmit'),
+        'type'        => 'checkbox',
+        'description' => '',
+        'default'     => 'no',
+    ),
+    'title' => array(
+        'title'       => __('Title', 'wc_securesubmit'),
+        'type'        => 'text',
+        'description' => __('This controls the title the user sees during checkout.', 'wc_securesubmit'),
+        'default'     => __('Credit Card', 'wc_securesubmit'),
+    ),
+    'description' => array(
+        'title'       => __('Description', 'wc_securesubmit'),
+        'type'        => 'textarea',
+        'description' => __('This controls the description the user sees during checkout.', 'wc_securesubmit'),
+        'default'     => 'Pay with your credit card via SecureSubmit.',
+    ),
+    'public_key' => array(
+        'title'       => __('Public Key', 'wc_securesubmit'),
+        'type'        => 'text',
+        'description' => __('Get your API keys from your SecureSubmit account.', 'wc_securesubmit'),
+        'default'     => '',
+    ),
+    'secret_key' => array(
+        'title'       => __('Secret Key', 'wc_securesubmit'),
+        'type'        => 'text',
+        'description' => __('Get your API keys from your SecureSubmit account.', 'wc_securesubmit'),
+        'default'     => '',
+    ),
+    'custom_error' => array(
+        'title'       => __('Custom Error', 'wc_securesubmit'),
+        'type'        => 'textarea',
+        'description' => __('To use the default Secure Submit error message use %s in the custom message text, ex. My message. %s -> will be displayed as: My message. Original Secure Submit message.', 'wc_securesubmit'),
+        'default'     => '%s',
+    ),
+    'allow_card_saving' => array(
+        'title'       => __('Allow Card Saving', 'wc_securesubmit'),
+        'label'       => __('Allow Card Saving', 'wc_securesubmit'),
+        'type'        => 'checkbox',
+        'description' => 'Note: to use the card saving feature, you must have multi-use tokenization enabled on your Heartland account.',
+        'default'     => 'no',
+    ),
+    'allow_fraud' => array(
+        'title'       => __('Allow Suspicious', 'wc_securesubmit'),
+        'label'       => __('Do not fail suspicious orders', 'wc_securesubmit'),
+        'type'        => 'checkbox',
+        'description' => 'Note: You will have 72 hours from the original authorization date to manually review suspicious orders in the virtual terminal and make a final decision (either to accept the gateway fraud decision or to manually override).',
+        'default'     => 'no',
+    ),
+    'email_fraud' => array(
+        'title'       => __('Email Suspicious', 'wc_securesubmit'),
+        'label'       => __('Email store owner on suspicious orders', 'wc_securesubmit'),
+        'type'        => 'checkbox',
+        'description' => '',
+        'default'     => 'no',
+    ),
+    'fraud_address' => array(
+        'title'       => __('Notification Email Address', 'wc_securesubmit'),
+        'type'        => 'text',
+        'description' => __('This email address will be notified of suspicious orders.', 'wc_securesubmit'),
+        'default'     => __('', 'wc_securesubmit'),
+    ),
+    'fraud_text' => array(
+        'title'       => __('Fraud Text', 'wc_securesubmit'),
+        'type'        => 'text',
+        'description' => __('This is the text that will display to the customer when fraud is detected and the transaction fails.', 'wc_securesubmit'),
+        'default'     => __('Please call customer service.', 'wc_securesubmit'),
+    ),
+    'paymentaction' => array(
+        'title'       => __('Payment Action', 'wc_securesubmit'),
+        'type'        => 'select',
+        'description' => __('Choose whether you wish to capture funds immediately or authorize payment only.', 'wc_securesubmit'),
+        'default'     => 'sale',
+        'desc_tip'    => true,
+        'options'     => array(
+            'sale'          => __('Capture', 'wc_securesubmit'),
+            'authorization' => __('Authorize', 'wc_securesubmit'),
+        ),
+    ),
+    'use_iframes' => array(
+        'title'       => __('Use iFrames', 'wc_securesubmit'),
+        'label'       => __('Host the payment fields on Heartland\'s servers', 'wc_securesubmit'),
+        'type'        => 'checkbox',
+        'description' => 'Note: The customer will remain on your site throughout the checkout process, and there will be no redirect. This option only helps reduce your PCI scope.',
+        'default'     => 'yes',
+    ),
+);
