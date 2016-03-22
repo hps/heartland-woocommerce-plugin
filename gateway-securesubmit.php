@@ -16,6 +16,7 @@ class WooCommerceSecureSubmitGateway
     {
         add_action('plugins_loaded', array($this, 'init'), 0);
         add_action('woocommerce_load', array($this, 'activate'));
+        add_action('wp_enqueue_scripts', array($this, 'loadScripts'));
     }
 
     public function init()
@@ -98,6 +99,15 @@ class WooCommerceSecureSubmitGateway
 
         $path = plugin_dir_path(__FILE__);
         include $path . 'templates/saved-cards.php';
+    }
+
+    public function loadScripts()
+    {
+        if (!is_account_page()) {
+            return;
+        }
+        // SecureSubmit custom CSS
+        wp_enqueue_style('woocommerce_securesubmit', plugins_url('assets/css/securesubmit.css', __FILE__), array(), '1.0');
     }
 
     protected function loadClasses()
