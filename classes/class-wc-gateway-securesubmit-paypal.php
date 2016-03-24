@@ -158,14 +158,16 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
     }
 
     public function process_paypal_express_payment_checkout() {
-        error_log(__FUNCTION__);
+        error_log('Begin function : ' . __FUNCTION__);
         global $woocommerce, $post;
-
+        $this->set_session('ss_paypal-express-checkout-initiated', true);
+        $this->set_session('checkout_form', $_POST);
+        error_log('$_POST = ' . print_r($_POST,true));
         $hpsBuyer = new HpsBuyerData();
         $review_order_page_url = add_query_arg( 'pp_action','revieworder', $this->get_review_order_page() );
         $hpsBuyer->returnUrl = $review_order_page_url;
         $hpsBuyer->cancelUrl = wc_get_cart_url();
-        $hpsLineItems = $this->get_cart_lineitems();
+        $hpsLineItems = $this->get_cart_lineitems();  //@review
         $payment = $this->get_cart_paymentdata();
         $porticoService = $this->getPorticoService();
 
@@ -188,6 +190,8 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
 
         $redirectUrl = $response->redirectUrl;
         echo('<script type="application/javascript">window.location.href="'.$redirectUrl.'";</script>');
+        error_log('End function : ' . __FUNCTION__);
+        error_log(' ------------------------------------------------- [ SENDING TO PAYPAL ]');
         exit();
     }
 
@@ -198,47 +202,60 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
      * @return array
      */
     public function process_payment( $order_id ) {
-        error_log(__FUNCTION__);
-    
+        error_log('Begin function : ' . __FUNCTION__);
+        error_log('$order_id = ' . $order_id);
+        WC()->session->set('ss_order_id', $order_id);
+        $override = WC()->session->get('process_payment_override');
+        if( isset($override) && $override==1)
+        {
+            WC()->session->set('process_payment_override',0);
+            WC()->session->set('process_payment_override_order_id', $order_id);
+            error_log('process_payment quick exit process payment');
+            error_log('End function [a]: ' . __FUNCTION__);
+            return array('result' => 'success');
+        }
         global $woocommerce, $post;
         $this->set_session('checkout_form', $_POST);
         $order = wc_get_order( $order_id );
-         
-        $porticoService = $this->getPorticoService();
 
-        $shippingInfo = $this->getShippingInfo($order);
-        $buyer = $this->get_buyer_data($order);
-        $payment = $this->get_payment_data($order);
-        $lineItems = $this->getLineItems($order);
-        
-        $orderTotal = $order->order_total;
-        $currency = strtolower(get_woocommerce_currency());      
-                
+        // create portico session
+        $expressCheckout = WC()->session->get('ss_paypal-express-checkout-initiated');
+        if( !isset($expressCheckout) || $expressCheckout == false) {
+            $porticoService = $this->getPorticoService();
 
-        //call portico to create session
-        $response;
-        try 
-        {
-            $response = $porticoService->createSession($orderTotal, $currency, $buyer, $payment, $shippingInfo, $lineItems);
-        } 
-        catch (Exception $e) 
-        {
-            $error = __('Error creating PayPal Portico session:', 'wc_securesubmit') . ' "' . $e->getMessage() . '"';
-            if (function_exists('wc_add_notice')) {
-                wc_add_notice($error, 'error');
-            } else {
-                $woocommerce->add_error($error);
+            $shippingInfo = $this->getShippingInfo($order);
+            $buyer = $this->get_buyer_data($order);
+            $payment = $this->get_payment_data($order);
+            $lineItems = $this->getLineItems($order);
+
+            $orderTotal = $order->order_total;
+            $currency = strtolower(get_woocommerce_currency());
+
+
+            //call portico to create session
+            $response;
+            try {
+                $response = $porticoService->createSession($orderTotal, $currency, $buyer, $payment, $shippingInfo, $lineItems);
+            } catch (Exception $e) {
+                $error = __('Error creating PayPal Portico session:', 'wc_securesubmit') . ' "' . $e->getMessage() . '"';
+                if (function_exists('wc_add_notice')) {
+                    wc_add_notice($error, 'error');
+                } else {
+                    $woocommerce->add_error($error);
+                }
+                return array(
+                    'result' => 'fail',
+                    'redirect' => '');
             }
+            $redirectUrl = $response->redirectUrl;
+            error_log('Process_Payment normal exit to url : ' . $redirectUrl);
+            error_log('End function [b]: ' . __FUNCTION__);
             return array(
-                'result'   => 'fail',
-                'redirect' => '' );
+                'result' => 'success',
+                'redirect' => $redirectUrl
+            );
+            error_log('End function [c]: ' . __FUNCTION__);
         }
-        $redirectUrl = $response->redirectUrl;
-
-        return array(
-            'result'   => 'success',           
-            'redirect' => $redirectUrl
-        );
     }
 
     /**
@@ -272,9 +289,8 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
             $response = $porticoService->refund($order->get_transaction_id(), $isPartial, $amount);
 
         } catch (Exception $e) {
-            error_log('Exception-al doughnuts = ' . print_r($e,true));
             $error = __('Error processing refund:', 'wc_securesubmit') . ' "' . $e->getMessage() . '"';
-            error_log('$error = ' . $error);
+            error_log('process_refund : $error = ' . $error);
             if (function_exists('wc_add_notice')) {
                 wc_add_notice($error, 'error');
             } else {
@@ -283,7 +299,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
             return false;
         }
 
-        error_log('Refund $response = ' . print_r($response,true));
+        error_log('process_refund : $response = ' . print_r($response,true));
         if ($response->responseCode=="00") {
             $reason = $reason == '' ? '' : '. Reason for refund: '.$reason;
             $order->add_order_note( __( 'SecureSubmit PayPal refund completed. Transaction id: ' . $response->transactionId . $reason, 'paypal-for-woocommerce' ));
@@ -409,8 +425,8 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
      */
     function process_paypal_checkout($posted = null) 
     {
-        error_log(__FUNCTION__);
-        error_log('$_POST = ' . print_r($_GET,true));
+        error_log('Begin function : ' . __FUNCTION__);
+        error_log('$_GET = ' . print_r($_GET,true));
         if ( isset( $_GET['pp_action'] ) && $_GET['pp_action'] == 'revieworder' )
 		{
             $this->paypal_review_order();
@@ -419,10 +435,13 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         {
             $this->paypal_finalize_order();
         }
+        error_log('Exiting function : ' . __FUNCTION__);
     }
+
     
     private function paypal_review_order()
     {
+        error_log('Begin function : ' . __FUNCTION__);
         wc_clear_notices();
         // The customer has logged into PayPal and approved order.
         // Retrieve the shipping details and present the order for completion.
@@ -430,17 +449,21 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
             define( 'WOOCOMMERCE_CHECKOUT', true );
         if ( isset( $_GET['token'] ) ) 
         {
+            error_log('Setting session TOKEN value to ' . $_GET['token']);
             $token = $_GET['token'];
-            $this->set_session( 'TOKEN', $token );            
+            $this->set_session( 'TOKEN', $token );
+        } else {
+            // Raise exception here since no data was returned from paypal
         }
         
         //get sessioninfo from portico in case any changes are made on PayPal's site, HpsAltPaymentSessionInfo return type
         $porticoService = $this->getPorticoService(); 
-        $porticoSessionInfo = $porticoService->sessionInfo($token); 
+        $porticoSessionInfo = $porticoService->sessionInfo($token);
         $shippingInfo = $porticoSessionInfo->shipping;
 
         if(!empty($porticoSessionInfo))
         {
+            error_log('paypal_review_order() : storing portico session call result in session [RESULT]');
             $this->set_session('RESULT',serialize($porticoSessionInfo));
             if ( isset( $shippingInfo->address->country ) ) {
                 /**
@@ -508,60 +531,159 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
 
             }
         }
+        error_log('End function : ' . __FUNCTION__);
     }
-    
-    private function paypal_finalize_order()
-    {
-        error_log(__FUNCTION__);
-        //set token from session if available
-        $token = $this->get_session('TOKEN');
-        if ( is_null($token) && isset( $_GET['token'] )) 
-        {
-            $token = $_GET['token'];                    
-        }
 
-        $chosen_shipping_methods = WC()->session->get('chosen_shipping_methods');
+    /*
+    Called when Paypal Express option is used
+    */
+    private function paypal_create_order()
+    {
+        error_log('Begin function : ' . __FUNCTION__);
+        /*
+        //$_POST = array_merge($_POST, maybe_unserialize(WC()->session->checkout_form));
+
+        $result = maybe_unserialize(WC()->session->result);
+        error_log('paypal_create_order() : $result = ' . print_r($result, true));
+
+        if (WC()->cart->needs_shipping()){
+            error_log('pco : adding shipping method');
+            $chosen_shipping_methods = maybe_unserialize(WC()->session->chosen_shipping_methods);
+            error_log('$chosen_shipping_methods = ' . print_r($chosen_shipping_methods,true));
+            WC()->checkout()->shipping_methods = $chosen_shipping_methods;
+        };
+
+        $hpsBuyerData = maybe_unserialize($result->buyer);
+        WC()->customer->set_address( array(
+            'first_name'    => isset($hpsBuyerData->firstName)    ? $hpsBuyerData->firstName    : '',
+            'last_name'     => isset($hpsBuyerData->lastName)     ? $hpsBuyerData->lastName     : '',
+            'country'       => isset($hpsBuyerData->CountryCode)  ? $hpsBuyerData->CountryCode  : '',
+            'email'         => isset($hpsBuyerData->emailAddress) ? $hpsBuyerData->emailAddress : ''));
+
+
+
+        $hpsShippingInfo = maybe_unserialize($result->shipping);
+        $ship_name =  $unfiltered_name_parts = explode(" ",$hpsShippingInfo->name);
+        error_log('$hpsShippingInfo = ' . print_r($hpsShippingInfo,true));
+        WC()->customer->set_address( array(
+            'first_name'    => isset($ship_name[0]) ? $ship_name[0] : '',
+            'last_name'     => isset($ship_name[1]) ? $ship_name[1] : '',
+            'address_1'     => isset($hpsShippingInfo->address->address) ? $hpsShippingInfo->address->address : '',
+            //'address_2'     => Doesn't appear to be passed from paypal
+            'city'          => isset($hpsShippingInfo->address->city)    ? $hpsShippingInfo->address->city : '',
+            'state'         => isset($hpsShippingInfo->address->state)   ? $hpsShippingInfo->address->state : '',
+            'postcode'      => isset($hpsShippingInfo->address->zip)     ? $hpsShippingInfo->address->zip : '',
+            'country'       => isset($hpsShippingInfo->address->country) ? $hpsShippingInfo->address->country : ''), 'shipping');
+
+        WC()->cart->calculate_totals();
+        $order_id = WC()->checkout->create_order();
+        $order = wc_get_order($order_id);
+
+        $payment_method = get_post_meta($order->id, '_payment_method');
+        error_log('pco : $payment_method = ' . print_r($payment_method));
+        if( !isset($payment_method) || empty($payment_method)  ) {
+            update_post_meta($order_id, '_payment_method', $this->id);
+            update_post_meta($order_id, '_payment_method_title', $this->title);
+            error_log('pco : payment method updated');
+        }
+        error_log('$order_id = ' . $order_id);
+
+        if(!isset($order_id)) {
+            error_log('SS ERROR: Unable to create order in paypal_create_order()');
+        }
+        */
+        $chosen_shipping_methods = maybe_unserialize(WC()->session->chosen_shipping_methods);
         error_log('$chosen_shipping_methods = ' . print_r($chosen_shipping_methods,true));
 
-        $order_id = WC()->checkout()->create_order();
+        $_POST['payment_method'] = $this->id;
+        $_POST['shipping_method'] =  $chosen_shipping_methods;
+        $_POST['ship_to_different_address'] = true; // Paypal does not send billing addresses, only shipping
+        WC()->session->set( 'chosen_shipping_methods',  maybe_unserialize(WC()->session->chosen_shipping_methods) );
+
+        $result = maybe_unserialize(WC()->session->result);
+        $hpsBuyerData = maybe_unserialize($result->buyer);
+        $hpsShippingInfo = maybe_unserialize($result->shipping);
+        $ship_name =  $unfiltered_name_parts = explode(" ",$hpsShippingInfo->name);
+
+        $_POST['billing_first_name'] = isset($hpsBuyerData->firstName)    ? $hpsBuyerData->firstName    : '';
+        $_POST['billing_last_name'] = isset($hpsBuyerData->lastName)     ? $hpsBuyerData->lastName     : '';
+        // Paypal doesn't provide billing address so using shipping address
+        $_POST['billing_address_1'] = isset($hpsShippingInfo->address->address) ? $hpsShippingInfo->address->address : '';
+        $_POST['billing_address_2'] = isset($hpsShippingInfo->address->address_1) ? $hpsShippingInfo->address->address_1 : 'NA';
+        $_POST['billing_city'] = isset($hpsShippingInfo->address->city)    ? $hpsShippingInfo->address->city : '';
+        $_POST['billing_state'] = isset($hpsShippingInfo->address->state)   ? $hpsShippingInfo->address->state : '';
+        $_POST['billing_postcode'] = isset($hpsShippingInfo->address->zip)     ? $hpsShippingInfo->address->zip : '';
+        //
+        $_POST['billing_country'] = isset($hpsBuyerData->countryCode)  ? $hpsBuyerData->countryCode  : '';
+        $_POST['billing_email'] = isset($hpsBuyerData->emailAddress) ? $hpsBuyerData->emailAddress : '';
+        $_POST['billing_phone'] = isset($hpsBuyerData->phone) ? $hpsBuyerData->phone : '5555555555';
+
+
+        $_POST['shipping_first_name'] = isset($ship_name[0]) ? $ship_name[0] : '';
+        $_POST['shipping_last_name'] = isset($ship_name[1]) ? $ship_name[1] : '';
+        $_POST['shipping_address_1'] = isset($hpsShippingInfo->address->address) ? $hpsShippingInfo->address->address : '';
+        $_POST['shipping_address_2'] = isset($hpsShippingInfo->address->address_1) ? $hpsShippingInfo->address->address_1 : 'NA';
+        $_POST['shipping_city'] = isset($hpsShippingInfo->address->city)    ? $hpsShippingInfo->address->city : '';
+        $_POST['shipping_state'] = isset($hpsShippingInfo->address->state)   ? $hpsShippingInfo->address->state : '';
+        $_POST['shipping_postcode'] = isset($hpsShippingInfo->address->zip)     ? $hpsShippingInfo->address->zip : '';
+        $_POST['shipping_country'] = isset($hpsShippingInfo->address->country) ? $hpsShippingInfo->address->country : '';
+
+        $wpnonce = wp_create_nonce('woocommerce-process_checkout');
+        $_POST['_wpnonce'] = $wpnonce;
+        WC()->session->set('ppexpress_checkout_form', serialize($_POST));
+        $all_notices = WC()->session->get('wc_notices', array());
+        if(sizeof($all_notices)>0) {
+            error_log('$all_notices = ' . print_r($all_notices, true));
+        }
+        WC()->checkout->process_checkout();
+        error_log('End function : ' . __FUNCTION__);
+        return;
+
+        /*
+        $chosen_shipping_methods = WC()->session->get('chosen_shipping_methods');
+        WC()->session->set('process_payment_override',1);
+        */
+    }
+    private function paypal_finalize_order()
+    {
+        error_log('Begin function : ' . __FUNCTION__);
+        //set token from session if available
+        $token = $this->get_session('TOKEN');
+
+        if ( is_null($token) && isset( $_GET['token'] ))
+        {
+            $token = $_GET['token'];
+        }
+
+        $porticoSessionInfo = unserialize( $this->get_session('RESULT') );
+        $order_id = WC()->session->get('ss_order_id');
+        if(!isset($order_id)) {
+            $this->paypal_create_order();
+            $order_id = WC()->session->order_awaiting_payment;
+        }
+        error_log('paypal_finalize_order : $order_id = ' . $order_id);
+
         $order = wc_get_order( $order_id );
+
+        // cleanup paypal express dummy values
+        $billingAddress = $order->get_address();
+        $shippingAddress = $order->get_address('shipping');
+        error_log('$billingAddress = ' . print_r($billingAddress,true));
+        error_log('$shippingAddress = ' . print_r($shippingAddress,true));
+        $billingAddress['address_2'] = ($billingAddress['address_2']=='NA') ? '' : $billingAddress['address_2'];
+        $shippingAddress['address_2'] = $shippingAddress['address_2']=='NA' ? '' : $shippingAddress['address_2'];
+        $billingAddress['phone'] = $billingAddress['phone'] == '5555555555' ? '' : $billingAddress['phone'];
+        $order->set_address($billingAddress);
+        $order->set_address($shippingAddress,'shipping');
+
+        error_log('paypal_finalize_order() : $order = ' . print_r($order,true));
 
         $porticoService = $this->getPorticoService();
         $checkoutForm = $this->get_session('checkout_form');
-        $porticoSessionInfo = unserialize( $this->get_session('RESULT') );
 
-                    
         $payment = $porticoSessionInfo->payment;
         $orderTotal = $payment->subtotal + $payment->shippingAmount + $payment->taxAmount;
         $currency = strtolower(get_woocommerce_currency());
-
-
-        //update order total and billing/shipping address
-        $order->set_total($orderTotal);
-        $order->set_address( array(
-				'first_name'    => $checkoutForm["billing_first_name"],
-				'last_name'     => $checkoutForm["billing_last_name"],
-				'company'       => $checkoutForm["billing_company"],
-				'address_1'     => $checkoutForm["billing_address_1"],
-				'address_2'     => $checkoutForm["billing_address_2"],
-				'city'          => $checkoutForm["billing_city"],
-				'state'         => $checkoutForm["billing_state"],
-				'postcode'      => $checkoutForm["billing_postcode"],
-				'country'       => $checkoutForm["billing_country"],
-                'email'         => $checkoutForm["billing_email"],
-                'phone'         => $checkoutForm["billing_phone"]));
-                      
-        $order->set_address( array(
-                'first_name'    => $checkoutForm["shipping_first_name"],
-                'last_name'     => $checkoutForm["shipping_last_name"],
-                'company'       => $checkoutForm["shipping_company"],
-                'address_1'     => $checkoutForm["shipping_address_1"],
-                'address_2'     => $checkoutForm["shipping_address_2"],
-                'city'          => $checkoutForm["shipping_city"],
-                'state'         => $checkoutForm["shipping_state"],
-                'postcode'      => $checkoutForm["shipping_postcode"],
-                'country'       => $checkoutForm["shipping_country"]), 'shipping');
-        
         //call portico with sale
         $response = null;
         try
@@ -600,31 +722,42 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
             $this->log($error);
             return false;
         }
-        
+
+        error_log('$response->responseCode = ' . $response->responseCode);
         if($response->responseCode == '0')
         {
+            /*
             $payment_method = get_post_meta($order->id, '_payment_method');
             if( !isset($payment_method) || empty($payment_method)  ) {
                 update_post_meta($order_id, '_payment_method', $this->id);
                 update_post_meta($order_id, '_payment_method_title', $this->title);
             }
+            */
 
             $order->add_order_note( __( 'SecureSubmit PayPal payment completed. Transaction id: ' . $response->transactionId, 'paypal-for-woocommerce' ));
             $order->payment_complete($response->transactionId);
+            
+            WC()->session->set('ss_order_id', null);
+            WC()->session->set('ss_express_checkout_initiated',null);
+            $this->session->checkout_form = null;
                     
             //add hook
-            do_action( 'woocommerce_checkout_order_processed', $order_id );
+            //do_action( 'woocommerce_checkout_order_processed', $order_id );
 
             // Empty the Cart
             WC()->cart->empty_cart();
 
-            wp_redirect( $this->get_return_url( $order ) );
+            //wp_redirect( $this->get_return_url( $order ) );
+            error_log('redirect -> ' . $this->get_return_url( $order ));
+            error_log('End function : ' . __FUNCTION__);
+            wp_redirect( $this->get_return_url( $order ));
             exit();
         }
-        
+        error_log('Error Section of  : ' . __FUNCTION__);
         wc_add_notice(  sprintf( __('There was a problem paying with PayPal.  Please try another method.', 'paypal-for-woocommerce' ) ), 'error' );
         $this->log('Order did not complete successfully. Order ID: ' . $order_id . '. Return Status Code: ' . $response->responseCode);
         wp_redirect(get_permalink(wc_get_page_id('cart')));
+        error_log('End function : ' . __FUNCTION__ );
         exit();
     }
 

@@ -273,9 +273,9 @@ class HpsAltPaymentService extends HpsSoapGatewayService
             return;
         }
 
-        if ($gatewayRspCode == '30') {
+        if ($gatewayRspCode == '30' && 2==1) {
             try {
-                $this->reverse($transactionId, $this->_amount, $this->_currency);
+                //$this->reverse($transactionId, $this->_amount, $this->_currency);
             } catch (Exception $e) {
                 throw new HpsGatewayException(
                     HpsExceptionCodes::GATEWAY_TIMEOUT_REVERSAL_ERROR,

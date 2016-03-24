@@ -2,7 +2,7 @@
 /**
  * Review Order
  */
-
+error_log('BEGIN TEMPLATE : PAYPAL-REVIEW-ORDER.PHP');
 global $woocommerce;
 $checked = get_option('woocommerce_enable_guest_checkout');
 
@@ -44,19 +44,33 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
             <p>
                 <?php
                 $checkoutForm = maybe_unserialize(WC()->session->checkout_form);
+                error_log('$checkoutForm = ' . print_r($checkoutForm,true));
                 $myresult = maybe_unserialize(WC()->session->result);
+                $isPayPalExpress = $checkoutForm["paypalexpress_initiated"];
+                if(isset($checkoutForm['paypalexpress_initiated'])) { 
+                    $customer = maybe_unserialize(WC()->session->customer);
+                    error_log('paypal-review-order template : $customer = ' . print_r($customer,true));
 
-                $address = array(
-                    'first_name' 	=> $checkoutForm['billing_first_name'],
-                    'last_name' 	=> $checkoutForm['billing_last_name'],
-                    'company'		=> $checkoutForm['billing_company'],
-                    'address_1'		=> $checkoutForm['billing_address_1'],
-                    'address_2'		=> $checkoutForm['billing_address_2'],
-                    'city'			=> $checkoutForm['billing_city'],
-                    'state'			=> $checkoutForm['billing_state'],
-                    'postcode'		=> $checkoutForm['billing_postcode'],
-                    'country'		=> $checkoutForm['billing_country']
-                ) ;
+                    $address = array(
+                        'first_name' 	=> $myresult->buyer->firstName,
+                        'last_name' 	=> $myresult->buyer->lastName,
+                        'address_1'		=> $myresult->shipping->address->address,
+                        'city'			=> $myresult->shipping->address->city ,
+                        'state'			=> $myresult->shipping->address->state ,
+                        'postcode'		=> $myresult->shipping->address->zip,
+                        'country'		=> $myresult->shipping->address->country);
+                } else {
+                    $address = array(
+                        'first_name' => $checkoutForm['billing_first_name'],
+                        'last_name' => $checkoutForm['billing_last_name'],
+                        'company' => $checkoutForm['billing_company'],
+                        'address_1' => $checkoutForm['billing_address_1'],
+                        'address_2' => $checkoutForm['billing_address_2'],
+                        'city' => $checkoutForm['billing_city'],
+                        'state' => $checkoutForm['billing_state'],
+                        'postcode' => $checkoutForm['billing_postcode'],
+                        'country' => $checkoutForm['billing_country']);
+                }
                 echo WC()->countries->get_formatted_address( $address );
                 ?>
             </p>
@@ -76,8 +90,8 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
                 $checkoutForm = maybe_unserialize(WC()->session->checkout_form);
                 $myresult = maybe_unserialize(WC()->session->result);
 
-                error_log('$myresult = ' . print_r($myresult,true));
-                error_log('$checkoutForm = ' . print_r($checkoutForm,true));
+                error_log('session.result = ' . print_r($myresult,true));
+                error_log('session.checkout_form = ' . print_r($checkoutForm,true));
                 error_log("defined vars : " . print_r(get_defined_vars(),true));
 
                 $address = array(
@@ -89,7 +103,6 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
                     'postcode'		=> $myresult->shipping->address->zip,
                     'country'		=> $myresult->shipping->address->country
                 ) ;
-
                 echo WC()->countries->get_formatted_address( $address );
                 ?>
             </p>
@@ -171,9 +184,11 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
     </form>
 <?php else:
         echo '<div class="clear"></div>';
-        echo '<p><a class="button angelleye_cancel" href="' . $woocommerce->cart->get_cart_url() . '">'.__('Cancel order', 'paypal-for-woocommerce').'</a> ';
+        echo '<p><a class="button" href="' . $woocommerce->cart->get_cart_url() . '">'.__('Cancel order', 'paypal-for-woocommerce').'</a> ';
         echo '<input type="submit" onclick="jQuery(this).attr(\'disabled\', \'disabled\').val(\'Processing\'); jQuery(this).parents(\'form\').submit(); return false;" class="button" value="' . __( 'Place Order','paypal-for-woocommerce') . '" /></p>';
     ?>
     </form><!--close the checkout form-->
 <?php endif; ?>
 <div class="clear"></div>
+<?php
+error_log('END TEMPLATE : PAYPAL-REVIEW-ORDER.PHP'); ?>
