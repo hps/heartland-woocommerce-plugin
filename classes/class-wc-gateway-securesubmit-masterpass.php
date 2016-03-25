@@ -188,7 +188,9 @@ class WC_Gateway_SecureSubmit_MasterPass extends WC_Payment_Gateway
      */
     public function myaccountConnect()
     {
-        $this->connect->call();
+        if ('yes' === $this->enabled) {
+            $this->connect->call();
+        }
     }
 
     /**
