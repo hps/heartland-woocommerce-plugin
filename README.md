@@ -19,6 +19,20 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+####1.6.0
+* Restructure SecureSubmit gateway class to reflect MasterPass structure
+* Enable capture/void functionality through WooCommerce interface
+
+####1.5.1
+* Fix missing Subscriptions class
+
+####1.5.0
+* Improve WooCommerce Subscriptions 2.0 support to support new features
+* Fix MasterPass lightbox firing when MasterPass not selected
+* Fix MasterPass warnings with missing variable and missing address
+* Fix Javascript library collision with slug used in wp_enqueue_script
+* Fix PHP 5.2 compatibility issues with MasterPass feature
+
 ####1.4.0
 * MasterPass as a payment method
 * Fix issue with submitting order review page

@@ -68,7 +68,7 @@ class WC_Gateway_SecureSubmit_MasterPass extends WC_Payment_Gateway
     public static function instance()
     {
         if (null === self::$_instance) {
-            new self();
+            self::$_instance = new self();
         }
         return self::$_instance;
     }

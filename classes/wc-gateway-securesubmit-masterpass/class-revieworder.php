@@ -11,7 +11,7 @@ class WC_Gateway_SecureSubmit_MasterPass_ReviewOrder
 
     public function __construct(&$masterpass = null)
     {
-      $this->masterpass = $masterpass;
+        $this->masterpass = $masterpass;
     }
 
     public function processCheckout()
