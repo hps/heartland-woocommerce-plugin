@@ -52,8 +52,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
 
         add_action( 'woocommerce_api_' . strtolower( get_class() ), array( $this, 'process_paypal_checkout' ), 12 );
         add_action( 'woocommerce_receipt_paypal_express', array( $this, 'receipt_page' ) );
-        add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
-       
+        add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );       
     }
     
 
@@ -160,7 +159,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
     public function process_paypal_express_payment_checkout() {
         error_log('Begin function : ' . __FUNCTION__);
         global $woocommerce, $post;
-        $this->set_session('ss_paypal-express-checkout-initiated', true);
+        $this->set_session('ss-paypal-express-checkout-inprogress', true);
         $this->set_session('checkout_form', $_POST);
         error_log('$_POST = ' . print_r($_POST,true));
         $hpsBuyer = new HpsBuyerData();
@@ -170,25 +169,30 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         $hpsLineItems = $this->get_cart_lineitems();  //@review
         $payment = $this->get_cart_paymentdata();
         $porticoService = $this->getPorticoService();
-
+        error_log('cart total = ' . WC()->cart->total);
+        $redirectUrl = null;
         try
         {
-            $response = $porticoService->createSession(WC()->cart->cart_contents_total,"USD", $hpsBuyer, $payment, null, $hpsLineItems);
+            $response = $porticoService->createSession(WC()->cart->total,"USD", $hpsBuyer, $payment, null, $hpsLineItems);
+            $redirectUrl = $response->redirectUrl;
         }
         catch (Exception $e)
         {
-            //echo print_r($e,true);
             $error = __('Error creating PayPal Portico session:', 'wc_securesubmit') . ' "' . $e->getMessage() . '"';
             if (function_exists('wc_add_notice')) {
                 wc_add_notice($error, 'error');
             } else {
                 $woocommerce->add_error($error);
             }
-            return false;
+
+            $redirectUrl = wc_get_cart_url();
+            error_log('Exception redirect url = ' . $redirectUrl);
+            echo('<script type="application/javascript">window.location.href="'.$redirectUrl.'";</script>');
+            wp_redirect($redirectUrl);
+            exit();
         }
 
-
-        $redirectUrl = $response->redirectUrl;
+        error_log('$redirectUrl = ' . $redirectUrl);
         echo('<script type="application/javascript">window.location.href="'.$redirectUrl.'";</script>');
         error_log('End function : ' . __FUNCTION__);
         error_log(' ------------------------------------------------- [ SENDING TO PAYPAL ]');
@@ -212,15 +216,16 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
             WC()->session->set('process_payment_override_order_id', $order_id);
             error_log('process_payment quick exit process payment');
             error_log('End function [a]: ' . __FUNCTION__);
-            return array('result' => 'success');
+            return;
         }
         global $woocommerce, $post;
         $this->set_session('checkout_form', $_POST);
         $order = wc_get_order( $order_id );
 
-        // create portico session
-        $expressCheckout = WC()->session->get('ss_paypal-express-checkout-initiated');
-        if( !isset($expressCheckout) || $expressCheckout == false) {
+        // create portico session if needed
+        $isExpressCheckout = WC()->session->get('ss-paypal-express-checkout-inprogress');
+        error_log('$isExpressCheckout = ' . $isExpressCheckout);
+        if( !isset($expressCheckout) || $isExpressCheckout == false) {
             $porticoService = $this->getPorticoService();
 
             $shippingInfo = $this->getShippingInfo($order);
@@ -618,7 +623,6 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         $_POST['billing_email'] = isset($hpsBuyerData->emailAddress) ? $hpsBuyerData->emailAddress : '';
         $_POST['billing_phone'] = isset($hpsBuyerData->phone) ? $hpsBuyerData->phone : '5555555555';
 
-
         $_POST['shipping_first_name'] = isset($ship_name[0]) ? $ship_name[0] : '';
         $_POST['shipping_last_name'] = isset($ship_name[1]) ? $ship_name[1] : '';
         $_POST['shipping_address_1'] = isset($hpsShippingInfo->address->address) ? $hpsShippingInfo->address->address : '';
@@ -628,20 +632,32 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         $_POST['shipping_postcode'] = isset($hpsShippingInfo->address->zip)     ? $hpsShippingInfo->address->zip : '';
         $_POST['shipping_country'] = isset($hpsShippingInfo->address->country) ? $hpsShippingInfo->address->country : '';
 
+        // If the user is logged in then use his woocommerce profile billing address information
+        if(is_user_logged_in()) {
+
+            $_POST['billing_address_1'] = isset(WC()->customer->address_1) ? WC()->customer->address_1 : $_POST['billing_address_1'];
+            $_POST['billing_address_2'] = isset(WC()->customer->address_2) ? WC()->customer->address_2 : $_POST['billing_address_2'];
+            $_POST['billing_city'] = isset(WC()->customer->city) ? WC()->customer->city : $_POST['billing_city'];
+            $_POST['billing_state'] = isset(WC()->customer->state) ? WC()->customer->state : $_POST['billing_state'];
+            $_POST['billing_postcode'] = isset(WC()->customer->postcode) ? WC()->customer->postcode : $_POST['billing_postcode'];
+        }
+
         $wpnonce = wp_create_nonce('woocommerce-process_checkout');
         $_POST['_wpnonce'] = $wpnonce;
+        error_log('paypal_create_order() : $_POST = ' . print_r($_POST,true));
         WC()->session->set('ppexpress_checkout_form', serialize($_POST));
         $all_notices = WC()->session->get('wc_notices', array());
         if(sizeof($all_notices)>0) {
             error_log('$all_notices = ' . print_r($all_notices, true));
         }
+        WC()->session->set('process_payment_override',1);
         WC()->checkout->process_checkout();
         error_log('End function : ' . __FUNCTION__);
         return;
 
         /*
         $chosen_shipping_methods = WC()->session->get('chosen_shipping_methods');
-        WC()->session->set('process_payment_override',1);
+
         */
     }
     private function paypal_finalize_order()
@@ -649,7 +665,6 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         error_log('Begin function : ' . __FUNCTION__);
         //set token from session if available
         $token = $this->get_session('TOKEN');
-
         if ( is_null($token) && isset( $_GET['token'] ))
         {
             $token = $_GET['token'];
@@ -658,6 +673,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         $porticoSessionInfo = unserialize( $this->get_session('RESULT') );
         $order_id = WC()->session->get('ss_order_id');
         if(!isset($order_id)) {
+            error_log('No order id found, creating order');
             $this->paypal_create_order();
             $order_id = WC()->session->order_awaiting_payment;
         }
@@ -736,7 +752,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
 
             $order->add_order_note( __( 'SecureSubmit PayPal payment completed. Transaction id: ' . $response->transactionId, 'paypal-for-woocommerce' ));
             $order->payment_complete($response->transactionId);
-            
+
             WC()->session->set('ss_order_id', null);
             WC()->session->set('ss_express_checkout_initiated',null);
             $this->session->checkout_form = null;
@@ -841,11 +857,11 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         $cartItems = $cart->get_cart();
         foreach ($cartItems as $cartItem) {
             $lineItem = new HpsLineItem();
-            $lineItem->name = $cartItem['data']->post->post_name;              // hpsLineItem : name
-            $lineItem->description = $cartItem['data']->post->post_excerpt;    // hpsLineItem : desription
-            $lineItem->number = $cartItem['product_id'];                       // hpsLineItem : number
-            $lineItem->amount = $cartItem['line_total'] / $cartItem['quantity']; // hpsLineItem : price
-            $lineItem->quantity = $cartItem['quantity'];                       // hpsLineItem : quantity
+            $lineItem->name = $cartItem['data']->post->post_name;                            // hpsLineItem : name
+            $lineItem->description = substr($cartItem['data']->post->post_excerpt,0,127);    // hpsLineItem : description
+            $lineItem->number = $cartItem['product_id'];                                     // hpsLineItem : number
+            $lineItem->amount = $cartItem['line_total'] / $cartItem['quantity'];             // hpsLineItem : price
+            $lineItem->quantity = $cartItem['quantity'];                                     // hpsLineItem : quantity
             $hpsLineItems[] = $lineItem;
         }
 

@@ -59,6 +59,17 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
                         'state'			=> $myresult->shipping->address->state ,
                         'postcode'		=> $myresult->shipping->address->zip,
                         'country'		=> $myresult->shipping->address->country);
+
+                    if(is_user_logged_in()) {
+                        $address = array(
+                            'first_name' 	=> $myresult->buyer->firstName,
+                            'last_name' 	=> $myresult->buyer->lastName,
+                            'address_1'		=> isset(WC()->customer->address_1) ? WC()->customer->address_1 : $myresult->shipping->address->address,
+                            'city'			=> isset(WC()->customer->city) ? WC()->customer->city :$myresult->shipping->address->city ,
+                            'state'			=> isset(WC()->customer->state) ? WC()->customer->state :$myresult->shipping->address->state ,
+                            'postcode'		=> isset(WC()->customer->postcode) ? WC()->customer->postcode : $myresult->shipping->address->zip,
+                            'country'		=> isset(WC()->customer->country) ? WC()->customer->country :$myresult->shipping->address->country);
+                    }
                 } else {
                     $address = array(
                         'first_name' => $checkoutForm['billing_first_name'],
