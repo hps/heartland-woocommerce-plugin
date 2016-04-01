@@ -286,6 +286,18 @@
             onTokenSuccess: responseHandler,
             onTokenError: responseHandler
         });
+        if (!wc_securesubmit_params.hpsReadyHandler) {
+            wc_securesubmit_params.hpsReadyHandler = function () {
+                setTimeout(function () {
+                    document.getElementById('heartland-frame-cardNumber').style.height = '52px';
+                    document.getElementById('heartland-frame-cardExpiration').style.height = '52px';
+                    document.getElementById('heartland-frame-cardCvv').style.height = '52px';
+                    console.log('fired');
+                }, 500);
+            };
+        }
+        Heartland.Events.removeHandler(document, 'securesubmitIframeReady', wc_securesubmit_params.hpsReadyHandler);
+        Heartland.Events.addHandler(document, 'securesubmitIframeReady', wc_securesubmit_params.hpsReadyHandler);
     };
 
     addHandler(document, 'DOMContentLoaded', function() {
