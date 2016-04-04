@@ -27,7 +27,6 @@ class WooCommerceSecureSubmitGateway
 
         load_plugin_textdomain('wc_securesubmit', false, dirname(plugin_basename(__FILE__)) . '/languages');
 
-<<<<<<< 0512392062e7120587e6f0ac2894a554270128b4
         $this->loadClasses();
 
         $securesubmit = call_user_func(array(self::SECURESUBMIT_GATEWAY_CLASS, 'instance'));
@@ -57,7 +56,6 @@ class WooCommerceSecureSubmitGateway
 
         $this->loadClasses();
         call_user_func(array(self::SECURESUBMIT_GATEWAY_CLASS . '_MasterPass', 'createOrderReviewPage'));
-=======
         include_once('classes/class-wc-gateway-securesubmit.php');
         include_once('classes/class-wc-gateway-securesubmit-subscriptions.php');
         include_once('classes/class-wc-gateway-securesubmit-paypal.php');
@@ -99,7 +97,6 @@ class WooCommerceSecureSubmitGateway
         $html = $html . "<img src='https://www.paypalobjects.com/en_US/i/btn/x-click-but6.gif'>";
         $html = $html . "</a></form></div>";
         return $html;
->>>>>>> work in progress
     }
 
     /**
@@ -148,8 +145,7 @@ class WooCommerceSecureSubmitGateway
         $path = plugin_dir_path(__FILE__);
         include $path . 'templates/saved-cards.php';
     }
-<<<<<<< 0512392062e7120587e6f0ac2894a554270128b4
-
+    
     public function loadScripts()
     {
         if (!is_account_page()) {
@@ -166,8 +162,6 @@ class WooCommerceSecureSubmitGateway
         include_once('classes/class-wc-gateway-securesubmit-subscriptions-deprecated.php');
         include_once('classes/class-wc-gateway-securesubmit-masterpass.php');
     }
-=======
-    
     
     //PayPal
     function set_paypal_init_styles() 
@@ -222,7 +216,4 @@ class WooCommerceSecureSubmitGateway
         wc_get_template('paypal-review-order.php', array(), '', $template);
         do_action( 'woocommerce_ppe_checkout_order_review' );
     }
-
->>>>>>> work in progress
-}
 new WooCommerceSecureSubmitGateway();
