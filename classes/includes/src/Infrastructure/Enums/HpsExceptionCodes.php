@@ -23,6 +23,8 @@ abstract class HpsExceptionCodes
     const GATEWAY_TIMEOUT                = 12;
     const UNEXPECTED_GATEWAY_RESPONSE    = 13;
     const GATEWAY_TIMEOUT_REVERSAL_ERROR = 14;
+    const GATEWAY_ERROR                  = 31;
+    const UNEXPECTED_GATEWAY_ERROR       = 32;
 
     // credit issuer codes
     const INCORRECT_NUMBER              = 15;
@@ -38,4 +40,8 @@ abstract class HpsExceptionCodes
     const ISSUER_TIMEOUT_REVERSAL_ERROR = 25;
     const UNKNOWN_CREDIT_ERROR          = 26;
     const POSSIBLE_FRAUD_DETECTED       = 27;
+
+    // gift codes
+    const UNKNOWN_GIFT_ERROR = 29;
+    const PARTIAL_APPROVAL   = 30;
 }

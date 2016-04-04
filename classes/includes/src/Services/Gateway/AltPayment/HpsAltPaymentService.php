@@ -5,7 +5,7 @@ class HpsAltPaymentService extends HpsSoapGatewayService
     /** @var string|null */
     protected $_transactionType = null;
 
-    public function authorize($sessionId, $amount, $currency, HpsBuyerData $buyer, HpsPaymentData $payment, HpsShippingInfo $shippingAddress = null, $lineItems = null)
+    public function authorize($sessionId, $amount, $currency, HpsBuyerData $buyer = null, HpsPaymentData $payment = null, HpsShippingInfo $shippingAddress = null, $lineItems = null)
     {
         HpsInputValidation::checkAmount($amount);
         HpsInputValidation::checkCurrency($currency);
@@ -53,7 +53,7 @@ class HpsAltPaymentService extends HpsSoapGatewayService
         return $this->_submitTransaction($transaction, 'AltPaymentCapture');
     }
 
-    public function createSession($amount, $currency, HpsBuyerData $buyer, HpsPaymentData $payment, HpsShippingInfo $shippingAddress = null, $lineItems = null)
+    public function createSession($amount, $currency, HpsBuyerData $buyer = null, HpsPaymentData $payment = null, HpsShippingInfo $shippingAddress = null, $lineItems = null)
     {
         HpsInputValidation::checkAmount($amount);
         HpsInputValidation::checkCurrency($currency);
@@ -101,7 +101,7 @@ class HpsAltPaymentService extends HpsSoapGatewayService
         return $this->_submitTransaction($transaction, 'AltPaymentReturn');
     }
 
-    public function sale($sessionId, $amount, $currency, HpsBuyerData $buyer, HpsPaymentData $payment, HpsShippingInfo $shippingAddress = null, $lineItems = null)
+    public function sale($sessionId, $amount, $currency, HpsBuyerData $buyer = null, HpsPaymentData $payment = null, HpsShippingInfo $shippingAddress = null, $lineItems = null)
     {
         HpsInputValidation::checkAmount($amount);
         HpsInputValidation::checkCurrency($currency);
@@ -273,9 +273,9 @@ class HpsAltPaymentService extends HpsSoapGatewayService
             return;
         }
 
-        if ($gatewayRspCode == '30' && 2==1) {
+        if ($gatewayRspCode == '30') {
             try {
-                //$this->reverse($transactionId, $this->_amount, $this->_currency);
+                $this->reverse($transactionId, $this->_amount, $this->_currency);
             } catch (Exception $e) {
                 throw new HpsGatewayException(
                     HpsExceptionCodes::GATEWAY_TIMEOUT_REVERSAL_ERROR,
@@ -311,7 +311,7 @@ class HpsAltPaymentService extends HpsSoapGatewayService
     private function _submitTransaction($transaction, $txnType, $clientTxnId = null, $cardData = null)
     {
         try {
-            $response = $this->doTransaction($transaction, $clientTxnId);
+            $response = $this->doRequest($transaction, $clientTxnId);
         } catch (HpsException $e) {
             if ($e->innerException != null && $e->innerException->getMessage() == 'gateway_time-out') {
                 // if (in_array($txnType, array('CreditSale', 'CreditAuth'))) {

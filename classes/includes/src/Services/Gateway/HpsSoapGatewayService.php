@@ -50,7 +50,6 @@ class HpsSoapGatewayService extends HpsGatewayServiceAbstract implements HpsGate
             'Content-length: '.strlen($xml->saveXML()),
         );
         $data = $xml->saveXML();
-//        error_log('SECURESUBMIT XML REQUEST : ' . $data);
         // print "\n" . $data;
 
         return $this->submitRequest($url, $header, $data);
@@ -59,7 +58,6 @@ class HpsSoapGatewayService extends HpsGatewayServiceAbstract implements HpsGate
     public function processResponse($curlResponse, $curlInfo, $curlError)
     {
         // print "\n" . $curlResponse;
-//        error_log('SECURESUBMIT XML RESPONSE : ' . $curlResponse);
         switch ($curlInfo['http_code']) {
             case '200':
                 $responseObject = $this->_XML2Array($curlResponse);
@@ -326,11 +324,11 @@ class HpsSoapGatewayService extends HpsGatewayServiceAbstract implements HpsGate
     {
         if ($this->_config->secretApiKey != null && $this->_config->secretApiKey != "") {
             if (strpos($this->_config->secretApiKey, '_cert_') !== false) {
-                return "https://posgateway.cert.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx";
+                return "https://cert.api2.heartlandportico.com/Hps.Exchange.PosGateway/PosGatewayService.asmx";
             } else if (strpos($this->_config->secretApiKey, '_uat_') !== false) {
                 return "https://posgateway.uat.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx";
             } else {
-                return "https://posgateway.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx";
+                return "https://api2.heartlandportico.com/Hps.Exchange.PosGateway/PosGatewayService.asmx";
             }
         } else {
             return $this->_config->soapServiceUri;

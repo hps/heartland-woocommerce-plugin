@@ -307,7 +307,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         $this->debug_log('process_refund : $response = ' . print_r($response,true));
         if ($response->responseCode=="00") {
             $reason = $reason == '' ? '' : '. Reason for refund: '.$reason;
-            $order->add_order_note( __( 'Secure Submit PayPal refund completed. Transaction id: ' . $response->transactionId . $reason, 'paypal-for-woocommerce' ));
+            $order->add_order_note( __( 'Heartland PayPal refund completed. Transaction id: ' . $response->transactionId . $reason, 'paypal-for-woocommerce' ));
             return true;
         }
 
