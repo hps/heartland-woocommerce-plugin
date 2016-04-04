@@ -632,14 +632,14 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         $_POST['shipping_postcode'] = isset($hpsShippingInfo->address->zip)     ? $hpsShippingInfo->address->zip : '';
         $_POST['shipping_country'] = isset($hpsShippingInfo->address->country) ? $hpsShippingInfo->address->country : '';
 
-        // If the user is logged in then use his woocommerce profile billing address information
+        // If the user is logged in then use his woocommerce profile billing address information if entered
         if(is_user_logged_in()) {
 
-            $_POST['billing_address_1'] = isset(WC()->customer->address_1) ? WC()->customer->address_1 : $_POST['billing_address_1'];
-            $_POST['billing_address_2'] = isset(WC()->customer->address_2) ? WC()->customer->address_2 : $_POST['billing_address_2'];
-            $_POST['billing_city'] = isset(WC()->customer->city) ? WC()->customer->city : $_POST['billing_city'];
-            $_POST['billing_state'] = isset(WC()->customer->state) ? WC()->customer->state : $_POST['billing_state'];
-            $_POST['billing_postcode'] = isset(WC()->customer->postcode) ? WC()->customer->postcode : $_POST['billing_postcode'];
+            $_POST['billing_address_1'] = isset(WC()->customer->address_1) && !empty(WC()->customer->address_1) ? WC()->customer->address_1 : $_POST['billing_address_1'];
+            $_POST['billing_address_2'] = isset(WC()->customer->address_2) && !empty(WC()->customer->address_2) ? WC()->customer->address_2 : $_POST['billing_address_2'];
+            $_POST['billing_city']      = isset(WC()->customer->city)      && !empty(WC()->customer->city)      ? WC()->customer->city      : $_POST['billing_city'];
+            $_POST['billing_state']     = isset(WC()->customer->state)     && !empty(WC()->customer->state)     ? WC()->customer->state     : $_POST['billing_state'];
+            $_POST['billing_postcode']  = isset(WC()->customer->postcode)  && !empty(WC()->customer->postcode)  ? WC()->customer->postcode  : $_POST['billing_postcode'];
         }
 
         $wpnonce = wp_create_nonce('woocommerce-process_checkout');
@@ -680,6 +680,13 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         error_log('paypal_finalize_order : $order_id = ' . $order_id);
 
         $order = wc_get_order( $order_id );
+
+        if(!isset($order) || $order == false)
+        {
+            wc_add_notice('Order information was not found, unable to create order', 'error');
+            wp_redirect(wc_get_cart_url());
+            exit();
+        }
 
         // cleanup paypal express dummy values
         $billingAddress = $order->get_address();
@@ -755,8 +762,8 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
 
             WC()->session->set('ss_order_id', null);
             WC()->session->set('ss_express_checkout_initiated',null);
-            $this->session->checkout_form = null;
-                    
+            WC()->session->set('checkout_form', null);
+
             //add hook
             //do_action( 'woocommerce_checkout_order_processed', $order_id );
 
