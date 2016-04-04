@@ -121,7 +121,7 @@ if (!defined( 'ABSPATH')) {
 
   <div class="clear"></div>
   <p>
-    <a class="button" href="<?= WC()->cart->get_cart_url(); ?>"><?= __('Cancel order', 'paypal-for-woocommerce'); ?></a>
+    <a class="button" href="<?= WC()->cart->get_cart_url(); ?>"><?= __('Cancel order', 'wc_securesubmit'); ?></a>
     <input type="submit"
            onclick="jQuery(this).attr('disabled', 'disabled').val('Processing'); jQuery(this).parents('form').submit(); return false;"
            class="button checkout-button"

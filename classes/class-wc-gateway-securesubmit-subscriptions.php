@@ -188,7 +188,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
         $token->tokenValue = $tokenValue;
 
         if (!isset($tokenValue) && $tokenData == null) {
-            return new WP_Error('securesubmit_error', __('SecureSubmit payment token not found', 'hps-securesubmit'));
+            return new WP_Error('securesubmit_error', __('SecureSubmit payment token not found', 'wc_securesubmit'));
         }
 
         if ($tokenData != null) {
@@ -223,7 +223,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
 
             $order->payment_complete($response->transactionId);
             $order->add_order_note(sprintf(
-                __('SecureSubmit %s completed (Transaction ID: %s)', 'hps-securesubmit'),
+                __('SecureSubmit %s completed (Transaction ID: %s)', 'wc_securesubmit'),
                 ($amount == 0 ? 'verify' : 'payment'),
                 $response->transactionId
             ));
@@ -231,7 +231,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
 
             return $response;
         } catch (Exception $e) {
-            return new WP_Error('securesubmit_error', sprintf(__('SecureSubmit payment error: %s', 'hps-securesubmit'), (string)$e->getMessage()));
+            return new WP_Error('securesubmit_error', sprintf(__('SecureSubmit payment error: %s', 'wc_securesubmit'), (string)$e->getMessage()));
         }
     }
 
