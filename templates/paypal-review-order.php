@@ -2,7 +2,6 @@
 /**
  * Review Order
  */
-error_log('BEGIN TEMPLATE : PAYPAL-REVIEW-ORDER.PHP');
 global $woocommerce;
 $checked = get_option('woocommerce_enable_guest_checkout');
 
@@ -44,12 +43,9 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
             <p>
                 <?php
                 $checkoutForm = maybe_unserialize(WC()->session->checkout_form);
-                error_log('$checkoutForm = ' . print_r($checkoutForm,true));
                 $myresult = maybe_unserialize(WC()->session->result);
-                $isPayPalExpress = $checkoutForm["paypalexpress_initiated"];
-                if(isset($checkoutForm['paypalexpress_initiated'])) { 
+                if(isset($checkoutForm['paypalexpress_initiated'])) {
                     $customer = maybe_unserialize(WC()->session->customer);
-                    error_log('paypal-review-order template : $customer = ' . print_r($customer,true));
 
                     $address = array(
                         'first_name' 	=> $myresult->buyer->firstName,
@@ -100,10 +96,6 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
                 <?php
                 $checkoutForm = maybe_unserialize(WC()->session->checkout_form);
                 $myresult = maybe_unserialize(WC()->session->result);
-
-                error_log('session.result = ' . print_r($myresult,true));
-                error_log('session.checkout_form = ' . print_r($checkoutForm,true));
-                error_log("defined vars : " . print_r(get_defined_vars(),true));
 
                 $address = array(
                     'first_name' 	=> $myresult->shipping->name,
@@ -201,5 +193,3 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
     </form><!--close the checkout form-->
 <?php endif; ?>
 <div class="clear"></div>
-<?php
-error_log('END TEMPLATE : PAYPAL-REVIEW-ORDER.PHP'); ?>

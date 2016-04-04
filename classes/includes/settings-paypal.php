@@ -40,7 +40,7 @@ return array(
 		'type'        => 'checkbox',
 		'label'       => __( 'Enable logging', 'woocommerce' ),
 		'default'     => 'no',
-		'description' => sprintf( __( 'Log PayPal events, such as IPN requests, inside <code>%s</code>', 'woocommerce' ), wc_get_log_file_path( 'paypal' ) )
+		'description' => sprintf( __( 'Adds error logging information to the php error log file.Log PayPal events, such as IPN requests, inside <code>%s</code>', 'woocommerce' ), wc_get_log_file_path( 'paypal' ) )
 	),
 	'paymentaction' => array(
 		'title'       => __( 'Payment Action', 'woocommerce' ),
