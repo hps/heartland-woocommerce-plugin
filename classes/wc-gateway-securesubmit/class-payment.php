@@ -112,7 +112,7 @@ class WC_Gateway_SecureSubmit_Payment
                 $verb = $this->parent->paymentaction == 'sale'
                       ? 'captured'
                       : 'authorized';
-                $order->add_order_note(__('SecureSubmit payment ' . $verb, 'hps-securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
+                $order->add_order_note(__('SecureSubmit payment ' . $verb, 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
                 $order->payment_complete($response->transactionId);
                 WC()->cart->empty_cart();
 
