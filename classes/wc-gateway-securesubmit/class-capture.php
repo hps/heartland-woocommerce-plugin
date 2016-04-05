@@ -34,7 +34,7 @@ class WC_Gateway_SecureSubmit_Capture
                     $transactionId,
                     $order->get_total()
                 );
-                $order->add_order_note(__('SecureSubmit payment captured', 'hps-securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
+                $order->add_order_note(__('SecureSubmit payment captured', 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
                 return true;
             } catch (HpsException $e) {
                 $this->parent->throwUserError($e->getMessage());

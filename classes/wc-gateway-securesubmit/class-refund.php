@@ -35,7 +35,7 @@ class WC_Gateway_SecureSubmit_Refund
                     strtolower(get_woocommerce_currency()),
                     $transactionId
                 );
-                $order->add_order_note(__('SecureSubmit payment refunded', 'hps-securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
+                $order->add_order_note(__('SecureSubmit payment refunded', 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
                 return true;
             } catch (HpsException $e) {
                 $this->throwUserError($e->getMessage());
