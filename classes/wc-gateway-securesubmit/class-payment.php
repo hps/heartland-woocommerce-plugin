@@ -112,7 +112,7 @@ class WC_Gateway_SecureSubmit_Payment
                 $verb = $this->parent->paymentaction == 'sale'
                       ? 'captured'
                       : 'authorized';
-                $order->add_order_note(__('SecureSubmit payment ' . $verb, 'hps-securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
+                $order->add_order_note(__('SecureSubmit payment ' . $verb, 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
                 $order->payment_complete($response->transactionId);
                 WC()->cart->empty_cart();
 
@@ -132,7 +132,7 @@ class WC_Gateway_SecureSubmit_Payment
 
                 if ($this->parent->allow_fraud == 'yes' && $e->getCode() == HpsExceptionCodes::POSSIBLE_FRAUD_DETECTED ) {
                     // we can skip the card saving: if it fails for possible fraud there will be no token.
-                    $order->update_status('on-hold', __('<strong>Accepted suspicious transaction.</strong> Please use Virtual Terminal to review.', 'hps-securesubmit'));
+                    $order->update_status('on-hold', __('<strong>Accepted suspicious transaction.</strong> Please use Virtual Terminal to review.', 'wc_securesubmit'));
                     $order->reduce_order_stock();
                     $cart->empty_cart();
 
