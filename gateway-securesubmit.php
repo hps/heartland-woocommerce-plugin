@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce SecureSubmit Gateway
 Plugin URI: https://developer.heartlandpaymentsystems.com/SecureSubmit/
 Description: Heartland Payment Systems gateway for WooCommerce.
-Version: 1.6.0
+Version: 1.7.0
 Author: SecureSubmit
 Author URI: https://developer.heartlandpaymentsystems.com/SecureSubmit/
 */
@@ -73,7 +73,7 @@ class WooCommerceSecureSubmitGateway
         add_filter('woocommerce_payment_gateways', array($this, 'addGateway'));
         add_action('woocommerce_after_my_account', array($this, 'savedCards'));
 
-        //paypal  
+        //paypal
         remove_action('init', 'woocommerce_paypal_express_review_order_page');
         remove_shortcode('woocommerce_review_order');
         add_shortcode('woocommerce_review_order', array($this, 'set_paypal_review_order_shortcode'));
@@ -203,7 +203,7 @@ class WooCommerceSecureSubmitGateway
             $secureSubmitPayPalGateway->process_paypal_checkout();
         }
     }
-    
+
     function set_paypal_review_order_shortcode( $atts ) {
         global $woocommerce;
         return WC_Shortcodes::shortcode_wrapper(array($this, 'get_paypal_review_order_page'), $atts);
