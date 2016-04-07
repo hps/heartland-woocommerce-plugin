@@ -35,6 +35,9 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section.
 
 == Changelog ==
+= 1.7.0 =
+* PayPal as a payment method
+
 = 1.6.0 =
 * Restructure SecureSubmit gateway class to reflect MasterPass structure
 * Enable capture/void functionality through WooCommerce interface

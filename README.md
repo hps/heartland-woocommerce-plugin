@@ -19,6 +19,9 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+####1.7.0
+* PayPal as a payment method
+
 ####1.6.0
 * Restructure SecureSubmit gateway class to reflect MasterPass structure
 * Enable capture/void functionality through WooCommerce interface
