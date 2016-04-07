@@ -642,13 +642,13 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
 
     private function set_session( $key, $value ) 
     {
-        self::debug_log('['.debug_backtrace()[1]['function'].'] Saved to session : ' . print_r($key,true) . ' = ' . print_r($value,true));
+        self::debug_log('Saved to session : ' . print_r($key,true) . ' = ' . print_r($value,true));
         WC()->session->$key = $value;
     }
 
     private function get_session( $key ) 
     {
-        self::debug_log('['.debug_backtrace()[1]['function'].'] Requested session value : ' . print_r($key,true) );
+        self::debug_log('Requested session value : ' . print_r($key,true) );
         return WC()->session->$key;
     }
        
