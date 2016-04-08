@@ -109,6 +109,14 @@ class WC_Gateway_SecureSubmit_Payment
                     }
                 }
 
+                if ($this->parent->allow_gift_cards) {
+                    $session_applied_gift_card = WC()->session->get('securesubmit_gift_card_applied');
+                    if (!empty($session_applied_gift_card)) {
+                        $gift_card_order_placement = new giftCardOrderPlacement();
+                        $gift_card_order_placement->processGiftCardPayment($order->id);
+                    }
+                }
+
                 $verb = $this->parent->paymentaction == 'sale'
                       ? 'captured'
                       : 'authorized';

@@ -146,6 +146,36 @@
     <input type="hidden" name="securesubmit_token" id="securesubmit_token" />
 </fieldset>
 
+<?php
+$gift_cards = new WC_Gateway_SecureSubmit_GiftCards();
+$gift_cards_allowed = $gift_cards->giftCardsAllowed();
+
+if ($this->allow_gift_cards && $gift_cards_allowed) : // Allow customers to pay with Heartland gift cards ?>
+    <fieldset>
+      	<!-- Start Gift Card -->
+      	<div class="securesubmit-content gift-card-content">
+        		<div class="form-row form-row-wide" id="gift-card-row">
+          			<label id="gift-card-label" for="gift-card-number"><?php _e('Use a gift card', 'wc_securesubmit'); ?></label>
+          			<div id="gift-card-input">
+            				<input type="tel" placeholder="Gift card" id="gift-card-number" value="" class="input-text">
+            				<input type="tel" placeholder="PIN" id="gift-card-pin" value="" class="input-text">
+            				<p id="gift-card-error"></p>
+            				<p id="gift-card-success"></p>
+          			</div>
+          			<button id="apply-gift-card" class="button"><?php _e('Apply', 'wc_securesubmit'); ?></button>
+          			<script>
+          				jQuery("#apply-gift-card").on('click', function (event) {
+          					event.preventDefault();
+          					window.applyGiftCard();
+          				});
+          			</script>
+        		</div>
+        		<div class="clear"></div>
+      	</div>
+      	<!-- End Gift Card -->
+    </fieldset>
+<?php endif; ?>
+
 <?php if ($this->use_iframes): // Create the iframes when WC refreshes the payment fields ?>
     <script>
         window.securesubmitLoadIframes = window.securesubmitLoadIframes || function () {};
