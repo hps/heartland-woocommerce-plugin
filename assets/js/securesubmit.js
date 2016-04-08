@@ -309,4 +309,42 @@
         jQuery('form#order_review').on('submit', handler);
         jQuery('form.checkout').on('checkout_place_order_securesubmit', handler);
     });
+
+    function processGiftCardResponse(msg) {
+        var giftCardResponse = JSON.parse(msg);
+
+        if (giftCardResponse.error === 1) {
+            jQuery('#gift-card-error').text(giftCardResponse.message).show('fast');
+        } else if (giftCardResponse.error === 0) {
+            jQuery('#gift-card-success').text("Your gift card was applied to the order.").show('fast');
+            jQuery('body').trigger('update_checkout');
+        }
+    }
+
+    window.removeGiftCards = function (clickedElement) {
+        var removedCardID = jQuery(clickedElement).attr('id');
+
+        jQuery.ajax({
+            url: ajaxurl,
+            type: "POST",
+            data: {
+                action: 'remove_gift_card',
+                securesubmit_card_id: removedCardID
+            }
+        }).done(function () {
+            jQuery('body').trigger('update_checkout');
+        });
+    };
+
+    window.applyGiftCard = function () {
+        jQuery.ajax({
+            url: ajaxurl,
+            type: "POST",
+            data: {
+                action: 'use_gift_card',
+                gift_card_number: jQuery('#gift-card-number').val(),
+                gift_card_pin: jQuery('#gift-card-pin').val()
+            }
+        }).success(processGiftCardResponse);
+    };
 }(window, document, window.Heartland, window.wc_securesubmit_params));

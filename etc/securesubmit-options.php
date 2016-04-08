@@ -93,4 +93,25 @@ return array(
         'description' => 'Note: The customer will remain on your site throughout the checkout process, and there will be no redirect. This option only helps reduce your PCI scope.',
         'default'     => 'yes',
     ),
+		'gift_cards' => array(
+			'title'       => __( 'Enable Gift Cards', 'wc_securesubmit' ),
+			'label'       => __( 'Allow customers to use gift cards to pay for purchases in full or in part.', 'wc_securesubmit' ),
+			'type'        => 'checkbox',
+			'description' => 'This will display a gift card entry field in the checkout above the credit card entry area.',
+			'default'     => 'no',
+		),
+		'gift_cards_gateway_title' => array(
+			'title'       => __( 'Gift Card Title', 'wc_securesubmit' ),
+			'label'       => __( 'This controls the payment method name users see when gift cards are enabled.', 'wc_securesubmit' ),
+			'type'        => 'text',
+			'description' => 'This updates the payment method title on checkout if you have enabled gift card usage.',
+			'default'     => 'Credit and/or Gift Cards',
+		),
+		'gift_cards_gateway_description' => array(
+			'title'       => __( 'Gift Card Description', 'wc_securesubmit' ),
+			'label'       => __( 'This controls the payment method description users see when gift cards are enabled.', 'wc_securesubmit' ),
+			'type'        => 'textarea',
+			'description' => 'This is the description that will display in the payment area of checkout if gift cards are enabled.',
+			'default'     => 'Pay with your credit or gift card via SecureSubmit.',
+		),
 );

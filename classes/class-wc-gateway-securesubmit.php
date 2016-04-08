@@ -37,6 +37,8 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $this->fraud_text           = $this->getSetting('fraud_text');
         $this->allow_card_saving    = ($this->getSetting('allow_card_saving') == 'yes' ? true : false);
         $this->use_iframes          = ($this->getSetting('use_iframes') == 'yes' ? true : false);
+    		$this->allow_gift_cards  = ( $this->getSetting( 'gift_cards' ) == 'yes' ? TRUE : FALSE );
+    		$this->gift_card_title   = $this->getSetting( 'gift_cards_gateway_title' );
         $this->supports             = array(
                                         'products',
                                         'refunds'
