@@ -3,7 +3,6 @@
 Plugin Name: WooCommerce Heartland PayPal Gateway
 Plugin URI: https://developer.heartlandpaymentsystems.com/SecureSubmit/
 Description: Heartland PayPal Payment gateway for WooCommerce.
-Version: 1.0.0
 Author: SecureSubmit
 Author URI: https://developer.heartlandpaymentsystems.com/SecureSubmit/
 */

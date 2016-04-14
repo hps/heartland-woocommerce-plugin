@@ -35,6 +35,10 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section.
 
 == Changelog ==
+= 1.7.2 =
+* Bug Fix - Resolves WooCommerce PayPal collision
+* Improvement - Sets Heartland PayPal enabled flag to false for new installs
+
 = 1.7.1 =
 * Bug Fix
 
