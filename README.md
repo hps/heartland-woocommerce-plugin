@@ -19,6 +19,10 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+####1.7.2
+* Bug Fix - Resolves WooCommerce PayPal collision
+* Improvement - Sets Heartland PayPal enabled flag to false for new installs
+
 ####1.7.1
 * Bug Fix
 
