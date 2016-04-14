@@ -11,8 +11,8 @@ return array(
 	'enabled' => array(
 		'title'   => __( 'Enable/Disable', 'wc_securesubmit' ),
 		'type'    => 'checkbox',
-		'label'   => __( 'Enable PayPal Secure Submit', 'wc_securesubmit' ),
-		'default' => 'yes'
+		'label'   => __( 'Enable Heartland PayPal', 'wc_securesubmit' ),
+		'default' => 'no'
 	),
 	'title' => array(
 		'title'       => __( 'Title', 'wc_securesubmit' ),

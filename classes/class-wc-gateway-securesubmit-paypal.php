@@ -24,7 +24,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
      * Constructor for the gateway.
      */
     public function __construct() {
-        $this->id                 = 'paypal';
+        $this->id                 = 'heartland_paypal';
         $this->has_fields         = false;
         $this->order_button_text  = __( 'Proceed to PayPal', 'wc_securesubmit' );
         $this->method_title       = __( 'Heartland Paypal', 'wc_securesubmit' );
