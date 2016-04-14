@@ -84,7 +84,7 @@ class giftCardOrderPlacement {
 				if ( ! empty( $gift_card_sales ) ) {
 
 					$giftcard_gateway->processGiftCardVoid( $gift_card_sales, $order_awaiting_payment );
-					
+
 				}
 
 				throw new Exception( $sale_response_message );
@@ -122,6 +122,7 @@ class giftCardOrderPlacement {
 	}
 
 	public function processGiftCardsZeroTotal( $order_id, $posted ) {
+        $appliedCards = WC()->session->get('securesubmit_gift_card_applied');
 
 		if ( empty( $posted[ 'payment_method' ] ) ) {
 
@@ -131,7 +132,7 @@ class giftCardOrderPlacement {
 
 			// We're already doing something if it's this payment gateway.
 
-		} else {
+		} else if (!empty($appliedCards)) {
 
 			$giftcard_gateway = new WC_Gateway_SecureSubmit_GiftCards();
 			$message          = sprintf( __( 'You must use the %s payment method in order to use gift cards.', 'wc_securesubmit' ), $giftcard_gateway->gift_card_title );
