@@ -50,7 +50,7 @@ return array(
         'default'     => 'no',
     ),
     'allow_fraud' => array(
-        'title'       => __('Allow Suspicious', 'wc_securesubmit'),
+        'title'       => __('Enable Advanced Fraud', 'wc_securesubmit'),
         'label'       => __('Do not fail suspicious orders', 'wc_securesubmit'),
         'type'        => 'checkbox',
         'description' => 'Note: You will have 72 hours from the original authorization date to manually review suspicious orders in the virtual terminal and make a final decision (either to accept the gateway fraud decision or to manually override).',
