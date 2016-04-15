@@ -36,6 +36,9 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 
 == Changelog ==
 = 1.7.2 =
+* Improvement - Added in advanced fraud velocity check
+
+= 1.7.2 =
 * Bug Fix - Resolves WooCommerce PayPal collision
 * Improvement - Sets Heartland PayPal enabled flag to false for new installs
 
