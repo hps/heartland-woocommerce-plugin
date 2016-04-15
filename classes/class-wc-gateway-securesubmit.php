@@ -19,7 +19,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 
         // properties
         $this->id                   = 'securesubmit';
-        $this->method_title         = __('SecureSubmit', 'wc_securesubmit');
+        $this->method_title         = __('Heartland', 'wc_securesubmit');
         $this->icon                 = plugins_url('/assets/images/cards.png', dirname(__FILE__));
         $this->has_fields           = true;
         $this->initFormFields();
