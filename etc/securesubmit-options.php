@@ -69,6 +69,24 @@ return array(
         'description' => __('This email address will be notified of suspicious orders.', 'wc_securesubmit'),
         'default'     => __('', 'wc_securesubmit'),
     ),
+    'velocity_attempts' => array(
+        'title'       => __('Maximum Velocity of Failures', 'wc_securesubmit'),
+        'type'        => 'text',
+        'description' => __('This is the maximum amount of attempts for a single IP address to try and submit credit cards. 0 for unlimited.', 'wc_securesubmit'),
+        'default'     => __('0', 'wc_securesubmit'),
+    ),
+    'velocity_duration' => array(
+        'title'       => __('Velocity Check Duration', 'wc_securesubmit'),
+        'type'        => 'text',
+        'description' => __('This is the amount of time, in minutes, between failed attempts that will be considered before resetting the count back to 0.', 'wc_securesubmit'),
+        'default'     => __('10', 'wc_securesubmit'),
+    ),
+    'velocity_text' => array(
+        'title'       => __('Maximum Velocity Error Text', 'wc_securesubmit'),
+        'type'        => 'text',
+        'description' => __('This is the text that will display to the customer when the maximum amount of failed attempts is met.', 'wc_securesubmit'),
+        'default'     => __('Please call customer service.', 'wc_securesubmit'),
+    ),
     'fraud_text' => array(
         'title'       => __('Fraud Text', 'wc_securesubmit'),
         'type'        => 'text',
