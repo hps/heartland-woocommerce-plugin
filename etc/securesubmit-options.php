@@ -71,13 +71,13 @@ return array(
     ),
     'velocity_attempts' => array(
         'title'       => __('Maximum Velocity of Failures', 'wc_securesubmit'),
-        'type'        => 'text',
+        'type'        => 'number',
         'description' => __('This is the maximum amount of attempts for a single IP address to try and submit credit cards. 0 for unlimited.', 'wc_securesubmit'),
         'default'     => __('0', 'wc_securesubmit'),
     ),
     'velocity_duration' => array(
         'title'       => __('Velocity Check Duration', 'wc_securesubmit'),
-        'type'        => 'text',
+        'type'        => 'number',
         'description' => __('This is the amount of time, in minutes, between failed attempts that will be considered before resetting the count back to 0.', 'wc_securesubmit'),
         'default'     => __('10', 'wc_securesubmit'),
     ),
