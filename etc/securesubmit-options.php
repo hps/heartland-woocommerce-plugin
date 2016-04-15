@@ -83,7 +83,7 @@ return array(
     ),
     'velocity_text' => array(
         'title'       => __('Maximum Velocity Error Text', 'wc_securesubmit'),
-        'type'        => 'text',
+        'type'        => 'textarea',
         'description' => __('This is the text that will display to the customer when the maximum amount of failed attempts is met.', 'wc_securesubmit'),
         'default'     => __('Please call customer service.', 'wc_securesubmit'),
     ),
