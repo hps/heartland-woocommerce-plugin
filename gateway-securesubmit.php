@@ -53,27 +53,29 @@ class WooCommerceSecureSubmitGateway
         add_action('wp_enqueue_scripts', array($this, 'set_paypal_init_styles'), 12 );
         add_action('woocommerce_after_cart', array($this, 'add_paypal_express_option'));
 
-    		$giftCards         = new WC_Gateway_SecureSubmit_GiftCards;
-    		$giftCardPlacement = new giftCardOrderPlacement;
+        $giftCards         = new WC_Gateway_SecureSubmit_GiftCards;
+        $giftCardPlacement = new giftCardOrderPlacement;
 
-  	    add_filter('woocommerce_gateway_title',                   array($giftCards, 'update_gateway_title_checkout'), 10, 2);
-  	    add_filter('woocommerce_gateway_description',             array($giftCards, 'update_gateway_description_checkout'), 10, 2);
-  	    add_action('wp_head',                                     array($giftCards, 'set_ajax_url'));
-  	    add_action('wp_ajax_nopriv_use_gift_card',                array($giftCards, 'applyGiftCard'));
-  	    add_action('wp_ajax_use_gift_card',                       array($giftCards, 'applyGiftCard'));
-  	    add_action('wp_ajax_nopriv_remove_gift_card',             array($giftCards, 'removeGiftCard'));
-  	    add_action('wp_ajax_remove_gift_card',                    array($giftCards, 'removeGiftCard'));
-  	    add_action('woocommerce_review_order_before_order_total', array($giftCards, 'addGiftCards'));
-  	    add_action('woocommerce_cart_totals_before_order_total',  array($giftCards, 'addGiftCards'));
-  	    add_filter('woocommerce_calculated_total',                array($giftCards, 'updateOrderTotal'), 10, 2);
-    		add_action('wp_enqueue_scripts',                          array($giftCards, 'removeGiftCardCode'));
+        if ($giftCards->allow_gift_cards) {
+            add_filter('woocommerce_gateway_title',                   array($giftCards, 'update_gateway_title_checkout'), 10, 2);
+            add_filter('woocommerce_gateway_description',             array($giftCards, 'update_gateway_description_checkout'), 10, 2);
+            add_action('wp_head',                                     array($giftCards, 'set_ajax_url'));
+            add_action('wp_ajax_nopriv_use_gift_card',                array($giftCards, 'applyGiftCard'));
+            add_action('wp_ajax_use_gift_card',                       array($giftCards, 'applyGiftCard'));
+            add_action('wp_ajax_nopriv_remove_gift_card',             array($giftCards, 'removeGiftCard'));
+            add_action('wp_ajax_remove_gift_card',                    array($giftCards, 'removeGiftCard'));
+            add_action('woocommerce_review_order_before_order_total', array($giftCards, 'addGiftCards'));
+            add_action('woocommerce_cart_totals_before_order_total',  array($giftCards, 'addGiftCards'));
+            add_filter('woocommerce_calculated_total',                array($giftCards, 'updateOrderTotal'), 10, 2);
+            add_action('wp_enqueue_scripts',                          array($giftCards, 'removeGiftCardCode'));
 
-  	    // Process checkout with gift cards
-  	    add_filter('woocommerce_get_order_item_totals',    array( $giftCardPlacement, 'addItemsToOrderDisplay'),PHP_INT_MAX, 2);
-  	    add_action('woocommerce_checkout_order_processed', array( $giftCardPlacement, 'processGiftCardsZeroTotal'), PHP_INT_MAX, 2);
+            // Process checkout with gift cards
+            add_filter('woocommerce_get_order_item_totals',    array( $giftCardPlacement, 'addItemsToOrderDisplay'),PHP_INT_MAX, 2);
+            add_action('woocommerce_checkout_order_processed', array( $giftCardPlacement, 'processGiftCardsZeroTotal'), PHP_INT_MAX, 2);
 
-  	    // Display gift cards used after checkout and on email
-  	    add_filter('woocommerce_get_order_item_totals', array( $giftCardPlacement, 'addItemsToPostOrderDisplay'), PHP_INT_MAX, 2);
+            // Display gift cards used after checkout and on email
+            add_filter('woocommerce_get_order_item_totals', array( $giftCardPlacement, 'addItemsToPostOrderDisplay'), PHP_INT_MAX, 2);
+        }
     }
 
     /**
@@ -191,8 +193,8 @@ class WooCommerceSecureSubmitGateway
         include_once('classes/class-wc-gateway-securesubmit-subscriptions.php');
         include_once('classes/class-wc-gateway-securesubmit-subscriptions-deprecated.php');
         include_once('classes/class-wc-gateway-securesubmit-masterpass.php');
-  	    include_once('classes/class-wc-gateway-securesubmit-giftcards.php');
-  	    include_once('classes/class-giftcard-order-placement.php');
+        include_once('classes/class-wc-gateway-securesubmit-giftcards.php');
+        include_once('classes/class-giftcard-order-placement.php');
     }
 
     //PayPal
@@ -234,13 +236,13 @@ class WooCommerceSecureSubmitGateway
 
         wc_print_notices();
         echo "
-	    <script>
-	    jQuery(document).ready(function($) {
-		    // Inputs/selects which update totals instantly
+        <script>
+        jQuery(document).ready(function($) {
+            // Inputs/selects which update totals instantly
             $('form.checkout').unbind( 'submit' );
-	    });
-	    </script>
-	    ";
+        });
+        </script>
+        ";
 
         //Allow override in theme: <theme_name>/woocommerce/paypal-paypal-review-order.php
         $template = plugin_dir_path(__FILE__) . 'templates/';
