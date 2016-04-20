@@ -49,13 +49,14 @@ class WC_Gateway_SecureSubmit_MasterPass_Lookup
             }
 
             $buyer = !$pair ? $this->masterpass->getBuyerData($checkoutForm) : null;
+            $payment = $this->masterpass->getPaymentData($cart);
             $shipping = !$pair ? $this->masterpass->getShippingInfo($checkoutForm) : null;
             $lines = !$pair ? $this->masterpass->getLineItems($cart) : array();
             $response = $service->createSession(
                 $cart->total,
                 strtolower(get_woocommerce_currency()),
                 $buyer,
-                new HpsPaymentData(),
+                $payment,
                 $shipping,
                 $lines,
                 $orderData

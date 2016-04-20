@@ -35,7 +35,7 @@ class WC_Gateway_SecureSubmit_MasterPass_Payment
                     $cart->total,
                     strtolower(get_woocommerce_currency()),
                     $this->masterpass->getBuyerData($checkoutForm),
-                    new HpsPaymentData(),
+                    $this->masterpass->getPaymentData($cart),
                     $this->masterpass->getShippingInfo($checkoutForm),
                     $this->masterpass->getLineItems($cart)
                 );
@@ -45,7 +45,7 @@ class WC_Gateway_SecureSubmit_MasterPass_Payment
                     $cart->total,
                     strtolower(get_woocommerce_currency()),
                     $this->masterpass->getBuyerData($checkoutForm),
-                    new HpsPaymentData(),
+                    $this->masterpass->getPaymentData($cart),
                     $this->masterpass->getShippingInfo($checkoutForm),
                     $this->masterpass->getLineItems($cart)
                 );

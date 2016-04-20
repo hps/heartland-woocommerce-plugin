@@ -295,6 +295,18 @@ class WC_Gateway_SecureSubmit_MasterPass extends WC_Payment_Gateway
     }
 
     /**
+     * Gets a mapped `HpsPaymentData` object
+     *
+     * @param WC_Cart $cart
+     *
+     * @return HpsPaymentData
+     */
+    public function getPaymentData(WC_Cart $cart)
+    {
+        return $this->data->getPaymentData($cart);
+    }
+
+    /**
      * Gets a mapped `HpsShippingInfo` object
      *
      * @param array $checkoutForm

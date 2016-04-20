@@ -24,6 +24,9 @@ class WC_Gateway_SecureSubmit_MasterPass_Data
         $config->processorId    = 475;
         $config->merchantId     = $this->masterpass->merchantId;
         $config->transactionPwd = $this->masterpass->transactionPwd;
+        if ('production' == $this->masterpass->environment) {
+            $config->serviceUri = 'https://centinel400.cardinalcommerce.com/maps/txns.asp';
+        }
         return new HpsMasterPassService($config);
     }
 
@@ -80,6 +83,21 @@ class WC_Gateway_SecureSubmit_MasterPass_Data
         $data->address->state = $checkoutForm['billing_state'];
         $data->address->zip = $checkoutForm['billing_postcode'];
         $data->countryCode = $checkoutForm['billing_country'];
+        return $data;
+    }
+
+    /**
+     * Gets a mapped `HpsPaymentData` object
+     *
+     * @param WC_Cart $cart
+     *
+     * @return HpsPaymentData
+     */
+    public function getPaymentData($cart)
+    {
+        $data = new HpsPaymentData();
+        $data->taxAmount = $cart->tax_total;
+        $data->shippingAmount = $cart->shipping_total;
         return $data;
     }
 
