@@ -19,6 +19,9 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+####1.8.1
+* Fix issue with invalid header on plugin activation
+
 ####1.8.0
 * Heartland Gift and Loyalty support
 * Fix issues with MasterPass and production accounts
