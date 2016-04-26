@@ -19,6 +19,9 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+####1.8.2
+* Fix PayPal issue with discounts
+
 ####1.8.1
 * Fix issue with invalid header on plugin activation
 

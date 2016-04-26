@@ -11,7 +11,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
 
     /** @var WC_Logger Logger instance */
     public static $log = false;
-    
+
     /**
      * Constructor for the gateway.
      */
@@ -44,9 +44,9 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
 
         add_action( 'woocommerce_api_' . strtolower( get_class() ), array( $this, 'process_paypal_checkout' ), 12 );
         add_action( 'woocommerce_receipt_paypal_express', array( $this, 'receipt_page' ) );
-        add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );       
+        add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
     }
-    
+
 
     /**
      * Logging method
@@ -279,7 +279,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         self::debug_log( 'Refund Failed in Portico call with responseCode ' . $response->responseCode);
         return false;
     }
-    
+
     protected function getPorticoService()
     {
         $config = new HpsServicesConfig();
@@ -299,13 +299,13 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
             $config->secretApiKey = $this->secret_key;
             $config->publicApiKey = $this->public_key;
         }
-        
+
         return new HpsPayPalService($config);
     }
 
     protected function getShippingInfo($order)
     {
-        $shippingInfo = new HpsShippingInfo();        
+        $shippingInfo = new HpsShippingInfo();
         $shippingInfo->name = $order->shipping_first_name . ' ' . $order->shipping_last_name;
         $shippingInfo->address = new HpsAddress();
         $shippingInfo->address->address = $order->shipping_address_1;
@@ -313,15 +313,15 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         $shippingInfo->address->state = $order->shipping_state;
         $shippingInfo->address->zip = preg_replace('/[^a-zA-Z0-9]/', '', $order->shipping_postcode);
         $shippingInfo->address->country = $order->shipping_country;
-        
+
         return $shippingInfo;
     }
-    
+
     protected function getLineItems($order)
     {
         $lineItems = array();
         $calculated_total = 0;
-        
+
         foreach ( $order->get_items( array( 'line_item', 'fee' ) ) as $item ) {
 			if ( 'fee' === $item['type'] ) {
 				$lineItem          = $this->createLineItem( $item['name'], 1, $item['line_total'] );
@@ -335,38 +335,48 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
 			if ( ! $lineItem ) {
 				continue;
 			}
-            
+
             $lineItems[] = $lineItem;
 		}
-        
+
+
+        if ($order->get_total_discount() > 0)
+        {
+            $discountItem = new HpsLineItem();
+            $discountItem->name = 'Discount';
+            $discountItem->number = 'discount';
+            $discountItem->amount = 0-$order->get_total_discount();
+            $lineItems[] = $discountItem;
+        }
+
         // Check for mismatched totals
 		if ( wc_format_decimal( $calculated_total + $order->get_total_tax() + round( $order->get_total_shipping(), 2 ) - round( $order->get_total_discount(), 2 ), 2 ) != wc_format_decimal( $order->get_total(), 2 ) ) {
 			return false;
 		}
-        
+
         return $lineItems;
     }
-    
-    protected function createLineItem( $item_name, $quantity = 1, $amount = 0, $item_number = '', $item_tax = 0 ) 
+
+    protected function createLineItem( $item_name, $quantity = 1, $amount = 0, $item_number = '', $item_tax = 0 )
     {
 		if ( ! $item_name || $amount < 0 || $quantity < 0 || $item_tax < 0 ) {
 			return false;
 		}
-        
+
         $line_item = new HpsLineItem();
         $line_item->name = html_entity_decode( wc_trim_string( $item_name, 127 ), ENT_NOQUOTES, 'UTF-8' );
         $line_item->number = $item_number;
         $line_item->amount = $amount;
         $line_item->quantity = $quantity;
         $line_item->taxAmount = $item_tax;
-        
+
         //$this->self::debug_log('name: ' . $line_item->name .
-        //      '; number: ' . $item_number . '; amount: ' .  $amount . '; quantity: ' . $quantity . '; tax: ' . $item_tax                   
+        //      '; number: ' . $item_number . '; amount: ' .  $amount . '; quantity: ' . $quantity . '; tax: ' . $item_tax
         //);
 
 		return $line_item;
     }
-    
+
     protected function get_order_item_name( $order, $item )
     {
 	    $item_name = $item['name'];
@@ -378,7 +388,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
 
 	    return $item_name;
 	}
-    
+
      /**
      *  Process PayPal Checkout
      *
@@ -401,7 +411,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         self::debug_log('Exiting function : ' . __FUNCTION__);
     }
 
-    
+
     private function paypal_review_order()
     {
         self::debug_log('Begin function : ' . __FUNCTION__);
@@ -410,7 +420,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         // Retrieve the shipping details and present the order for completion.
         if ( ! defined( 'WOOCOMMERCE_CHECKOUT' ) )
             define( 'WOOCOMMERCE_CHECKOUT', true );
-        if ( isset( $_GET['token'] ) ) 
+        if ( isset( $_GET['token'] ) )
         {
             self::debug_log('Setting session TOKEN value to ' . $_GET['token']);
             $token = $_GET['token'];
@@ -418,9 +428,9 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         } else {
             // Raise exception here since no data was returned from paypal
         }
-        
+
         //get sessioninfo from portico in case any changes are made on PayPal's site, HpsAltPaymentSessionInfo return type
-        $porticoService = $this->getPorticoService(); 
+        $porticoService = $this->getPorticoService();
         $porticoSessionInfo = $porticoService->sessionInfo($token);
         $shippingInfo = $porticoSessionInfo->shipping;
 
@@ -481,8 +491,10 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         $_POST['billing_email'] = isset($hpsBuyerData->emailAddress) ? $hpsBuyerData->emailAddress : '';
         $_POST['billing_phone'] = isset($hpsBuyerData->phone) ? $hpsBuyerData->phone : '5555555555';
 
-        $_POST['shipping_first_name'] = isset($ship_name[0]) ? $ship_name[0] : '';
-        $_POST['shipping_last_name'] = isset($ship_name[1]) ? $ship_name[1] : '';
+        list($ship_first_name, $ship_middle_name, $ship_last_name) = $ship_name;
+        if (!isset($ship_last_name)) $ship_last_name = $ship_middle_name;
+        $_POST['shipping_first_name'] = $ship_first_name;
+        $_POST['shipping_last_name'] = $ship_last_name;
         $_POST['shipping_address_1'] = isset($hpsShippingInfo->address->address) ? $hpsShippingInfo->address->address : '';
         $_POST['shipping_address_2'] = isset($hpsShippingInfo->address->address_1) ? $hpsShippingInfo->address->address_1 : 'NA';
         $_POST['shipping_city'] = isset($hpsShippingInfo->address->city)    ? $hpsShippingInfo->address->city : '';
@@ -568,7 +580,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         //call portico with sale
         $response = null;
         try
-        { 
+        {
             if($this->paymentaction == 'sale')
             {
                 $response = $porticoService->sale(
@@ -592,14 +604,14 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
                             $porticoSessionInfo->lineItems);
             }
         }
-        catch (Exception $e) 
+        catch (Exception $e)
         {
             $error = __('Error finalizing PayPal Portico transaction:', 'wc_securesubmit') . ' "' . $e->getMessage() . '"';
             if (function_exists('wc_add_notice')) {
                 wc_add_notice($error, 'error');
             } else {
                 $woocommerce->add_error($error, $notice_type='error');
-            }          
+            }
             self::debug_log($error);
             return false;
         }
@@ -632,18 +644,18 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         exit();
     }
 
-    private function set_session( $key, $value ) 
+    private function set_session( $key, $value )
     {
         self::debug_log('Saved to session : ' . print_r($key,true) . ' = ' . print_r($value,true));
         WC()->session->$key = $value;
     }
 
-    private function get_session( $key ) 
+    private function get_session( $key )
     {
         self::debug_log('Requested session value : ' . print_r($key,true) );
         return WC()->session->$key;
     }
-       
+
     public function get_state_code( $country, $state ) {
         // If not US address, then convert state to abbreviation
         if ( $country != 'US' ) {
@@ -695,7 +707,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
     public function get_payment_data($order)
     {
         $payment = new HpsPaymentData();
-        $payment->subtotal = $order->get_subtotal();
+        $payment->subtotal = $order->get_subtotal() - $order->get_total_discount();
         $payment->shippingAmount = $order->get_total_shipping();
         $payment->taxAmount = $order->get_total_tax();
         $payment->paymentType = $this->paymentaction == 'authorization' ? 'Authorization' : 'Sale';
@@ -715,19 +727,19 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         foreach ($cartItems as $cartItem) {
             $lineItem = new HpsLineItem();
             $lineItem->name = $cartItem['data']->post->post_name;                            // hpsLineItem : name
-            $lineItem->description = substr($cartItem['data']->post->post_excerpt,0,127);    // hpsLineItem : description
+            //$lineItem->description = substr($cartItem['data']->post->post_excerpt,0,127);    // hpsLineItem : description
             $lineItem->number = $cartItem['product_id'];                                     // hpsLineItem : number
-            $lineItem->amount = $cartItem['line_total'] / $cartItem['quantity'];             // hpsLineItem : price
+            $lineItem->amount = number_format($cartItem['data']->price, 2);             // hpsLineItem : price
             $lineItem->quantity = $cartItem['quantity'];                                     // hpsLineItem : quantity
             $hpsLineItems[] = $lineItem;
         }
 
         if(isset($cart->discount_cart) && $cart->discount_cart>0)
         {
-            $discountItem = new $hpsLineItems;
+            $discountItem = new HpsLineItem();
             $discountItem->name = 'Discount';
             $discountItem->number = 'discount';
-            $discountItem->amount = $cart->discount_cart;
+            $discountItem->amount = 0-$cart->discount_cart;
             $hpsLineItems[] = $discountItem;
         }
 
@@ -742,7 +754,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
     {
         $cart = WC()->cart;
         $payment = new HpsPaymentData();
-        $payment->subtotal = $cart->subtotal;
+        $payment->subtotal = $cart->subtotal - $cart->get_cart_discount_total();
         $payment->shippingAmount = $cart->shipping_total;
         $payment->taxAmount = $cart->tax_total;
         $payment->paymentType = $this->paymentaction == 'authorization' ? 'Authorization' : 'Sale';
