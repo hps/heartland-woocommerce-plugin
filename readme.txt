@@ -35,8 +35,11 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section.
 
 == Changelog ==
+= 1.8.2 =
+* Fix PayPal issue with discounts
+
 = 1.8.1 =
-Fix issue with invalid header on plugin activation
+* Fix issue with invalid header on plugin activation
 
 = 1.8.0 =
 * Heartland Gift and Loyalty support
