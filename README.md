@@ -19,6 +19,9 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+####1.8.3
+* Fix Javascript with iFrames during order review
+
 ####1.8.2
 * Fix PayPal issue with discounts
 
