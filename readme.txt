@@ -35,6 +35,9 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section.
 
 == Changelog ==
+= 1.8.3 =
+* Fix Javascript with iFrames during order review
+
 = 1.8.2 =
 * Fix PayPal issue with discounts
 

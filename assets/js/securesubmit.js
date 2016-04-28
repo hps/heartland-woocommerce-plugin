@@ -299,6 +299,7 @@
         Heartland.Events.removeHandler(document, 'securesubmitIframeReady', wc_securesubmit_params.hpsReadyHandler);
         Heartland.Events.addHandler(document, 'securesubmitIframeReady', wc_securesubmit_params.hpsReadyHandler);
     };
+    window.securesubmitLoadIframes();
 
     addHandler(document, 'DOMContentLoaded', function() {
         var handler = formHandler;
