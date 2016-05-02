@@ -35,6 +35,9 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section.
 
 == Changelog ==
+= 1.8.4 =
+* Remove console.log() call from javascript
+
 = 1.8.3 =
 * Fix Javascript with iFrames during order review
 
