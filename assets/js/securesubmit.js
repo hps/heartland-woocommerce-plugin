@@ -292,7 +292,6 @@
                     document.getElementById('heartland-frame-cardNumber').style.height = '52px';
                     document.getElementById('heartland-frame-cardExpiration').style.height = '52px';
                     document.getElementById('heartland-frame-cardCvv').style.height = '52px';
-                    console.log('fired');
                 }, 500);
             };
         }
