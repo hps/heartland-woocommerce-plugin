@@ -5,3 +5,5 @@
 .idea/vcs.xml
 .idea/workspace.xml
 .tern-port
+
+/vendor/
