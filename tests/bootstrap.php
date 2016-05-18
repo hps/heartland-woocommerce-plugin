@@ -2,24 +2,113 @@
 /**
  * PHPUnit bootstrap file
  *
- * @package woocommerce-securesubmit-gateway
+ * PHP version 5.2+
+ *
+ * @category Tests
+ * @package  WC_Gateway_SecureSubmit
+ * @author   Heartland <EntApp_DevPortal@e-hps.com>
+ * @license  Custom <https://github.com/hps/heartland-woocommerce-plugin/blob/master/LICENSE.md>
+ * @link     https://github.com/hps/heartland-woocommerce-plugin
  */
-
-$_tests_dir = getenv( 'WP_TESTS_DIR' );
-if ( ! $_tests_dir ) {
-	$_tests_dir = '/tmp/wordpress-tests-lib';
-}
-
-// Give access to tests_add_filter() function.
-require_once $_tests_dir . '/includes/functions.php';
 
 /**
- * Manually load the plugin being tested.
+ * PHPUnit bootstrap file
+ *
+ * @category Tests
+ * @package  WC_Gateway_SecureSubmit
+ * @author   Heartland <EntApp_DevPortal@e-hps.com>
+ * @license  Custom <https://github.com/hps/heartland-woocommerce-plugin/blob/master/LICENSE.md>
+ * @link     https://github.com/hps/heartland-woocommerce-plugin
  */
-function _manually_load_plugin() {
-	require dirname( dirname( __FILE__ ) ) . '/gateway-securesubmit.php';
-}
-tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
+class WC_Gateway_SecureSubmit_Tests_Bootstrap
+{
+    public $wpTestsDir  = null;
+    public $testsDir    = null;
+    public $pluginDir   = null;
 
-// Start up the WP testing environment.
-require $_tests_dir . '/includes/bootstrap.php';
+    /**
+     * Constructor to the bootstrap file
+     */
+    public function __construct()
+    {
+        if (!isset($_SERVER['SERVER_NAME'])) {
+            $_SERVER['SERVER_NAME'] = 'localhost';
+        }
+
+        if (getenv('WP_MULTISITE')) {
+            define('WP_TESTS_MULTISITE', 1);
+        }
+
+        $this->testsDir = dirname(__FILE__);
+        $this->pluginDir = dirname($this->testsDir);
+        $this->wpTestsDir = getenv('WP_TESTS_DIR')
+            ? getenv('WP_TESTS_DIR')
+            : '/tmp/wordpress-tests-lib';
+
+        // Load test functions
+        include_once $this->wpTestsDir . '/includes/functions.php';
+
+        // Load WooCommerce
+        tests_add_filter('muplugins_loaded', array($this, 'loadWooCommerce'));
+
+        // Load the plugin
+        tests_add_filter('muplugins_loaded', array($this, 'loadPlugin'));
+
+        // Start up the WP testing environment.
+        include_once $this->wpTestsDir . '/includes/bootstrap.php';
+
+        // Include utility classes
+        $this->includes();
+
+        // Install the plugin
+        $this->install();
+    }
+
+    /**
+     * Loads the plugin for the current PHPUnit runtime
+     *
+     * @return void
+     */
+    public function loadPlugin()
+    {
+        include_once $this->pluginDir . '/gateway-securesubmit.php';
+    }
+
+    /**
+     * Loads the WooCommerce plugin for the current PHPUnit runtime
+     *
+     * @return void
+     */
+    public function loadWooCommerce()
+    {
+        include_once $this->pluginDir . '/../woocommerce/woocommerce.php';
+    }
+
+    /**
+     * Loads helper classes that aid in writing tests
+     *
+     * @return void
+     */
+    public function includes()
+    {
+        include_once $this->testsDir . '/utility/helper.php';
+        include_once $this->testsDir . '/utility/installer.php';
+        include_once $this->testsDir . '/utility/unit-test-case.php';
+
+        include_once $this->testsDir . '/utility/order.php';
+        include_once $this->testsDir . '/utility/product.php';
+        include_once $this->testsDir . '/utility/shipping.php';
+    }
+
+    /**
+     * Installs the plugin
+     *
+     * @return void
+     */
+    public function install()
+    {
+        update_option('woocommerce_currency', 'USD');
+        WC_Gateway_SecureSubmit_Tests_Utility_Installer::installSecureSubmit();
+    }
+}
+new WC_Gateway_SecureSubmit_Tests_Bootstrap();
