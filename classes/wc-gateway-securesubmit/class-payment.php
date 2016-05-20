@@ -132,8 +132,8 @@ class WC_Gateway_SecureSubmit_Payment
                 if ($e->getCode()== HpsExceptionCodes::POSSIBLE_FRAUD_DETECTED && $this->parent->email_fraud == 'yes' && $this->parent->fraud_address != '') {
                     wc_mail(
                         $this->parent->fraud_address,
-                        'Suspicious order ' . ($this->parent->allow_fraud == 'yes' ? 'allowed' : 'declined') . ' (' . $order_id . ')',
-                        'Hello,<br><br>Heartland has determined that you should review order ' . $order_id . ' for the amount of ' . $order->order_total . '.<p><br></p>'.
+                        'Suspicious order ' . ($this->parent->allow_fraud == 'yes' ? 'allowed' : 'declined') . ' (' . $order->id . ')',
+                        'Hello,<br><br>Heartland has determined that you should review order ' . $order->id . ' for the amount of ' . $order->order_total . '.<p><br></p>'.
                         '<p>You have received this email because you have configured the \'Email store owner on suspicious orders\' settings in the [WooCommerce | Checkout | SecureSubmit] options page.</p>'
                     );
                 }
@@ -142,11 +142,11 @@ class WC_Gateway_SecureSubmit_Payment
                     // we can skip the card saving: if it fails for possible fraud there will be no token.
                     $order->update_status('on-hold', __('<strong>Accepted suspicious transaction.</strong> Please use Virtual Terminal to review.', 'wc_securesubmit'));
                     $order->reduce_order_stock();
-                    $cart->empty_cart();
+                    WC()->cart->empty_cart();
 
                     return array(
                         'result' => 'success',
-                        'redirect' => $this->get_return_url($order)
+                        'redirect' => $this->parent->get_return_url($order)
                     );
                 } else {
                     if ($e->getCode() == HpsExceptionCodes::POSSIBLE_FRAUD_DETECTED) {

@@ -102,7 +102,8 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
      * Initialize Gateway Settings Form Fields
      */
     public function init_form_fields() {
-        $this->form_fields = include( 'includes/settings-paypal.php' );
+        $path = $path = dirname(plugin_dir_path(__FILE__));
+        $this->form_fields = include $path . '/etc/settings-paypal.php';
     }
 
     /**
