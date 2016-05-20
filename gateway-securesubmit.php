@@ -167,6 +167,7 @@ class WooCommerceSecureSubmitGateway
         if (isset($_POST['delete_card']) && wp_verify_nonce($_POST['_wpnonce'], "secure_submit_del_card")) {
             $card = $cards[(int)$_POST['delete_card']];
             delete_user_meta(get_current_user_id(), '_secure_submit_card', $card);
+            unset($cards[(int)$_POST['delete_card']]);
         }
 
         if (!$cards) {

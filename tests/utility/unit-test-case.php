@@ -22,7 +22,8 @@
  */
 class WC_Gateway_SecureSubmit_Tests_Utility_UnitTestCase extends WP_UnitTestCase
 {
-    protected $instance = null;
+    protected $instance    = null;
+    protected $targetClass = null;
 
     /**
      * Setup the test
@@ -32,7 +33,7 @@ class WC_Gateway_SecureSubmit_Tests_Utility_UnitTestCase extends WP_UnitTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->instance = WC_Gateway_SecureSubmit::instance();
+        $this->instance = call_user_func(array($this->targetClass, 'instance'));
     }
 
     /**

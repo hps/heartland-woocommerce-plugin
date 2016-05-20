@@ -23,6 +23,8 @@
 class WC_Gateway_SecureSubmit_Tests_Unit_Gateway_SupportTest
     extends WC_Gateway_SecureSubmit_Tests_Utility_UnitTestCase
 {
+    protected $targetClass  = 'WC_Gateway_SecureSubmit';
+
     public function testInstance()
     {
         $this->assertEquals(

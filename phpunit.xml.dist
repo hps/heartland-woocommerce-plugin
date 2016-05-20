@@ -24,7 +24,9 @@
     <whitelist>
       <directory>./</directory>
       <exclude>
+        <directory>./classes/includes/</directory>
         <directory>./tests/</directory>
+        <directory>./vendor/</directory>
       </exclude>
     </whitelist>
   </filter>

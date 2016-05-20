@@ -29,7 +29,7 @@ class WC_Gateway_SecureSubmit_Tests_Utility_Order
      *
      * @return WC_Order
      */
-    public static function create($pmSlug)
+    public static function create($pmSlug, $total = 40)
     {
         // Create product
         $product = WC_Gateway_SecureSubmit_Tests_Utility_Product::createSimpleProduct();
@@ -90,7 +90,7 @@ class WC_Gateway_SecureSubmit_Tests_Utility_Order
         $order->set_total(0, 'cart_discount_tax');
         $order->set_total(0, 'tax');
         $order->set_total(0, 'shipping_tax');
-        $order->set_total(40, 'total'); // 4 x $10 simple helper product
+        $order->set_total($total, 'total'); // 4 x $10 simple helper product
 
         return wc_get_order($order->id);
     }
