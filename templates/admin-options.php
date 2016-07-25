@@ -4,6 +4,37 @@
     <table class="form-table">
         <?php $this->generate_settings_html(); ?>
     </table>
+    <script>
+        (function (window, document, $) {
+            if (!$) { return; }
+
+            var groups = ['anti-fraud', 'gift'];
+            var groupsLength = groups.length;
+            var i = 0;
+
+            $(document).ready(function () {
+                for (i = 0; i < groupsLength; i++) {
+                    var group = groups[i];
+                    var $groupSwitch = $('.enable-' + group);
+                    var $groupOptions = $('.' + group).closest('tr');
+
+                    if ($groupSwitch.is(':checked')) {
+                        $groupOptions.show();
+                    } else {
+                        $groupOptions.hide();
+                    }
+                }
+            });
+
+            for (i = 0; i < groupsLength; i++) {
+                var group = groups[i];
+                $('.enable-' + group).click(function () {
+                    $('.' + group).closest('tr').toggle();
+                });
+            }
+
+        }(window, document, jQuery));
+    </script>
 <?php else: ?>
     <div class="inline error">
         <p>
