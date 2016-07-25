@@ -85,6 +85,20 @@ return array(
         'default'     => __('Please call customer service.', 'wc_securesubmit'),
         'class'       => 'anti-fraud',
     ),
+    'fraud_velocity_attempts' => array(
+        'title'       => __('Max Velocity Attempts', 'wc_securesubmit'),
+        'type'        => 'text',
+        'description' => __('The maximum number of attempts allowed before additional attempts are blocked.', 'wc_securesubmit'),
+        'default'     => __('', 'wc_securesubmit'),
+        'class'       => 'anti-fraud',
+    ),
+    'fraud_velocity_timeout' => array(
+        'title'       => __('Notification Email Address', 'wc_securesubmit'),
+        'type'        => 'text',
+        'description' => __('The amount of time (in minutes) before recent failures are ignored.', 'wc_securesubmit'),
+        'default'     => __('', 'wc_securesubmit'),
+        'class'       => 'anti-fraud',
+    ),
     'paymentaction' => array(
         'title'       => __('Payment Action', 'wc_securesubmit'),
         'type'        => 'select',

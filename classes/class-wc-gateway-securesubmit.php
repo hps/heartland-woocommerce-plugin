@@ -18,31 +18,34 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         require_once 'wc-gateway-securesubmit/class-void.php';
 
         // properties
-        $this->id                   = 'securesubmit';
-        $this->method_title         = __('SecureSubmit', 'wc_securesubmit');
-        $this->icon                 = plugins_url('/assets/images/cards.png', dirname(__FILE__));
-        $this->has_fields           = true;
+        $this->id                      = 'securesubmit';
+        $this->method_title            = __('SecureSubmit', 'wc_securesubmit');
+        $this->icon                    = plugins_url('/assets/images/cards.png', dirname(__FILE__));
+        $this->has_fields              = true;
         $this->initFormFields();
         $this->init_settings();
-        $this->title                = $this->getSetting('title');
-        $this->description          = $this->getSetting('description');
-        $this->enabled              = $this->getSetting('enabled');
-        $this->secret_key           = $this->getSetting('secret_key');
-        $this->public_key           = $this->getSetting('public_key');
-        $this->custom_error         = $this->getSetting('custom_error');
-        $this->paymentaction        = $this->getSetting('paymentaction');
-        $this->allow_fraud          = $this->getSetting('allow_fraud');
-        $this->email_fraud          = $this->getSetting('email_fraud');
-        $this->fraud_address        = $this->getSetting('fraud_address');
-        $this->fraud_text           = $this->getSetting('fraud_text');
-        $this->allow_card_saving    = ($this->getSetting('allow_card_saving') == 'yes' ? true : false);
-        $this->use_iframes          = ($this->getSetting('use_iframes') == 'yes' ? true : false);
-    		$this->allow_gift_cards  = ( $this->getSetting( 'gift_cards' ) == 'yes' ? TRUE : FALSE );
-    		$this->gift_card_title   = $this->getSetting( 'gift_cards_gateway_title' );
-        $this->supports             = array(
-                                        'products',
-                                        'refunds'
-                                     );
+        $this->title                   = $this->getSetting('title');
+        $this->description             = $this->getSetting('description');
+        $this->enabled                 = $this->getSetting('enabled');
+        $this->secret_key              = $this->getSetting('secret_key');
+        $this->public_key              = $this->getSetting('public_key');
+        $this->custom_error            = $this->getSetting('custom_error');
+        $this->paymentaction           = $this->getSetting('paymentaction');
+        $this->enable_anti_fraud       = ($this->getSetting('enable_anti_fraud') == 'yes' ? true : false);
+        $this->allow_fraud             = $this->getSetting('allow_fraud');
+        $this->email_fraud             = $this->getSetting('email_fraud');
+        $this->fraud_address           = $this->getSetting('fraud_address');
+        $this->fraud_text              = $this->getSetting('fraud_text');
+        $this->fraud_velocity_attempts = $this->getSetting('fraud_velocity_attempts');
+        $this->fraud_velocity_timeout  = $this->getSetting('fraud_velocity_timeout');
+        $this->allow_card_saving       = ($this->getSetting('allow_card_saving') == 'yes' ? true : false);
+        $this->use_iframes             = ($this->getSetting('use_iframes') == 'yes' ? true : false);
+        $this->allow_gift_cards        = ($this->getSetting( 'gift_cards' ) == 'yes' ? true : false);
+        $this->gift_card_title         = $this->getSetting( 'gift_cards_gateway_title' );
+        $this->supports                = array(
+                                            'products',
+                                            'refunds'
+                                         );
 
         // actions
         add_action('wp_enqueue_scripts', array($this, 'payment_scripts'));
