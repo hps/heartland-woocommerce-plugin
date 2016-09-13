@@ -166,7 +166,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 
     public function process_capture($order)
     {
-        if ($this->isTransactionActiveOnGateway($order->id)) {
+        if (!$this->isTransactionActiveOnGateway($order->id)) {
             $this->displayUserError('Payment already captured');
             return;
         }
