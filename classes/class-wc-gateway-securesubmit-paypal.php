@@ -576,7 +576,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         $checkoutForm = $this->get_session('checkout_form');
 
         $payment = $porticoSessionInfo->payment;
-        $orderTotal = $payment->subtotal + $payment->shippingAmount + $payment->taxAmount;
+        $orderTotal = $order->get_total();
         $currency = strtolower(get_woocommerce_currency());
         //call portico with sale
         $response = null;
