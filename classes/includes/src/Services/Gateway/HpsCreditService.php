@@ -287,7 +287,18 @@ class HpsCreditService extends HpsSoapGatewayService
         return $this->_submitTransaction($hpsTransaction, 'CreditReturn', (isset($details->clientTransactionId) ? $details->clientTransationId : null));
     }
 
-    public function reverse($cardData, $amount, $currency, $details = null)
+     /**
+     * @param HpsCreditCard|HpsTokenData|int                $cardData GatewayTxnId
+     * @param float                                         $amount
+     * @param USD                                           $currency
+     * @param null|HpsTransactionDetails                    $details
+     * @param null|float                                    $authAmount
+     * @return HpsReversal
+     * @throws HpsException
+     * @throws HpsGatewayException
+     * @throws HpsInvalidRequestException
+     */
+    public function reverse($cardData, $amount, $currency, $details = null, $authAmount = null)
     {
         HpsInputValidation::checkCurrency($currency);
         $this->_currency = $currency;
@@ -299,19 +310,22 @@ class HpsCreditService extends HpsSoapGatewayService
         $hpsBlock1 = $xml->createElement('hps:Block1');
 
         $hpsBlock1->appendChild($xml->createElement('hps:Amt', $amount));
+        if ($authAmount !== null) {
+            $hpsBlock1->appendChild($xml->createElement('hps:AuthAmt', HpsInputValidation::checkAmount($authAmount)));
+        }
+
         $cardDataElement = null;
         if ($cardData instanceof HpsCreditCard) {
             $cardDataElement = $xml->createElement('hps:CardData');
             $cardDataElement->appendChild($this->_hydrateManualEntry($cardData, $xml));
-        } else if ($cardData instanceof HpsTokenData) {
+        } elseif ($cardData instanceof HpsTokenData) {
             $cardDataElement = $xml->createElement('hps:CardData');
-            $tokenData = $xml->createElement('hps:TokenData');
-            $tokenData->appendChild($xml->createElement('hps:TokenValue', $cardData->tokenValue));
-            $cardDataElement->appendChild($tokenData);
+            $cardDataElement->appendChild($this->_hydrateTokenData($cardData, $xml));
         } else {
             $cardDataElement = $xml->createElement('hps:GatewayTxnId', $cardData);
         }
         $hpsBlock1->appendChild($cardDataElement);
+
         if ($details != null) {
             $hpsBlock1->appendChild($this->_hydrateAdditionalTxnFields($details, $xml));
         }

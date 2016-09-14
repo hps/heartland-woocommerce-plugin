@@ -6,7 +6,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
     public $capture = null;
     public $payment = null;
     public $refund  = null;
-    public $void    = null;
+    public $reverse = null;
 
     public function __construct()
     {
@@ -15,7 +15,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         require_once 'wc-gateway-securesubmit/class-capture.php';
         require_once 'wc-gateway-securesubmit/class-payment.php';
         require_once 'wc-gateway-securesubmit/class-refund.php';
-        require_once 'wc-gateway-securesubmit/class-void.php';
+        require_once 'wc-gateway-securesubmit/class-reverse.php';
 
         // properties
         $this->id                      = 'securesubmit';
@@ -58,7 +58,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $this->capture = new WC_Gateway_SecureSubmit_Capture($this);
         $this->payment = new WC_Gateway_SecureSubmit_Payment($this);
         $this->refund  = new WC_Gateway_SecureSubmit_Refund($this);
-        $this->void    = new WC_Gateway_SecureSubmit_Void($this);
+        $this->reverse = new WC_Gateway_SecureSubmit_Reverse($this);
     }
 
     public static function instance()
@@ -179,7 +179,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
     public function process_refund($orderId, $amount = null, $reason = '')
     {
         if ($this->isTransactionActiveOnGateway($orderId)) {
-            return $this->void->call($orderId, $amount);
+            return $this->reverse->call($orderId, $amount, $reason);
         } else {
             return $this->refund->call($orderId, $amount, $reason);
         }
