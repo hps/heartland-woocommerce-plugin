@@ -28,7 +28,14 @@ class WC_Gateway_SecureSubmit_Reverse
         }
 
         $originalAmount = $order->get_total();
-        $amount = $originalAmount - $amount;
+        $totalRefunded = $order->get_total_refunded();
+        $newAmount = $originalAmount - $order->get_total_refunded();
+
+        if ($newAmount < 0) {
+            // total reversed is more than original auth amount
+            return false;
+        }
+
         $details = new HpsTransactionDetails();
         $details->memo = $reason;
 
@@ -40,12 +47,12 @@ class WC_Gateway_SecureSubmit_Reverse
                     $originalAmount,
                     strtolower(get_woocommerce_currency()),
                     $details,
-                    $amount
+                    $newAmount
                 );
                 $order->add_order_note(
                     __('SecureSubmit payment reversed', 'wc_securesubmit')
                     . ' (Transaction ID: ' . $response->transactionId . ')'
-                    . ' to ' . $amount
+                    . ' to ' . wc_price($newAmount)
                 );
                 return true;
             } catch (HpsException $e) {
