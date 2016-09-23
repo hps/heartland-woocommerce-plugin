@@ -35,6 +35,13 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section.
 
 == Changelog ==
+= 1.8.5 =
+* Begin unit/integration testing
+* Add basic velocity checking
+* Fix "Capture credit card authorization" action when managing orders
+* Use reverse instead of void for active authorizations
+* Support partial refunds
+
 = 1.8.4 =
 * Remove console.log() call from javascript
 

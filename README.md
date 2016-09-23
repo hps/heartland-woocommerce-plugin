@@ -19,6 +19,13 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+####1.8.5
+* Begin unit/integration testing
+* Add basic velocity checking
+* Fix "Capture credit card authorization" action when managing orders
+* Use reverse instead of void for active authorizations
+* Support partial refunds
+
 ####1.8.4
 * Remove console.log() call
 
