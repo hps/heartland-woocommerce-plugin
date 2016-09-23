@@ -31,6 +31,8 @@ class WC_Gateway_SecureSubmit_Payment
         }
 
         try {
+            $this->checkVelocity();
+
             $post_data = array();
 
             if (empty($securesubmit_token)) {
@@ -45,9 +47,9 @@ class WC_Gateway_SecureSubmit_Payment
 
             $hpstoken = new HpsTokenData();
 
-            if (
-                is_user_logged_in() && isset($_POST['secure_submit_card']) &&
-                $_POST['secure_submit_card'] !== 'new'
+            if (is_user_logged_in()
+                && isset($_POST['secure_submit_card'])
+                && $_POST['secure_submit_card'] !== 'new'
             ) {
                 $cards = get_user_meta(get_current_user_id(), '_secure_submit_card', false);
 
@@ -91,12 +93,12 @@ class WC_Gateway_SecureSubmit_Payment
 
                         if ($response->tokenData->responseCode == '0') {
                             switch (strtolower($card_type)) {
-                            case 'mastercard':
-                                $card_type = 'MasterCard';
-                                break;
-                            default:
-                                $card_type = ucfirst($card_type);
-                                break;
+                                case 'mastercard':
+                                    $card_type = 'MasterCard';
+                                    break;
+                                default:
+                                    $card_type = ucfirst($card_type);
+                                    break;
                             }
                             add_user_meta(get_current_user_id(), '_secure_submit_card', array(
                                 'last_four' => $last_four,
@@ -129,6 +131,8 @@ class WC_Gateway_SecureSubmit_Payment
                     'redirect' => $this->parent->get_return_url($order)
                 );
             } catch (HpsException $e) {
+                $this->updateVelocity($e);
+
                 if ($e->getCode()== HpsExceptionCodes::POSSIBLE_FRAUD_DETECTED && $this->parent->email_fraud == 'yes' && $this->parent->fraud_address != '') {
                     wc_mail(
                         $this->parent->fraud_address,
@@ -170,5 +174,84 @@ class WC_Gateway_SecureSubmit_Payment
                 'redirect' => ''
             );
         }
+    }
+
+    private function checkVelocity()
+    {
+        if ($this->parent->enable_anti_fraud !== true) {
+            return;
+        }
+
+        $count = (int)$this->getVelocityVar('Count');
+        $issuerResponse = (string)$this->getVelocityVar('IssuerResponse');
+
+        if ($count
+            && $issuerResponse
+            && $count >= $this->parent->fraud_velocity_attempts
+        ) {
+            sleep(5);
+            throw new HpsException(sprintf($this->parent->fraud_text, $issuerResponse));
+        }
+    }
+
+    private function updateVelocity($e)
+    {
+        if ($this->parent->enable_anti_fraud !== true) {
+            return;
+        }
+
+        $count = (int)$this->getVelocityVar('Count');
+        $issuerResponse = (string)$this->getVelocityVar('IssuerResponse');
+
+        if ($issuerResponse !== $e->getMessage()) {
+            $issuerResponse = $e->getMessage();
+        }
+
+        $this->setVelocityVar('Count', $count + 1);
+        $this->setVelocityVar('IssuerResponse', $issuerResponse);
+    }
+
+    private function getVelocityVar($var)
+    {
+        return get_transient($this->getVelocityVarPrefix() . $var);
+    }
+
+    private function setVelocityVar($var, $data = null)
+    {
+        return set_transient(
+            $this->getVelocityVarPrefix() . $var,
+            $data,
+            MINUTE_IN_SECONDS * $this->parent->fraud_velocity_timeout
+        );
+    }
+
+    private function getVelocityVarPrefix()
+    {
+        return sprintf('HeartlandHPS_Velocity%s', md5($this->getRemoteIP()));
+    }
+
+    private function getRemoteIP()
+    {
+        static $remoteIP = '';
+        if ($remoteIP !== '') {
+            return $remoteIP;
+        }
+
+        $remoteIP = $_SERVER['REMOTE_ADDR'];
+        if (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER)
+            && $_SERVER['HTTP_X_FORWARDED_FOR'] != ''
+        ) {
+            $remoteIPArray = array_values(
+                array_filter(
+                    explode(
+                        ',',
+                        $_SERVER['HTTP_X_FORWARDED_FOR']
+                    )
+                )
+            );
+            $remoteIP = end($remoteIPArray);
+        }
+
+        return $remoteIP;
     }
 }
