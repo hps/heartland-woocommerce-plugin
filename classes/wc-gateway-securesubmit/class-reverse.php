@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
     exit();
 }
 
-class WC_Gateway_SecureSubmit_Void
+class WC_Gateway_SecureSubmit_Reverse
 {
     protected $parent = null;
 
@@ -27,13 +27,33 @@ class WC_Gateway_SecureSubmit_Void
             return false;
         }
 
+        $originalAmount = $order->get_total();
+        $totalRefunded = $order->get_total_refunded();
+        $newAmount = $originalAmount - $order->get_total_refunded();
+
+        if ($newAmount < 0) {
+            // total reversed is more than original auth amount
+            return false;
+        }
+
+        $details = new HpsTransactionDetails();
+        $details->memo = $reason;
+
         try {
             $chargeService = $this->parent->getCreditService();
             try {
-                $response = $chargeService->void(
-                    $transactionId
+                $response = $chargeService->reverse(
+                    $transactionId,
+                    $originalAmount,
+                    strtolower(get_woocommerce_currency()),
+                    $details,
+                    $newAmount
                 );
-                $order->add_order_note(__('SecureSubmit payment voided', 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
+                $order->add_order_note(
+                    __('SecureSubmit payment reversed', 'wc_securesubmit')
+                    . ' (Transaction ID: ' . $response->transactionId . ')'
+                    . ' to ' . wc_price($newAmount)
+                );
                 return true;
             } catch (HpsException $e) {
                 $this->throwUserError($e->getMessage());
