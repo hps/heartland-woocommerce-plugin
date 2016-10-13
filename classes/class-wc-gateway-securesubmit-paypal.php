@@ -575,7 +575,11 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         $porticoService = $this->getPorticoService();
         $checkoutForm = $this->get_session('checkout_form');
 
-        $payment = $porticoSessionInfo->payment;
+        $buyer = $this->get_buyer_data($order);
+        $buyer->payerId = $porticoSessionInfo->buyer->payerId;
+        $payment = $this->get_payment_data($order);
+        $shipping = $this->getShippingInfo($order);
+        $lineItems = $this->getLineItems($order);
         $orderTotal = $order->get_total();
         $currency = strtolower(get_woocommerce_currency());
         //call portico with sale
@@ -588,10 +592,10 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
                             $token,
                             $orderTotal,
                             $currency,
-                            $porticoSessionInfo->buyer,
-                            $porticoSessionInfo->payment,
-                            $porticoSessionInfo->shipping,
-                            $porticoSessionInfo->lineItems);
+                            $buyer,
+                            $payment,
+                            $shipping,
+                            $lineItems);
             }
             else
             {
@@ -599,10 +603,10 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
                             $token,
                             $orderTotal,
                             $currency,
-                            $porticoSessionInfo->buyer,
-                            $porticoSessionInfo->payment,
-                            $porticoSessionInfo->shipping,
-                            $porticoSessionInfo->lineItems);
+                            $buyer,
+                            $payment,
+                            $shipping,
+                            $lineItems);
             }
         }
         catch (Exception $e)
@@ -613,7 +617,11 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
             } else {
                 $woocommerce->add_error($error, $notice_type='error');
             }
-            self::debug_log($error);
+            self::debug_log('Error Section of  : ' . __FUNCTION__);
+            wc_add_notice(  sprintf( __('There was a problem paying with PayPal.  Please try another method.', 'wc_securesubmit' ) ), 'error' );
+            self::debug_log('Order did not complete successfully. Order ID: ' . $order_id . '.');
+            wp_redirect(get_permalink(wc_get_page_id('cart')));
+            self::debug_log('End function : ' . __FUNCTION__ );
             return false;
         }
 
