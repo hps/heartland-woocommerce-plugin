@@ -152,7 +152,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 
         $isCert = -1 !== strpos($this->public_key, '_cert_');
         $url = $isCert
-            ? 'http://localhost:7777/dist/securesubmit.js' // 'https://hps.github.io/token/2.1/securesubmit.js'
+            ? 'https://hps.github.io/token/2.1/securesubmit.js'
             : 'https://api.heartlandportico.com/SecureSubmit.v1/token/2.1/securesubmit.js';
 
         // SecureSubmit tokenization library
@@ -165,7 +165,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         if ($this->enable_threedsecure) {
             $url = $isCert
                 ? 'https://includestest.ccdc02.com/cardinalcruise/v1/songbird.js'
-                : '';
+                : 'https://includes.ccdc02.com/cardinalcruise/v1/songbird.js';
             wp_enqueue_script('hps_wc_securesubmit_cardinal_library', $url, array(), '2.1', true);
         }
 
@@ -176,6 +176,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         );
 
         if ($this->enable_threedsecure) {
+            WC()->cart->calculate_totals();
             $orderNumber = str_shuffle('abcdefghijklmnopqrstuvwxyz');
             $data = array(
                 'jti' => str_shuffle('abcdefghijklmnopqrstuvwxyz'),

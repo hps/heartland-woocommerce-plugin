@@ -43,7 +43,6 @@
         if (document.getElementById('securesubmit_cca_data')) {
             return;
         }
-        Cardinal.configure({logging:{level:'verbose'}});
         if (!window.__secureSubmitFrameInit) {
             Cardinal.setup('init', {
                 jwt: wc_securesubmit_params.cca.jwt
