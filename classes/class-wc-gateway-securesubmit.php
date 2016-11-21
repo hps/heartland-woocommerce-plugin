@@ -42,6 +42,10 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $this->use_iframes             = ($this->getSetting('use_iframes') == 'yes' ? true : false);
         $this->allow_gift_cards        = ($this->getSetting( 'gift_cards' ) == 'yes' ? true : false);
         $this->gift_card_title         = $this->getSetting( 'gift_cards_gateway_title' );
+        $this->enable_threedsecure     = ($this->getSetting('enable_threedsecure') == 'yes' ? true : false);
+        $this->threedsecure_api_identifier = $this->getSetting('threedsecure_api_identifier');
+        $this->threedsecure_org_unit_id    = $this->getSetting('threedsecure_org_unit_id');
+        $this->threedsecure_api_key    = $this->getSetting('threedsecure_api_key');
         $this->supports                = array(
                                             'products',
                                             'refunds'
@@ -158,7 +162,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         // SecureSubmit custom CSS
         wp_enqueue_style('woocommerce_securesubmit', plugins_url('assets/css/securesubmit.css', dirname(__FILE__)), array(), '1.0');
 
-        if (true) {
+        if ($this->enable_threedsecure) {
             $url = $isCert
                 ? 'https://includestest.ccdc02.com/cardinalcruise/v1/songbird.js'
                 : '';
@@ -171,16 +175,13 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
             'images_dir'  => plugins_url('assets/images', dirname(__FILE__)),
         );
 
-        if (true) {
+        if ($this->enable_threedsecure) {
             $orderNumber = str_shuffle('abcdefghijklmnopqrstuvwxyz');
-            $apiIdentifier = '579bc985da529378f0ec7d0e';
-            $orgUnitId = '5799c3c433fadd4cf427d01a';
-            $apiKey = 'a32ed153-3759-4302-a314-546811590b43';
             $data = array(
                 'jti' => str_shuffle('abcdefghijklmnopqrstuvwxyz'),
                 'iat' => time(),
-                'iss' => $apiIdentifier,
-                'OrgUnitId' => $orgUnitId,
+                'iss' => $this->threedsecure_api_identifier,
+                'OrgUnitId' => $this->threedsecure_org_unit_id,
                 'Payload' => array(
                     'OrderDetails' => array(
                         'OrderNumber' => $orderNumber,
@@ -191,7 +192,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                 ),
             );
             include_once 'class-heartland-jwt.php';
-            $jwt = HeartlandJWT::encode($apiKey, $data);
+            $jwt = HeartlandJWT::encode($this->threedsecure_api_key, $data);
 
             $securesubmit_params['cca'] = array(
                 'jwt' => $jwt,
