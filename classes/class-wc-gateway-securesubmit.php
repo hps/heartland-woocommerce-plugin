@@ -146,18 +146,58 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
             return;
         }
 
+        $isCert = -1 !== strpos($this->public_key, '_cert_');
+        $url = $isCert
+            ? 'http://localhost:7777/dist/securesubmit.js' // 'https://hps.github.io/token/2.1/securesubmit.js'
+            : 'https://api.heartlandportico.com/SecureSubmit.v1/token/2.1/securesubmit.js';
+
         // SecureSubmit tokenization library
-        wp_enqueue_script('hps_wc_securesubmit_library', 'https://api.heartlandportico.com/SecureSubmit.v1/token/2.1/securesubmit.js', array(), '2.1', true);
+        wp_enqueue_script('hps_wc_securesubmit_library', $url, array(), '2.1', true);
         // SecureSubmit js controller for WooCommerce
         wp_enqueue_script('woocommerce_securesubmit', plugins_url('assets/js/securesubmit.js', dirname(__FILE__)), array('jquery'), '1.0', true);
         // SecureSubmit custom CSS
         wp_enqueue_style('woocommerce_securesubmit', plugins_url('assets/css/securesubmit.css', dirname(__FILE__)), array(), '1.0');
+
+        if (true) {
+            $url = $isCert
+                ? 'https://includestest.ccdc02.com/cardinalcruise/v1/songbird.js'
+                : '';
+            wp_enqueue_script('hps_wc_securesubmit_cardinal_library', $url, array(), '2.1', true);
+        }
 
         $securesubmit_params = array(
             'key'         => $this->public_key,
             'use_iframes' => $this->use_iframes,
             'images_dir'  => plugins_url('assets/images', dirname(__FILE__)),
         );
+
+        if (true) {
+            $orderNumber = str_shuffle('abcdefghijklmnopqrstuvwxyz');
+            $apiIdentifier = '579bc985da529378f0ec7d0e';
+            $orgUnitId = '5799c3c433fadd4cf427d01a';
+            $apiKey = 'a32ed153-3759-4302-a314-546811590b43';
+            $data = array(
+                'jti' => str_shuffle('abcdefghijklmnopqrstuvwxyz'),
+                'iat' => time(),
+                'iss' => $apiIdentifier,
+                'OrgUnitId' => $orgUnitId,
+                'Payload' => array(
+                    'OrderDetails' => array(
+                        'OrderNumber' => $orderNumber,
+                        // Centinel requires amounts in pennies
+                        'Amount' => 100 * WC()->cart->total,
+                        'CurrencyCode' => '840',
+                    ),
+                ),
+            );
+            include_once 'class-heartland-jwt.php';
+            $jwt = HeartlandJWT::encode($apiKey, $data);
+
+            $securesubmit_params['cca'] = array(
+                'jwt' => $jwt,
+                'orderNumber' => $orderNumber,
+            );
+        }
 
         wp_localize_script('woocommerce_securesubmit', 'wc_securesubmit_params', $securesubmit_params);
     }
