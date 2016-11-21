@@ -275,7 +275,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $config->versionNumber = '1510';
         $config->developerId = '002914';
 
-        return new HpsCreditService($config);
+        return new HpsFluentCreditService($config);
     }
 
     public function getOrderAddress($order)

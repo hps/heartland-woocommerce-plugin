@@ -30,10 +30,10 @@ class WC_Gateway_SecureSubmit_Capture
         try {
             $chargeService = $this->parent->getCreditService();
             try {
-                $response = $chargeService->capture(
-                    $transactionId,
-                    $order->get_total()
-                );
+                $response = $chargeService->capture()
+                    ->withTransactionId($transactionId)
+                    ->withAmount($order->get_total())
+                    ->execute();
                 $order->add_order_note(__('SecureSubmit payment captured', 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
                 return true;
             } catch (HpsException $e) {

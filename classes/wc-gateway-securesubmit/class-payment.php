@@ -68,24 +68,43 @@ class WC_Gateway_SecureSubmit_Payment
 
             try {
                 if ($this->parent->paymentaction == 'sale') {
-                    $response = $chargeService->charge(
-                        $order->order_total,
-                        strtolower(get_woocommerce_currency()),
-                        $hpstoken,
-                        $cardHolder,
-                        $save_card_to_customer, // multi-use
-                        $details
-                    );
+                    $builder = $chargeService->charge();
                 } else {
-                    $response = $chargeService->authorize(
-                        $order->order_total,
-                        strtolower(get_woocommerce_currency()),
-                        $hpstoken,
-                        $cardHolder,
-                        $save_card_to_customer, // multi-use
-                        $details
-                    );
+                    $builder = $chargeService->authorize();
                 }
+
+                $secureEcommerce = null;
+                if (true
+                    && false !== ($data = json_decode($_POST['securesubmit_cca_data']))
+                    && isset($data) && isset($data->ActionCode)
+                    && 'SUCCESS' === $data->ActionCode
+                ) {
+                    $cavv = isset($data->Payment->ExtendedData->CAVV)
+                        ? $data->Payment->ExtendedData->CAVV
+                        : '';
+                    $eciFlag = isset($data->Payment->ExtendedData->ECIFlag)
+                        ? substr($data->Payment->ExtendedData->ECIFlag, 1)
+                        : '';
+                    $xid = isset($data->Payment->ExtendedData->XID)
+                        ? $data->Payment->ExtendedData->XID
+                        : '';
+                    $secureEcommerce = new HpsSecureEcommerce();
+                    $secureEcommerce->dataSource = 'Visa 3DSecure';
+                    $secureEcommerce->type       = '3DSecure';
+                    $secureEcommerce->data       = $cavv;
+                    $secureEcommerce->eciFlag    = $eciFlag;
+                    $secureEcommerce->xid        = $xid;
+                }
+
+                $response = $builder
+                    ->withAmount($order->order_total)
+                    ->withCurrency(strtolower(get_woocommerce_currency()))
+                    ->withToken($hpstoken)
+                    ->withCardHolder($cardHolder)
+                    ->withRequestMultiUseToken($save_card_to_customer)
+                    ->withDetails($details)
+                    ->withSecureEcommerce($secureEcommerce)
+                    ->execute();
 
                 if ($save_card_to_customer) {
                     if (is_user_logged_in()) {
