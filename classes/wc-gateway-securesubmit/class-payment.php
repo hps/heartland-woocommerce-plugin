@@ -74,11 +74,28 @@ class WC_Gateway_SecureSubmit_Payment
                 }
 
                 $secureEcommerce = null;
+                $authenticated = false;
                 if (true
-                    && false !== ($data = json_decode($_POST['securesubmit_cca_data']))
+                    && false !== ($data = json_decode(stripslashes($_POST['securesubmit_cca_data'])))
                     && isset($data) && isset($data->ActionCode)
                     && 'SUCCESS' === $data->ActionCode
                 ) {
+                    $dataSource = '';
+                    switch ($card_type) {
+                    case 'visa':
+                        $dataSource = 'Visa 3DSecure';
+                        break;
+                    case 'mastercard':
+                        $dataSource = 'MasterCard 3DSecure';
+                        break;
+                    case 'discover':
+                        $dataSource = 'Discover 3DSecure';
+                        break;
+                    case 'amex':
+                        $dataSource = 'AMEX 3DSecure';
+                        break;
+                    }
+
                     $cavv = isset($data->Payment->ExtendedData->CAVV)
                         ? $data->Payment->ExtendedData->CAVV
                         : '';
@@ -88,12 +105,14 @@ class WC_Gateway_SecureSubmit_Payment
                     $xid = isset($data->Payment->ExtendedData->XID)
                         ? $data->Payment->ExtendedData->XID
                         : '';
+
                     $secureEcommerce = new HpsSecureEcommerce();
-                    $secureEcommerce->dataSource = 'Visa 3DSecure';
                     $secureEcommerce->type       = '3DSecure';
+                    $secureEcommerce->dataSource = $dataSource;
                     $secureEcommerce->data       = $cavv;
                     $secureEcommerce->eciFlag    = $eciFlag;
                     $secureEcommerce->xid        = $xid;
+                    $authenticated = true;
                 }
 
                 $response = $builder
@@ -104,6 +123,7 @@ class WC_Gateway_SecureSubmit_Payment
                     ->withRequestMultiUseToken($save_card_to_customer)
                     ->withDetails($details)
                     ->withSecureEcommerce($secureEcommerce)
+                    ->withAllowDuplicates(true)
                     ->execute();
 
                 if ($save_card_to_customer) {
@@ -141,7 +161,7 @@ class WC_Gateway_SecureSubmit_Payment
                 $verb = $this->parent->paymentaction == 'sale'
                       ? 'captured'
                       : 'authorized';
-                $order->add_order_note(__('SecureSubmit payment ' . $verb, 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
+                $order->add_order_note(__('SecureSubmit payment ' . $verb .($authenticated ? ' and authenticated' : ''), 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
                 $order->payment_complete($response->transactionId);
                 WC()->cart->empty_cart();
 

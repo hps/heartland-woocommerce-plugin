@@ -38,39 +38,80 @@
         });
     }
 
+    window.__secureSubmitFrameInit = window.__secureSubmitFrameInit || false;
     function cca() {
         if (document.getElementById('securesubmit_cca_data')) {
             return;
         }
         Cardinal.configure({logging:{level:'verbose'}});
-        Cardinal.setup('init', {
-            jwt: wc_securesubmit_params.cca.jwt
-        });
-        Cardinal.on('payments.validated', function (data, jwt) {
-            console.log(data);
-            var form = document.querySelector('form.checkout, form#order_review');
-            var cca = document.createElement('input');
-            data.jwt = jwt;
-            cca.type = 'hidden';
-            cca.id = 'securesubmit_cca_data';
-            cca.name = 'securesubmit_cca_data';
-            cca.value = JSON.stringify(data);
-            form.appendChild(cca);
-            jQuery(form).submit();
-        });
-        var token = document.getElementById('securesubmit_cardinal_token').value;
-        Cardinal.start('cca', {
+        if (!window.__secureSubmitFrameInit) {
+            Cardinal.setup('init', {
+                jwt: wc_securesubmit_params.cca.jwt
+            });
+            Cardinal.on('payments.validated', function (data, jwt) {
+                var token = document.getElementById('securesubmit_cardinal_token');
+                var form = document.querySelector('form.checkout, form#order_review');
+                var cca = document.createElement('input');
+                data.jwt = jwt;
+                cca.type = 'hidden';
+                cca.id = 'securesubmit_cca_data';
+                cca.name = 'securesubmit_cca_data';
+                cca.value = Heartland.JSON.stringify(data);
+                form.appendChild(cca);
+
+                if ((!token || !token.value) && data.Token && data.Token.Token) {
+                    createCardinalTokenNode(form, data.Token.Token);
+                }
+
+                jQuery(form).submit();
+            });
+            window.__secureSubmitFrameInit = true;
+        }
+        Cardinal.trigger('jwt.update', wc_securesubmit_params.cca.jwt);
+        var options = {
             OrderDetails: {
                 OrderNumber: wc_securesubmit_params.cca.orderNumber + 'cca'
-            },
-            Token: {
+            }
+        };
+        if (wc_securesubmit_params.use_iframes) {
+            var token = document.getElementById('securesubmit_cardinal_token').value;
+            options.Token = {
                 Token: token,
                 ExpirationMonth: document.getElementById('exp_month').value,
                 ExpirationYear: document.getElementById('exp_year').value
+            };
+        } else {
+            var card = document.getElementById('securesubmit_card_number');
+            var cvv = document.getElementById('securesubmit_card_cvv');
+            var expiration = document.getElementById('securesubmit_card_expiration');
+
+            if (!expiration || !expiration.value) {
+                return false;
             }
-        });
+
+            var split = expiration.value.split(' / ');
+            var month = split[0].replace(/^\s+|\s+$/g, '');
+            var year = split[1].replace(/^\s+|\s+$/g, '');
+            options.Consumer = {
+                Account: {
+                    AccountNumber: card.value.replace(/\D/g, ''),
+                    ExpirationMonth: month.replace(/\D/g, ''),
+                    ExpirationYear: year.replace(/\D/g, ''),
+                    CardCode: cvv.value.replace(/\D/g, '')
+                }
+            };
+        }
+        Cardinal.start('cca', options);
     }
 
+    function createCardinalTokenNode(form, value) {
+        var cardinalToken = document.createElement('input');
+        cardinalToken.type = 'hidden';
+        cardinalToken.id = 'securesubmit_cardinal_token';
+        cardinalToken.name = 'securesubmit_cardinal_token';
+        cardinalToken.value = value;
+        form.appendChild(cardinalToken);
+    }
 
     // Handles form submission when not using iframes
     function formHandler(e) {
@@ -80,14 +121,12 @@
             return el.checked;
         });
         var token = document.getElementById('securesubmit_token');
-        var cardinalToken = document.getElementById('securesubmit_cardinal_token');
         var cardinalCcaData = document.getElementById('securesubmit_cca_data');
 
         var securesubmitEnabled = securesubmitMethod && securesubmitMethod.checked;
         var newCardUsed = storedCardsChecked.length === 0 || (storedCardsChecked[0] && storedCardsChecked[0].value === 'new');
         var ccaEnabled = !!wc_securesubmit_params.cca;
         var securesubmitTokenObtained = token.value !== '';
-        var cardinalTokenObtained = cardinalToken && cardinalToken.value !== '';
         var cardinalCcaDataObtained = cardinalCcaData && cardinalCcaData.value !== '';
 
         if (!securesubmitEnabled) {
@@ -99,7 +138,7 @@
             var cvv = document.getElementById('securesubmit_card_cvv');
             var expiration = document.getElementById('securesubmit_card_expiration');
 
-            if (!expiration || expiration.value) {
+            if (!expiration || !expiration.value) {
                 return false;
             }
 
@@ -117,27 +156,17 @@
                 error: responseHandler
             };
 
-            if (wc_securesubmit_params.cca) {
-                options.cca = {
-                    jwt: wc_securesubmit_params.cca.jwt,
-                    orderNumber: wc_securesubmit_params.cca.orderNumber
-                };
-            }
-
             (new Heartland.HPS(options)).tokenize();
 
             return false;
         }
 
-        console.log(ccaEnabled);
-        console.log(cardinalTokenObtained);
-        if (ccaEnabled && cardinalTokenObtained && !cardinalCcaDataObtained) {
+        if (ccaEnabled && !cardinalCcaDataObtained) {
             cca();
             return false;
         }
 
-        console.log('form submit');
-        return false;
+        return true;
     }
 
     // Handles form submission when using iframes
@@ -200,7 +229,6 @@
                 document.querySelector('.securesubmit_new_card_info')
             );
         } else {
-            console.log(response);
             var heartland = response.heartland || response;
             var cardinal = response.cardinal;
             var token = document.getElementById('securesubmit_token');
@@ -237,12 +265,7 @@
             form.appendChild(expYr);
 
             if (cardinal) {
-                var cardinalToken = document.createElement('input');
-                cardinalToken.type = 'hidden';
-                cardinalToken.id = 'securesubmit_cardinal_token';
-                cardinalToken.name = 'securesubmit_cardinal_token';
-                cardinalToken.value = cardinal.token_value;
-                form.appendChild(cardinalToken);
+                createCardinalTokenNode(form, cardinal.token_value);
                 cca();
                 return;
             }
