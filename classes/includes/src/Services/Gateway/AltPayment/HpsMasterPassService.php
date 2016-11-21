@@ -527,7 +527,7 @@ class HpsMasterPassService
      */
     protected function formatAmount($amount)
     {
-        return sprintf('%s', ceil(floatval($amount) * 100));
+        return sprintf('%s', ceil(intval($amount) * 100));
         // return $amount;
     }
 
