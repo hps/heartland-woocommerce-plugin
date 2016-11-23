@@ -150,17 +150,17 @@ return array(
         'class'       => 'enable-threedsecure',
     ),
     'threedsecure_api_identifier' => array(
-        'title'       => __('3DSecure API Identifier', 'wc_securesubmit'),
+        'title'       => __('Cardholder Authentication API Identifier', 'wc_securesubmit'),
         'type'        => 'text',
         'class'       => 'threedsecure',
     ),
     'threedsecure_org_unit_id' => array(
-        'title'       => __('3DSecure Org Unit ID', 'wc_securesubmit'),
+        'title'       => __('Cardholder Authentication Org Unit ID', 'wc_securesubmit'),
         'type'        => 'text',
         'class'       => 'threedsecure',
     ),
     'threedsecure_api_key' => array(
-        'title'       => __('3DSecure API Key', 'wc_securesubmit'),
+        'title'       => __('Cardholder Authentication API Key', 'wc_securesubmit'),
         'type'        => 'text',
         'class'       => 'threedsecure',
     ),
