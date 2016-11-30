@@ -48,23 +48,23 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
                     $customer = maybe_unserialize(WC()->session->customer);
 
                     $address = array(
-                        'first_name' 	=> $myresult->buyer->firstName,
-                        'last_name' 	=> $myresult->buyer->lastName,
-                        'address_1'		=> $myresult->shipping->address->address,
-                        'city'			=> $myresult->shipping->address->city ,
-                        'state'			=> $myresult->shipping->address->state ,
-                        'postcode'		=> $myresult->shipping->address->zip,
-                        'country'		=> $myresult->shipping->address->country);
+                        'first_name'     => $myresult->buyer->firstName,
+                        'last_name'     => $myresult->buyer->lastName,
+                        'address_1'        => $myresult->shipping->address->address,
+                        'city'            => $myresult->shipping->address->city ,
+                        'state'            => $myresult->shipping->address->state ,
+                        'postcode'        => $myresult->shipping->address->zip,
+                        'country'        => $myresult->shipping->address->country);
 
                     if(is_user_logged_in()) {
                         $address = array(
-                            'first_name' 	=> $myresult->buyer->firstName,
-                            'last_name' 	=> $myresult->buyer->lastName,
-                            'address_1'		=> isset(WC()->customer->address_1) ? WC()->customer->address_1 : $myresult->shipping->address->address,
-                            'city'			=> isset(WC()->customer->city) ? WC()->customer->city :$myresult->shipping->address->city ,
-                            'state'			=> isset(WC()->customer->state) ? WC()->customer->state :$myresult->shipping->address->state ,
-                            'postcode'		=> isset(WC()->customer->postcode) ? WC()->customer->postcode : $myresult->shipping->address->zip,
-                            'country'		=> isset(WC()->customer->country) ? WC()->customer->country :$myresult->shipping->address->country);
+                            'first_name'     => $myresult->buyer->firstName,
+                            'last_name'     => $myresult->buyer->lastName,
+                            'address_1'        => isset(WC()->customer->address_1) ? WC()->customer->address_1 : $myresult->shipping->address->address,
+                            'city'            => isset(WC()->customer->city) ? WC()->customer->city :$myresult->shipping->address->city ,
+                            'state'            => isset(WC()->customer->state) ? WC()->customer->state :$myresult->shipping->address->state ,
+                            'postcode'        => isset(WC()->customer->postcode) ? WC()->customer->postcode : $myresult->shipping->address->zip,
+                            'country'        => isset(WC()->customer->country) ? WC()->customer->country :$myresult->shipping->address->country);
                     }
                 } else {
                     $address = array(
@@ -98,13 +98,13 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
                 $myresult = maybe_unserialize(WC()->session->result);
 
                 $address = array(
-                    'first_name' 	=> $myresult->shipping->name,
-                    'company'		=> isset($checkoutForm["shipping_company"]) ? $checkoutForm["shipping_company"] : '',
-                    'address_1'		=> $myresult->shipping->address->address,
-                    'city'			=> $myresult->shipping->address->city,
-                    'state'			=> $myresult->shipping->address->state,
-                    'postcode'		=> $myresult->shipping->address->zip,
-                    'country'		=> $myresult->shipping->address->country
+                    'first_name'     => $myresult->shipping->name,
+                    'company'        => isset($checkoutForm["shipping_company"]) ? $checkoutForm["shipping_company"] : '',
+                    'address_1'        => $myresult->shipping->address->address,
+                    'city'            => $myresult->shipping->address->city,
+                    'state'            => $myresult->shipping->address->state,
+                    'postcode'        => $myresult->shipping->address->zip,
+                    'country'        => $myresult->shipping->address->country
                 ) ;
                 echo WC()->countries->get_formatted_address( $address );
                 ?>
