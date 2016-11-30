@@ -369,11 +369,6 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         $line_item->number = $item_number;
         $line_item->amount = $amount;
         $line_item->quantity = $quantity;
-        $line_item->taxAmount = $item_tax;
-
-        //$this->self::debug_log('name: ' . $line_item->name .
-        //      '; number: ' . $item_number . '; amount: ' .  $amount . '; quantity: ' . $quantity . '; tax: ' . $item_tax
-        //);
 
 		return $line_item;
     }
@@ -762,10 +757,16 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
     public function get_cart_paymentdata()
     {
         $cart = WC()->cart;
+
+        $taxAmount = 0;
+        foreach ($cart->get_tax_totals() as $tax) {
+            $taxAmount += $tax->amount;
+        }
+
         $payment = new HpsPaymentData();
-        $payment->subtotal = $cart->subtotal - $cart->get_cart_discount_total();
+        $payment->subtotal = $cart->subtotal - $cart->get_cart_discount_total() - $cart->tax_total;
         $payment->shippingAmount = $cart->shipping_total;
-        $payment->taxAmount = $cart->tax_total;
+        $payment->taxAmount = $taxAmount;
         $payment->paymentType = $this->paymentaction == 'authorization' ? 'Authorization' : 'Sale';
         return $payment;
     }
