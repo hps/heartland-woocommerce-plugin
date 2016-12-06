@@ -30,11 +30,11 @@ class WC_Gateway_SecureSubmit_Refund
         try {
             $chargeService = $this->parent->getCreditService();
             try {
-                $response = $chargeService->refund(
-                    $amount,
-                    strtolower(get_woocommerce_currency()),
-                    $transactionId
-                );
+                $response = $chargeService->refund()
+                    ->withAmount($amount)
+                    ->withCurrency(strtolower(get_woocommerce_currency()))
+                    ->withTransactionId($transactionId)
+                    ->execute();
                 $order->add_order_note(__('SecureSubmit payment refunded', 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
                 return true;
             } catch (HpsException $e) {

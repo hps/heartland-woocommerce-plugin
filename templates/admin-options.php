@@ -8,7 +8,7 @@
         (function (window, document, $) {
             if (!$) { return; }
 
-            var groups = ['anti-fraud', 'gift'];
+            var groups = ['anti-fraud', 'gift', 'threedsecure'];
             var groupsLength = groups.length;
             var i = 0;
 

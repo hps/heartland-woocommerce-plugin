@@ -17,6 +17,7 @@ class HpsServicesConfig implements HpsConfigInterface
     public $proxyOptions    = null;
     public $soapServiceUri  = "https://cert.api2.heartlandportico.com/Hps.Exchange.PosGateway/PosGatewayService.asmx";
     public $payPlanBaseUri  = null;
+    public $curlOptions     = null;
 
     public function serviceUri()
     {
@@ -36,7 +37,7 @@ class HpsServicesConfig implements HpsConfigInterface
 
     public function getKeyType($keyType)
     {
-        $key = $keyType == self::KEY_TYPE_SECRET ? $this->secretApiKey : $this->publicApiKey;
+        $key = trim($keyType == self::KEY_TYPE_SECRET ? $this->secretApiKey : $this->publicApiKey);
         switch (true) {
             case substr($key, 0, 6) == 'skapi_':
                 return self::KEY_TYPE_SECRET;

@@ -42,13 +42,13 @@ class WC_Gateway_SecureSubmit_Reverse
         try {
             $chargeService = $this->parent->getCreditService();
             try {
-                $response = $chargeService->reverse(
-                    $transactionId,
-                    $originalAmount,
-                    strtolower(get_woocommerce_currency()),
-                    $details,
-                    $newAmount
-                );
+                $response = $chargeService->reverse()
+                    ->withTransactionId($transactionId)
+                    ->withAmount($originalAmount)
+                    ->withCurrency(strtolower(get_woocommerce_currency()))
+                    ->withDetails($details)
+                    ->withAuthAmount($newAmount)
+                    ->execute();
                 $order->add_order_note(
                     __('SecureSubmit payment reversed', 'wc_securesubmit')
                     . ' (Transaction ID: ' . $response->transactionId . ')'

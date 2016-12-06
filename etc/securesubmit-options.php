@@ -141,4 +141,27 @@ return array(
         'default'     => 'Pay with your credit or gift card via SecureSubmit.',
         'class'       => 'gift',
     ),
+    'enable_threedsecure' => array(
+        'title'       => __('Enable Cardholder Authentication (3DSecure)', 'wc_securesubmit'),
+        'label'       => __('Use 3DSecure', 'wc_securesubmit'),
+        'type'        => 'checkbox',
+        'description' => 'Note: This feature requires additional account setup. Please contact your Heartland representative to enable this feature.',
+        'default'     => 'no',
+        'class'       => 'enable-threedsecure',
+    ),
+    'threedsecure_api_identifier' => array(
+        'title'       => __('Cardholder Authentication API Identifier', 'wc_securesubmit'),
+        'type'        => 'text',
+        'class'       => 'threedsecure',
+    ),
+    'threedsecure_org_unit_id' => array(
+        'title'       => __('Cardholder Authentication Org Unit ID', 'wc_securesubmit'),
+        'type'        => 'text',
+        'class'       => 'threedsecure',
+    ),
+    'threedsecure_api_key' => array(
+        'title'       => __('Cardholder Authentication API Key', 'wc_securesubmit'),
+        'type'        => 'text',
+        'class'       => 'threedsecure',
+    ),
 );

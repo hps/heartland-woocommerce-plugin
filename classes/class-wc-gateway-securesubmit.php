@@ -42,6 +42,10 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $this->use_iframes             = ($this->getSetting('use_iframes') == 'yes' ? true : false);
         $this->allow_gift_cards        = ($this->getSetting( 'gift_cards' ) == 'yes' ? true : false);
         $this->gift_card_title         = $this->getSetting( 'gift_cards_gateway_title' );
+        $this->enable_threedsecure     = ($this->getSetting('enable_threedsecure') == 'yes' ? true : false);
+        $this->threedsecure_api_identifier = $this->getSetting('threedsecure_api_identifier');
+        $this->threedsecure_org_unit_id    = $this->getSetting('threedsecure_org_unit_id');
+        $this->threedsecure_api_key    = $this->getSetting('threedsecure_api_key');
         $this->supports                = array(
                                             'products',
                                             'refunds'
@@ -146,18 +150,56 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
             return;
         }
 
+        $isCert = -1 !== strpos($this->public_key, '_cert_');
+        $url = $isCert
+            ? 'https://hps.github.io/token/2.1/securesubmit.js'
+            : 'https://api.heartlandportico.com/SecureSubmit.v1/token/2.1/securesubmit.js';
+
         // SecureSubmit tokenization library
-        wp_enqueue_script('hps_wc_securesubmit_library', 'https://api.heartlandportico.com/SecureSubmit.v1/token/2.1/securesubmit.js', array(), '2.1', true);
+        wp_enqueue_script('hps_wc_securesubmit_library', $url, array(), '2.1', true);
         // SecureSubmit js controller for WooCommerce
         wp_enqueue_script('woocommerce_securesubmit', plugins_url('assets/js/securesubmit.js', dirname(__FILE__)), array('jquery'), '1.0', true);
         // SecureSubmit custom CSS
         wp_enqueue_style('woocommerce_securesubmit', plugins_url('assets/css/securesubmit.css', dirname(__FILE__)), array(), '1.0');
+
+        if ($this->enable_threedsecure) {
+            $url = $isCert
+                ? 'https://includestest.ccdc02.com/cardinalcruise/v1/songbird.js'
+                : 'https://includes.ccdc02.com/cardinalcruise/v1/songbird.js';
+            wp_enqueue_script('hps_wc_securesubmit_cardinal_library', $url, array(), '2.1', true);
+        }
 
         $securesubmit_params = array(
             'key'         => $this->public_key,
             'use_iframes' => $this->use_iframes,
             'images_dir'  => plugins_url('assets/images', dirname(__FILE__)),
         );
+
+        if ($this->enable_threedsecure) {
+            WC()->cart->calculate_totals();
+            $orderNumber = str_shuffle('abcdefghijklmnopqrstuvwxyz');
+            $data = array(
+                'jti' => str_shuffle('abcdefghijklmnopqrstuvwxyz'),
+                'iat' => time(),
+                'iss' => $this->threedsecure_api_identifier,
+                'OrgUnitId' => $this->threedsecure_org_unit_id,
+                'Payload' => array(
+                    'OrderDetails' => array(
+                        'OrderNumber' => $orderNumber,
+                        // Centinel requires amounts in pennies
+                        'Amount' => 100 * WC()->cart->total,
+                        'CurrencyCode' => '840',
+                    ),
+                ),
+            );
+            include_once 'class-heartland-jwt.php';
+            $jwt = HeartlandJWT::encode($this->threedsecure_api_key, $data);
+
+            $securesubmit_params['cca'] = array(
+                'jwt' => $jwt,
+                'orderNumber' => $orderNumber,
+            );
+        }
 
         wp_localize_script('woocommerce_securesubmit', 'wc_securesubmit_params', $securesubmit_params);
     }
@@ -235,7 +277,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $config->versionNumber = '1510';
         $config->developerId = '002914';
 
-        return new HpsCreditService($config);
+        return new HpsFluentCreditService($config);
     }
 
     public function getOrderAddress($order)
