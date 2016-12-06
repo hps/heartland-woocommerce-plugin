@@ -56,7 +56,7 @@ class WC_Gateway_SecureSubmit_Reverse
                 );
                 return true;
             } catch (HpsException $e) {
-                $this->throwUserError($e->getMessage());
+                $this->parent->throwUserError($e->getMessage());
             }
         } catch (Exception $e) {
             $error = __('Error:', 'wc_securesubmit') . ' "' . $e->getMessage() . '"';

@@ -38,7 +38,7 @@ class WC_Gateway_SecureSubmit_Refund
                 $order->add_order_note(__('SecureSubmit payment refunded', 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
                 return true;
             } catch (HpsException $e) {
-                $this->throwUserError($e->getMessage());
+                $this->parent->throwUserError($e->getMessage());
             }
         } catch (Exception $e) {
             $error = __('Error:', 'wc_securesubmit') . ' "' . $e->getMessage() . '"';
