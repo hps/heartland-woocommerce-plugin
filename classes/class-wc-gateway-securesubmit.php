@@ -150,7 +150,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
             return;
         }
 
-        $isCert = -1 !== strpos($this->public_key, '_cert_');
+        $isCert = false !== strpos($this->public_key, '_cert_');
         $url = $isCert
             ? 'https://hps.github.io/token/2.1/securesubmit.js'
             : 'https://api.heartlandportico.com/SecureSubmit.v1/token/2.1/securesubmit.js';

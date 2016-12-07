@@ -78,7 +78,7 @@ class WC_Gateway_SecureSubmit_Payment
                 if ($this->parent->enable_threedsecure
                     && false !== ($data = json_decode(stripslashes($_POST['securesubmit_cca_data'])))
                     && isset($data) && isset($data->ActionCode)
-                    && 'SUCCESS' === $data->ActionCode
+                    && in_array($data->ActionCode, array('SUCCESS', 'NOACTION'))
                 ) {
                     $dataSource = '';
                     switch ($card_type) {
