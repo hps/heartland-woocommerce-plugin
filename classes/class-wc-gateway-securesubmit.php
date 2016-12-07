@@ -220,6 +220,10 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 
     public function process_refund($orderId, $amount = null, $reason = '')
     {
+        $order = wc_get_order($orderId);
+        $transactionId = $this->getOrderTransactionId($order);
+        $transaction = $this->getCreditService()->get($transactionId)->execute();
+        error_log(print_r($transaction, true));
         if ($this->isTransactionActiveOnGateway($orderId)) {
             return $this->reverse->call($orderId, $amount, $reason);
         } else {
@@ -306,7 +310,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
     {
         $order = wc_get_order($orderId);
         $transactionId = $this->getOrderTransactionId($order);
-        $transaction = $this->getCreditService()->get($transactionId);
+        $transaction = $this->getCreditService()->get($transactionId)->execute();
         return $transaction->transactionStatus == 'A';
     }
 

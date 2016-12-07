@@ -205,20 +205,20 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
 
             $response = null;
             if ($amount == 0) {
-                $response = $chargeService->verify(
-                    $token,
-                    $cardHolder,
-                    $requestMulti
-                );
+                $response = $chargeService->verify()
+                    ->withToken($token)
+                    ->withCardHolder($cardHolder)
+                    ->withRequestMultiUseToken($requestMulti)
+                    ->execute();
             } else {
-                $response = $chargeService->charge(
-                    $amount,
-                    strtolower(get_woocommerce_currency()),
-                    $token,
-                    $cardHolder,
-                    $requestMulti,
-                    $details
-                );
+                $response = $chargeService->charge()
+                    ->withAmount($amount)
+                    ->withCurrency(strtolower(get_woocommerce_currency()))
+                    ->withToken($token)
+                    ->withCardHolder($cardHolder)
+                    ->withRequestMultiUseToken($requestMulti)
+                    ->withDetails($details)
+                    ->execute();
             }
 
             $order->payment_complete($response->transactionId);
