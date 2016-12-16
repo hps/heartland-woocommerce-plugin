@@ -27,10 +27,11 @@
             });
 
             for (i = 0; i < groupsLength; i++) {
-                var group = groups[i];
-                $('.enable-' + group).click(function () {
-                    $('.' + group).closest('tr').toggle();
-                });
+                $('.enable-' + groups[i]).click((function (group) {
+                    return function () {
+                        $('.' + group).closest('tr').toggle();
+                    };
+                }(groups[i])));
             }
 
         }(window, document, jQuery));
