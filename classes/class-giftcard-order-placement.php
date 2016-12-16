@@ -32,7 +32,7 @@ class giftCardOrderPlacement {
 
 	public function addItemsToOrderDisplay( $rows, $order_object ) {
 		if (null == WC()->session) {
-			return;
+			return $rows;
 		}
 		
 		$securesubmit_data = WC()->session->get( 'securesubmit_data' );
