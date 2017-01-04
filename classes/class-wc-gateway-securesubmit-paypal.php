@@ -366,7 +366,9 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
 
         $line_item = new HpsLineItem();
         $line_item->name = html_entity_decode( wc_trim_string( $item_name, 127 ), ENT_NOQUOTES, 'UTF-8' );
-        $line_item->number = $item_number;
+        if (isset($item_number) && !empty($item_number)) {
+            $line_item->number = html_entity_decode(wc_trim_string($item_number, 127), ENT_NOQUOTES, 'UTF-8');
+        }
         $line_item->amount = $amount;
         $line_item->quantity = $quantity;
 
