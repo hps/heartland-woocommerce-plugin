@@ -19,6 +19,11 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+####1.9.0
+* Fix full reversals
+* Add consumer authentication (3DSecure) support
+* Fix PayPal Express order totals
+
 ####1.8.5
 * Begin unit/integration testing
 * Add basic velocity checking

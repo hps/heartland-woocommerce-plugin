@@ -35,6 +35,11 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section.
 
 == Changelog ==
+= 1.9.0 =
+* Fix full reversals
+* Add consumer authentication (3DSecure) support
+* Fix PayPal Express order totals
+
 = 1.8.5 =
 * Begin unit/integration testing
 * Add basic velocity checking
