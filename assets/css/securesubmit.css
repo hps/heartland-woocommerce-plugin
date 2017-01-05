@@ -1,3 +1,15 @@
+/*fix css mistake in rosa theme
+*/
+
+li.payment_method_securesubmit div,label,fieldset,input,image {
+  display: block !important; 
+  }
+
+/*fix css mistake in rosa theme*/
+script {
+    display:none !important;
+}
+
 /* iframe style fix */
 
 .payment_method_securesubmit iframe {
