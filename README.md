@@ -19,6 +19,9 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+####1.9.1
+* Corrected CSS bug with Rosa theam displaying contents of script tags
+
 ####1.9.0
 * Fix full reversals
 * Add consumer authentication (3DSecure) support
