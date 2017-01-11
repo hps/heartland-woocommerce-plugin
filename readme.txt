@@ -38,6 +38,7 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 = 1.9.2 =
 * Updated PHP SDK to sanitize the card holder details
 * validations are added to check the length of first name, last name, state, city, phone, email and zip values
+* Test against Wordpress 4.7
 
 = 1.9.1 =
 * Corrected CSS bug with Rosa theam displaying contents of script tags
