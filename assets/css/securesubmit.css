@@ -1,12 +1,17 @@
 /*fix css mistake in rosa theme
 */
 
-li.payment_method_securesubmit div,label,fieldset,input,image {
-  display: block !important; 
-  }
+div.payment_method_securesubmit div,
+div.payment_method_securesubmit label,
+div.payment_method_securesubmit fieldset,
+div.payment_method_securesubmit input[type="tel"],
+div.payment_method_securesubmit input[type="text"],
+div.payment_method_securesubmit image {
+  display: block !important;
+}
 
 /*fix css mistake in rosa theme*/
-script {
+div.payment_method_securesubmit script {
     display:none !important;
 }
 
