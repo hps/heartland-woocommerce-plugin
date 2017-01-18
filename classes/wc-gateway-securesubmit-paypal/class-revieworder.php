@@ -31,18 +31,22 @@ class WC_Gateway_SecureSubmit_PayPal_ReviewOrder
             exit();
         }
 
-        $token = $_GET['token'];
-        $this->parent->setSession('paypal_session_token', $token);
+        $this->parent->setSession('paypal_session_token', $_GET['token']);
 
-        //get sessioninfo from portico in case any changes are made on PayPal's site, HpsAltPaymentSessionInfo return type
-        $sessionInfo = $this->parent->getPorticoService()->sessionInfo($token);
+        /**
+          * Get sessioninfo from portico in case any changes are made on PayPal's site
+          * @var HpsAltPaymentSessionInfo
+          */
+        $sessionInfo = $this->parent->getPorticoService()->sessionInfo($_GET['token']);
         $shippingInfo = $sessionInfo->shipping;
+
+        error_log(print_r($sessionInfo, true));
 
         if (empty($sessionInfo)) {
             return;
         }
 
-        $this->setSession('paypal_session_info', serialize($sessionInfo));
+        $this->parent->setSession('paypal_session_info', serialize($sessionInfo));
 
 
         if (!isset($shippingInfo->address->country)) {
@@ -101,7 +105,7 @@ class WC_Gateway_SecureSubmit_PayPal_ReviewOrder
         ";
 
         //Allow override in theme: <theme_name>/woocommerce/paypal-paypal-review-order.php
-        $template = plugin_dir_path(__FILE__) . 'templates/';
+        $template = plugin_dir_path(dirname(dirname(__FILE__))) . 'templates/';
         wc_get_template('paypal-review-order.php', array(), '', $template);
         do_action('woocommerce_ppe_checkout_order_review');
     }

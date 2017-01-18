@@ -121,7 +121,7 @@ class WC_Gateway_SecureSubmit_PayPal_FinalizeOrder
     {
         $chosen_shipping_methods = maybe_unserialize($this->parent->getSession('chosen_shipping_methods'));
 
-        $_POST['payment_method'] = $this->id;
+        $_POST['payment_method'] = $this->parent->id;
         $_POST['shipping_method'] =  $chosen_shipping_methods;
         $_POST['ship_to_different_address'] = true; // Paypal does not send billing addresses, only shipping
         $this->parent->setSession('chosen_shipping_methods', maybe_unserialize($this->parent->getSession('chosen_shipping_methods')));

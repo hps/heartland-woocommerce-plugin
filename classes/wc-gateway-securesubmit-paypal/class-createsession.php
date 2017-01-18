@@ -19,7 +19,7 @@ class WC_Gateway_SecureSubmit_PayPal_CreateSession
         $override = WC()->session->get('process_payment_override');
         if (isset($override) && $override == 1) {
             $this->parent->setSession('process_payment_override', 0);
-            $this->parent->setSession('process_payment_override_order_id', $order_id);
+            $this->parent->setSession('process_payment_override_order_id', $orderId);
             return;
         }
 
