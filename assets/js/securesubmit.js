@@ -431,19 +431,7 @@
     };
     window.securesubmitLoadIframes();
 
-    function paypalIncontextHandler(e) {
-
-        return false;
-    }
-
-    function paypalPreventCheckoutSubmit(e) {
-        console.log('prevent checkout');
-        if (!jQuery('[name="payment_method"][value="heartland_paypal"]').is(':checked')) {
-            console.log('heartland paypal not selected');
-            return true;
-        }
-
-        e.preventDefault();
+    function paypalShowIncontext() {
         paypal.checkout.initXO();
 
         jQuery.ajax({
@@ -462,6 +450,15 @@
                 paypal.checkout.closeFlow();
             }
         });
+    }
+
+    function paypalPreventCheckoutSubmit(e) {
+        if (!jQuery('[name="payment_method"][value="heartland_paypal"]').is(':checked')) {
+            return true;
+        }
+
+        e.preventDefault();
+        paypalShowIncontext();
         return false;
     }
 
@@ -472,8 +469,6 @@
         var buttons = [];
 
         jQuery('[id^="hps_paypal_shortcut_"]').each(function (i, el) { buttons.push(el); });
-
-        console.log(buttons);
 
         if (buttons && buttons.length === 0) {
             var checkoutSubmit = jQuery('#place_order');
@@ -489,36 +484,13 @@
             environment: config.env,
             button: buttons,
             click: function (e) {
-                console.log('button clicked');
-
                 if (jQuery('[name="payment_method"][value="heartland_paypal"]').length !== 0
                     && !jQuery('[name="payment_method"][value="heartland_paypal"]').is(':checked')) {
-                    console.log('heartland paypal not selected');
-                    return;
+                    return true;
                 }
 
-                console.log('starting')
-
                 e.preventDefault();
-                paypal.checkout.initXO();
-
-                jQuery.ajax({
-                    type: 'POST',
-                    url: wc_securesubmit_paypal_params.ajaxUrl,
-                    data: {
-                        action: 'wc_securesubmit_paypal_start_incontext',
-                        paypalexpress_initiated: 'true'
-                    },
-                    dataType: 'json',
-                    success: function (response) {
-                        paypal.checkout.startFlow(response.redirect);
-                    },
-                    error: function (response) {
-                        alert('Error starting PayPal checkout');
-                        paypal.checkout.closeFlow();
-                    }
-                });
-
+                paypalShowIncontext();
                 return false;
             }
         });
