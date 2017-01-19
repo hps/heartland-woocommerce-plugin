@@ -10,7 +10,7 @@ class HpsInputValidation
         'LastName' => 26,
         'City' => 20,
         'Email' => 100,
-	'State' => 20
+	    'State' => 20
     );
 
     public static function checkAmount($amount)
