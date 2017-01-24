@@ -352,6 +352,14 @@ html body .woocommerce .payment_method_securesubmit iframe{
    margin: 0 .5em 0 0;
 }
 
+/* credit card images */
+
+.woocommerce-checkout #payment ul.payment_methods li.payment_method_securesubmit img {
+	width: 172px;
+	height: 24px;
+	display: inline-block;
+}
+
 /* credit card fields labels */
 
 .payment_method_securesubmit div.payment_box .securesubmit_new_card .securesubmit_new_card_info label {
