@@ -237,7 +237,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
      */
     public function process_refund($orderId, $amount = null, $reason = '')
     {
-        return $this->refund->call($orderId, $amount, $reson);
+        return $this->refund->call($orderId, $amount, $reason);
     }
 
      /**
