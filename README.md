@@ -24,6 +24,8 @@ Changelog
 * Updated PHP SDK to sanitize the card holder details
 * validations are added to check the length of first name, last name, state, city, phone, email and zip values
 * Test against Wordpress 4.7
+* Correct CSS issue with some themes when CC image is scaled improperly
+* Fix issue with capturing credit card authorizations
 
 ####1.9.1
 * Corrected CSS bug with Rosa theam displaying contents of script tags
