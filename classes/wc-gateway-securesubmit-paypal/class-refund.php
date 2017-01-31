@@ -18,7 +18,6 @@ class WC_Gateway_SecureSubmit_PayPal_Refund
         $order = wc_get_order($order_id);
 
         if (!$this->parent->can_refund_order($order)) {
-            call_user_func(arra($this->parent, 'debugLog'), 'Refund Failed: No transaction ID');
             return false;
         }
 
@@ -33,7 +32,6 @@ class WC_Gateway_SecureSubmit_PayPal_Refund
             );
         } catch (Exception $e) {
             $error = __('Error processing refund:', 'wc_securesubmit') . ' "' . $e->getMessage() . '"';
-            call_user_func(arra($this->parent, 'debugLog'), 'process_refund : $error = ' . $error);
             if (function_exists('wc_add_notice')) {
                 wc_add_notice($error, 'error');
             } else {
@@ -42,7 +40,6 @@ class WC_Gateway_SecureSubmit_PayPal_Refund
             return false;
         }
 
-        call_user_func(arra($this->parent, 'debugLog'), 'process_refund : $response = ' . print_r($response, true));
         if ($response->responseCode == "00") {
             $reason = $reason == '' ? '' : '. Reason for refund: '.$reason;
             $order->add_order_note(
@@ -52,7 +49,6 @@ class WC_Gateway_SecureSubmit_PayPal_Refund
             return true;
         }
 
-        call_user_func(arra($this->parent, 'debugLog'), 'Refund Failed in Portico call with responseCode ' . $response->responseCode);
         return false;
     }
 }
