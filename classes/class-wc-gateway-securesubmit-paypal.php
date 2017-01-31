@@ -312,7 +312,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway {
         $shippingInfo->address->address = $order->shipping_address_1;
         $shippingInfo->address->city = $order->shipping_city;
         $shippingInfo->address->state = $order->shipping_state;
-        $shippingInfo->address->zip = preg_replace('/[^a-zA-Z0-9]/', '', $order->shipping_postcode);
+        $shippingInfo->address->zip = $order->shipping_postcode;
         $shippingInfo->address->country = $order->shipping_country;
 
         return $shippingInfo;

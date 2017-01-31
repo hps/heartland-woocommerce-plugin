@@ -19,6 +19,12 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+
+####1.9.2
+* Updated PHP SDK to sanitize the card holder details
+* validations are added to check the length of first name, last name, state, city, phone, email and zip values
+* Test against Wordpress 4.7
+
 ####1.9.1
 * Corrected CSS bug with Rosa theam displaying contents of script tags
 

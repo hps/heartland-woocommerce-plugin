@@ -286,7 +286,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $hpsaddress->address = $order->billing_address_1;
         $hpsaddress->city = $order->billing_city;
         $hpsaddress->state = $order->billing_state;
-        $hpsaddress->zip = preg_replace('/[^a-zA-Z0-9]/', '', $order->billing_postcode);
+        $hpsaddress->zip = $order->billing_postcode;
         $hpsaddress->country = $order->billing_country;
         return $hpsaddress;
     }
@@ -296,8 +296,8 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $cardHolder = new HpsCardHolder();
         $cardHolder->firstName = $order->billing_first_name;
         $cardHolder->lastName = $order->billing_last_name;
-        $cardHolder->phone = preg_replace('/[^0-9]/', '', $order->billing_phone);
-        $cardHolder->emailAddress = $order->billing_email;
+        $cardHolder->phone = $order->billing_phone;
+        $cardHolder->email = $order->billing_email;
         $cardHolder->address = $hpsaddress;
         return $cardHolder;
     }
