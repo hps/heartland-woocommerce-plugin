@@ -40,8 +40,6 @@ class WC_Gateway_SecureSubmit_PayPal_ReviewOrder
         $sessionInfo = $this->parent->getPorticoService()->sessionInfo($_GET['token']);
         $shippingInfo = $sessionInfo->shipping;
 
-        error_log(print_r($sessionInfo, true));
-
         if (empty($sessionInfo)) {
             return;
         }
