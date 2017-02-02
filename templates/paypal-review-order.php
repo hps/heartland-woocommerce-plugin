@@ -47,8 +47,6 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
                 if(isset($checkoutForm['paypalexpress_initiated'])) {
                     $customer = maybe_unserialize(WC()->session->customer);
 
-                    error_log(print_r($myresult, true));
-
                     $address = array(
                         'first_name'     => $myresult->buyer->firstName,
                         'last_name'     => $myresult->buyer->lastName,
