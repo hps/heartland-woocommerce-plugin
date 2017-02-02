@@ -15,7 +15,7 @@ class WC_Gateway_SecureSubmit_PayPal_Refund
 
     public function call($orderId, $amount, $reason)
     {
-        $order = wc_get_order($order_id);
+        $order = wc_get_order($orderId);
 
         if (!$this->parent->can_refund_order($order)) {
             return false;
