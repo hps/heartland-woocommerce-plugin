@@ -1,11 +1,11 @@
 <phpunit
-	bootstrap="tests/bootstrap.php"
-	backupGlobals="false"
-	colors="true"
-	convertErrorsToExceptions="true"
-	convertNoticesToExceptions="true"
-	convertWarningsToExceptions="true"
-	>
+    bootstrap="tests/bootstrap.php"
+    backupGlobals="false"
+    colors="true"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    >
   <php>
     <ini name="zend.enable_gc" value="0" />
     <ini name="memory_limit" value="-1" />
@@ -13,12 +13,12 @@
     <ini name="error_reporting" value="32767" />
   </php>
 
-	<testsuites>
-		<testsuite>
-			<directory suffix=".php">./tests/unit/</directory>
+    <testsuites>
+        <testsuite>
+            <directory suffix=".php">./tests/unit/</directory>
       <directory suffix=".php">./tests/integration/</directory>
-		</testsuite>
-	</testsuites>
+        </testsuite>
+    </testsuites>
 
   <filter>
     <whitelist>

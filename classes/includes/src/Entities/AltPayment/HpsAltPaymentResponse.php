@@ -24,6 +24,11 @@ class HpsAltPaymentResponse extends HpsAuthorization
     public static function nvpToArray($pairs)
     {
         $array = array();
+
+        if (empty($pairs) || !isset($pairs->NameValuePair)) {
+            return $array;
+        }
+
         foreach ($pairs->NameValuePair as $pair) {
             $array[(string)$pair->Name] = (string)$pair->Value;
         }

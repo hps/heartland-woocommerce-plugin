@@ -43,28 +43,28 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
             <p>
                 <?php
                 $checkoutForm = maybe_unserialize(WC()->session->checkout_form);
-                $myresult = maybe_unserialize(WC()->session->result);
+                $myresult = maybe_unserialize(WC()->session->paypal_session_info);
                 if(isset($checkoutForm['paypalexpress_initiated'])) {
                     $customer = maybe_unserialize(WC()->session->customer);
 
                     $address = array(
-                        'first_name' 	=> $myresult->buyer->firstName,
-                        'last_name' 	=> $myresult->buyer->lastName,
-                        'address_1'		=> $myresult->shipping->address->address,
-                        'city'			=> $myresult->shipping->address->city ,
-                        'state'			=> $myresult->shipping->address->state ,
-                        'postcode'		=> $myresult->shipping->address->zip,
-                        'country'		=> $myresult->shipping->address->country);
+                        'first_name'     => $myresult->buyer->firstName,
+                        'last_name'     => $myresult->buyer->lastName,
+                        'address_1'        => $myresult->shipping->address->address,
+                        'city'            => $myresult->shipping->address->city ,
+                        'state'            => $myresult->shipping->address->state ,
+                        'postcode'        => $myresult->shipping->address->zip,
+                        'country'        => $myresult->shipping->address->country);
 
                     if(is_user_logged_in()) {
                         $address = array(
-                            'first_name' 	=> $myresult->buyer->firstName,
-                            'last_name' 	=> $myresult->buyer->lastName,
-                            'address_1'		=> isset(WC()->customer->address_1) ? WC()->customer->address_1 : $myresult->shipping->address->address,
-                            'city'			=> isset(WC()->customer->city) ? WC()->customer->city :$myresult->shipping->address->city ,
-                            'state'			=> isset(WC()->customer->state) ? WC()->customer->state :$myresult->shipping->address->state ,
-                            'postcode'		=> isset(WC()->customer->postcode) ? WC()->customer->postcode : $myresult->shipping->address->zip,
-                            'country'		=> isset(WC()->customer->country) ? WC()->customer->country :$myresult->shipping->address->country);
+                            'first_name'     => $myresult->buyer->firstName,
+                            'last_name'     => $myresult->buyer->lastName,
+                            'address_1'        => isset(WC()->customer->address_1) ? WC()->customer->address_1 : $myresult->shipping->address->address,
+                            'city'            => isset(WC()->customer->city) ? WC()->customer->city :$myresult->shipping->address->city ,
+                            'state'            => isset(WC()->customer->state) ? WC()->customer->state :$myresult->shipping->address->state ,
+                            'postcode'        => isset(WC()->customer->postcode) ? WC()->customer->postcode : $myresult->shipping->address->zip,
+                            'country'        => isset(WC()->customer->country) ? WC()->customer->country :$myresult->shipping->address->country);
                     }
                 } else {
                     $address = array(
@@ -95,18 +95,20 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
             <p>
                 <?php
                 $checkoutForm = maybe_unserialize(WC()->session->checkout_form);
-                $myresult = maybe_unserialize(WC()->session->result);
+                $myresult = maybe_unserialize(WC()->session->paypal_session_info);
 
-                $address = array(
-                    'first_name' 	=> $myresult->shipping->name,
-                    'company'		=> isset($checkoutForm["shipping_company"]) ? $checkoutForm["shipping_company"] : '',
-                    'address_1'		=> $myresult->shipping->address->address,
-                    'city'			=> $myresult->shipping->address->city,
-                    'state'			=> $myresult->shipping->address->state,
-                    'postcode'		=> $myresult->shipping->address->zip,
-                    'country'		=> $myresult->shipping->address->country
-                ) ;
-                echo WC()->countries->get_formatted_address( $address );
+                if (!empty($myresult) && isset($myresult->shipping)) {
+                    $address = array(
+                        'first_name'     => $myresult->shipping->name,
+                        'company'        => isset($checkoutForm["shipping_company"]) ? $checkoutForm["shipping_company"] : '',
+                        'address_1'        => $myresult->shipping->address->address,
+                        'city'            => $myresult->shipping->address->city,
+                        'state'            => $myresult->shipping->address->state,
+                        'postcode'        => $myresult->shipping->address->zip,
+                        'country'        => $myresult->shipping->address->country
+                    ) ;
+                    echo WC()->countries->get_formatted_address( $address );
+                }
                 ?>
             </p>
         </div>
@@ -135,23 +137,12 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
     </div>
     <form name="" action="" method="post">
         <?php
-        function curPageURL() {
-            $pageURL = 'http';
-            if (@$_SERVER["HTTPS"] == "on") {$pageURL .= "s";}
-            $pageURL .= "://";
-            if ($_SERVER["SERVER_PORT"] != "80") {
-                $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
-            } else {
-                $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
-            }
-            return $pageURL;
-        }
 
         woocommerce_login_form(
             array(
                 'message'  => 'Please login or create an account to complete your order.',
-                'redirect' => curPageURL(),
-                'hidden'   => true
+                'redirect' => get_permalink(),
+                'hidden'   => true,
             )
         );
         $result = unserialize(WC()->session->RESULT);
@@ -185,11 +176,13 @@ $show_login = apply_filters('paypal-for-woocommerce-show-login', !is_user_logged
             <input type="hidden" name="address" value="<?php echo WC()->customer->get_address(); ?>">
         </p>
     </form>
-<?php else:
-        echo '<div class="clear"></div>';
-        echo '<p><a class="button" href="' . $woocommerce->cart->get_cart_url() . '">'.__('Cancel order', 'wc_securesubmit').'</a> ';
-        echo '<input type="submit" onclick="jQuery(this).attr(\'disabled\', \'disabled\').val(\'Processing\'); jQuery(this).parents(\'form\').submit(); return false;" class="button" value="' . __( 'Place Order','wc_securesubmit') . '" /></p>';
-    ?>
+<?php else: ?>
+        <div class="clear"></div>
+        <p>
+            <a class="button" href="<?php echo $woocommerce->cart->get_cart_url() ?>"><?php echo __('Cancel order', 'wc_securesubmit') ?></a>
+            <input type="submit" onclick="jQuery(this).attr('disabled', 'disabled').val('Processing'); jQuery(this).parents('form').submit(); return false;"
+                   class="button" value="<?php echo __( 'Place Order','wc_securesubmit') ?>" />
+        </p>
     </form><!--close the checkout form-->
 <?php endif; ?>
 <div class="clear"></div>
