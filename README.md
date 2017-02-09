@@ -19,6 +19,9 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+####1.10.0
+* Restructured PayPal code for ease of future enhancements
+* Add support for PayPal In-Context/One Touch
 
 ####1.9.2
 * Updated PHP SDK to sanitize the card holder details

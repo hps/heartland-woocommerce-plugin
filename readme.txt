@@ -35,6 +35,10 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section.
 
 == Changelog ==
+= 1.10.0 =
+* Restructured PayPal code for ease of future enhancements
+* Add support for PayPal In-Context/One Touch
+
 = 1.9.2 =
 * Updated PHP SDK to sanitize the card holder details
 * validations are added to check the length of first name, last name, state, city, phone, email and zip values
