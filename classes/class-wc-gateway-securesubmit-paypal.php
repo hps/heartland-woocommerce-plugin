@@ -225,8 +225,8 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
      */
     public function can_refund_order($order)
     {
-        if (!empty($order)) {
-            return true;
+        if (empty($order)) {
+            return false;
         }
 
         $transactionId = $order->get_transaction_id();
