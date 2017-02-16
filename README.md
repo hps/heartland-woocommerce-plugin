@@ -19,6 +19,9 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+####1.10.1
+* Fix context error with PHP versions before 5.5
+
 ####1.10.0
 * Restructured PayPal code for ease of future enhancements
 * Add support for PayPal In-Context/One Touch

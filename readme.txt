@@ -35,6 +35,9 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section.
 
 == Changelog ==
+= 1.10.1 =
+* Fix context error with PHP versions before 5.5
+
 = 1.10.0 =
 * Restructured PayPal code for ease of future enhancements
 * Add support for PayPal In-Context/One Touch
