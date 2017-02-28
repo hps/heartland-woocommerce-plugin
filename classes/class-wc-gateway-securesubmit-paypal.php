@@ -80,6 +80,10 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
             return;
         }
 
+        if ($this->enabled === 'no') {
+            return;
+        }
+
         $url = 'https://api.heartlandportico.com/SecureSubmit.v1/token/2.1/securesubmit.js';
         wp_enqueue_script('hps_wc_securesubmit_library', $url, array(), '2.1', true);
 
