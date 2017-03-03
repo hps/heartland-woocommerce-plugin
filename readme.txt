@@ -35,6 +35,10 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section.
 
 == Changelog ==
+= 1.10.2 =
+* Fix issue with PayPal starting incontext when not enabled
+* Fix capture against partially reversed transactions
+
 = 1.10.1 =
 * Fix context error with PHP versions before 5.5
 
