@@ -499,7 +499,7 @@
     }
 
     addHandler(document, 'DOMContentLoaded', function() {
-        if (wc_securesubmit_params) {
+        if (window.wc_securesubmit_params) {
             if (!wc_securesubmit_params.handler) {
                 var handler = formHandler;
                 if (wc_securesubmit_params.use_iframes) {
@@ -516,7 +516,7 @@
                 .on('checkout_place_order_securesubmit', wc_securesubmit_params.handler);
         }
 
-        if (wc_securesubmit_paypal_params) {
+        if (window.wc_securesubmit_paypal_params) {
             if (!wc_securesubmit_paypal_params.handler) {
                 wc_securesubmit_paypal_params.handler = paypalPreventCheckoutSubmit;
             }

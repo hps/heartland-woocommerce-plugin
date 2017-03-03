@@ -157,6 +157,10 @@ class WC_Gateway_SecureSubmit_MasterPass extends WC_Payment_Gateway
             return;
         }
 
+        if ($this->enabled === 'no') {
+            return;
+        }
+
         if ('production' === $this->environment) {
             $masterpassClient = 'https://www.masterpass.com/lightbox/Switch/integration/MasterPass.client.js';
         } else {
