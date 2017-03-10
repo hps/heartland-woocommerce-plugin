@@ -28,16 +28,6 @@ return array(
         'description' => __('This controls the description which the user sees during checkout.', 'wc_securesubmit'),
         'default'     => __('Pay via PayPal; you can pay with your credit card if you don\'t have a PayPal account.', 'wc_securesubmit'),
     ),
-    'enable_credit' => array(
-        'title'       => __('PayPal Credit', 'wc_securesubmit'),
-        'type'        => 'checkbox',
-        'label'       => __('Enable PayPal Credit', 'wc_securesubmit'),
-        'default'     => 'no',
-        'description' => __('PayPal Express Checkout lets you give customers access to financing through Paypal Credit&#174; - at no additional cost to you.', 'wc_securesubmit')
-                       . __('You get paid up front, even though customers have more time to pay.', 'wc_securesubmit')
-                       . __('A pre-integrated payment button lets customers pay quickly with Paypal Credit&#174;.', 'wc_securesubmit')
-                       . sprintf(__('<a href="%s" target="_blank">Learn More</a>', 'wc_securesubmit'), 'https://www.paypal.com/webapps/mpp/promotional-financing'),
-    ),
     'testmode' => array(
         'title'       => __('PayPal Sandbox', 'wc_securesubmit'),
         'type'        => 'checkbox',

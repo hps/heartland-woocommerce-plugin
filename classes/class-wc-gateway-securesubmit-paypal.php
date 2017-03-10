@@ -44,7 +44,6 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
         $this->public_key     = $this->get_option('public_key');
         $this->secret_key     = $this->get_option('secret_key');
         $this->enabled        = $this->get_option('enabled');
-        $this->enable_credit  = 'yes' === $this->get_option('enable_credit', 'no');
 
         // actions
         add_action('woocommerce_api_' . strtolower(get_class()), array($this, 'processPaypalCheckout'), 12);
@@ -57,32 +56,6 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
         $this->finalizeOrder = new WC_Gateway_SecureSubmit_PayPal_FinalizeOrder($this);
         $this->reviewOrder   = new WC_Gateway_SecureSubmit_PayPal_ReviewOrder($this);
         $this->refund        = new WC_Gateway_SecureSubmit_PayPal_Refund($this);
-    }
-
-    public function is_available()
-    {
-        if ($this->enabled == "yes") {
-            if (WC()->version < '1.5.8') {
-                return false;
-            }
-
-            // we will be adding more currencies in the near future, but today we are bound to USD
-            if (!in_array(get_option('woocommerce_currency'), array('USD'))) {
-                return false;
-            }
-
-            if (!$this->secret_key) {
-                return false;
-            }
-
-            if (!$this->public_key) {
-                return false;
-            }
-
-            return true;
-        }
-
-        return false;
     }
 
     public static function instance()
@@ -133,7 +106,6 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
 
         $params = array(
             'ajaxUrl' => admin_url('admin-ajax.php'),
-            'env' => $this->testmode ? 'sandbox' : 'production',
         );
 
         wp_localize_script('woocommerce_securesubmit', 'wc_securesubmit_paypal_params', $params);
@@ -146,9 +118,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
             $this->setSession('checkout_form', $_POST);
         }
 
-        $credit = isset($_POST['paypalexpress_credit']) || isset($_GET['paypalexpress_credit']);
-
-        print json_encode($this->createSession->call(null, $credit));
+        print json_encode($this->createSession->call(null));
         wp_die();
     }
 
@@ -224,9 +194,8 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
         $woocommerce = WC();
         $this->setSession('ss-paypal-express-checkout-inprogress', true);
         $this->setSession('checkout_form', $_POST);
-        $credit = isset($_POST['paypalexpress_credit']) || isset($_GET['paypalexpress_credit']);
 
-        $response = $this->createSession->call(null, $credit);
+        $response = $this->createSession->call(null);
         $redirectUrl = $response['redirect'];
 
         if (isset($response['message'])) {
@@ -250,7 +219,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
             return $this->createSession->call($orderId);
         }
 
-        $this->setSession('ss-paypal-express-checkout-inprogress', null);
+        $this->parent->setSession('ss-paypal-express-checkout-inprogress', null);
     }
 
     /**
