@@ -13,7 +13,7 @@ class WC_Gateway_SecureSubmit_PayPal_CreateSession
         $this->parent = $parent;
     }
 
-    public function call($orderId)
+    public function call($orderId, $isCredit = false)
     {
         $this->parent->setSession('ss_order_id', $orderId);
         $override = WC()->session->get('process_payment_override');
@@ -45,6 +45,7 @@ class WC_Gateway_SecureSubmit_PayPal_CreateSession
         }
 
         $currency = strtolower(get_woocommerce_currency());
+        $buyer->credit = $isCredit;
 
         //call portico to create session
         $response;
