@@ -453,7 +453,9 @@
     }
 
     function paypalPreventCheckoutSubmit(e) {
-        if (!jQuery('[name="payment_method"][value="heartland_paypal"]').is(':checked')) {
+        if (jQuery('[name="payment_method"][value^="heartland_paypal"]').length !== 0
+            && !jQuery('[name="payment_method"][value^="heartland_paypal"]').is(':checked')
+        ) {
             return true;
         }
 
@@ -463,9 +465,6 @@
     }
 
     function paypalIncontextReady() {
-        var config = {
-            env: 'sandbox'
-        };
         var buttons = [];
 
         jQuery('[id^="hps_paypal_shortcut_"]').each(function (i, el) { buttons.push(el); });
@@ -481,11 +480,12 @@
         }
 
         paypal.checkout.setup('undefined', {
-            environment: config.env,
+            environment: wc_securesubmit_paypal_params.env,
             button: buttons,
             click: function (e) {
-                if (jQuery('[name="payment_method"][value="heartland_paypal"]').length !== 0
-                    && !jQuery('[name="payment_method"][value="heartland_paypal"]').is(':checked')) {
+                if (jQuery('[name="payment_method"][value^="heartland_paypal"]').length !== 0
+                    && !jQuery('[name="payment_method"][value^="heartland_paypal"]').is(':checked')
+                ) {
                     return true;
                 }
 
@@ -522,7 +522,8 @@
             }
 
             jQuery('form.checkout')
-                .on('checkout_place_order_heartland_paypal', wc_securesubmit_paypal_params.handler);
+                .on('checkout_place_order_heartland_paypal', wc_securesubmit_paypal_params.handler)
+                .on('checkout_place_order_heartland_paypal_credit', wc_securesubmit_paypal_params.handler);
 
             window.paypalCheckoutReady = paypalIncontextReady;
         }
