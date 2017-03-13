@@ -431,16 +431,25 @@
     };
     window.securesubmitLoadIframes();
 
-    function paypalShowIncontext() {
+    function paypalShowIncontext(isCredit) {
+        var data = {
+            action: 'wc_securesubmit_paypal_start_incontext',
+            paypalexpress_initiated: 'true'
+        };
+
         paypal.checkout.initXO();
+        isCredit = isCredit
+            || jQuery('[name="payment_method"][value^="heartland_paypal"]:checked').length !== 0
+            && jQuery('[name="payment_method"][value^="heartland_paypal"]:checked').attr('value').indexOf('credit') !== -1;
+
+        if (isCredit) {
+            data.paypalexpress_credit = 'true';
+        }
 
         jQuery.ajax({
             type: 'POST',
             url: wc_securesubmit_paypal_params.ajaxUrl,
-            data: {
-                action: 'wc_securesubmit_paypal_start_incontext',
-                paypalexpress_initiated: 'true'
-            },
+            data: data,
             dataType: 'json',
             success: function (response) {
                 paypal.checkout.startFlow(response.redirect);
@@ -483,6 +492,8 @@
             environment: wc_securesubmit_paypal_params.env,
             button: buttons,
             click: function (e) {
+                var isCredit = e.target.id === 'hps_paypal_shortcut_express_button_credit';
+
                 if (jQuery('[name="payment_method"][value^="heartland_paypal"]').length !== 0
                     && !jQuery('[name="payment_method"][value^="heartland_paypal"]').is(':checked')
                 ) {
@@ -490,7 +501,7 @@
                 }
 
                 e.preventDefault();
-                paypalShowIncontext();
+                paypalShowIncontext(isCredit);
                 return false;
             }
         });
