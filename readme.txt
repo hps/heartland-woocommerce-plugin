@@ -35,6 +35,10 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section.
 
 == Changelog ==
+= 1.11.0 =
+* Add PayPal Credit as a payment option. All settings for PayPal apply to PayPal Credit
+* Fix styling issues with TwentySeventeen theme
+
 = 1.10.2 =
 * Fix issue with PayPal starting incontext when not enabled
 * Fix capture against partially reversed transactions
