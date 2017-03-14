@@ -23,9 +23,7 @@ class WC_Gateway_SecureSubmit_Payment
         $exp_month = isset($_POST['exp_month']) ? woocommerce_clean($_POST['exp_month']) : '';
         $exp_year = isset($_POST['exp_year']) ? woocommerce_clean($_POST['exp_year']) : '';
         $card_type = isset($_POST['card_type']) ? woocommerce_clean($_POST['card_type']) : '';
-		
-		do_action( 'hss_cc_last4', $orderId, $card_type, $last_four);
-
+	
         if (isset($_POST['save_card']) && $_POST['save_card'] === "true") {
             $save_card_to_customer = true;
         } else {
@@ -165,6 +163,7 @@ class WC_Gateway_SecureSubmit_Payment
                       : 'authorized';
                 $order->add_order_note(__('SecureSubmit payment ' . $verb .($authenticated ? ' and authenticated' : ''), 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
                 $order->payment_complete($response->transactionId);
+		do_action('wc_securesubmit_order_credit_card_details', $orderId, $card_type, $last_four);
                 WC()->cart->empty_cart();
 
                 return array(
