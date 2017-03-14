@@ -1,8 +1,5 @@
-/*fix css mistake in rosa theme
-*/
-
-div.payment_method_securesubmit div,
-div.payment_method_securesubmit label,
+div.payment_method_securesubmit > div,
+div.payment_method_securesubmit > label,
 div.payment_method_securesubmit fieldset,
 div.payment_method_securesubmit input[type="tel"],
 div.payment_method_securesubmit input[type="text"],
@@ -95,6 +92,7 @@ html body .woocommerce .payment_method_securesubmit iframe{
    vertical-align: baseline;
    padding: 0;
    margin: 0;
+	 background-color: #fff !important;
 }
 
 /* general styles */
@@ -178,6 +176,11 @@ html body .woocommerce .payment_method_securesubmit iframe{
 }
 
 /* saved cards */
+
+/* display the 'select payment method' radio buttons even if hidden in theme */
+.wc_payment_method.payment_method_securesubmit .saved-card-selector input[type=radio] {
+	display: inline-block;
+}
 
 .saved-creditcards-list .button {
    font-size: 12px !important;
@@ -367,6 +370,10 @@ html body .woocommerce .payment_method_securesubmit iframe{
 
 /* credit card fields labels */
 
+#payment .securesubmit-content div.form-row {
+	padding: 1em;
+}
+
 .payment_method_securesubmit div.payment_box .securesubmit_new_card .securesubmit_new_card_info label {
    text-transform: uppercase;
    font-size: 13px;
@@ -381,7 +388,6 @@ html body .woocommerce .payment_method_securesubmit iframe{
 #heartland-field-body, #heartland-field-wrapper {
    width: 100%;
 }
-
 
 #securesubmit_card_number {
    /*background-image: url(../../assets/images/ss-inputcard-blank@2x.png); */
@@ -527,19 +533,6 @@ textarea:focus {
 .securesubmit-content {
    padding: 0 1.5em;
 }
-
-/*
-.securesubmit-content .saved-creditcards-list {
-   margin: 0 !important;
-   padding: 0 !important;
-}
-
-.securesubmit_new_card_info .form-row {
-   margin: 0 !important;
-   padding: 0 !important;
-}
-*/
-
 
 .securesubmit-content .saved-creditcards-list {
    margin-bottom: 0 !important;
