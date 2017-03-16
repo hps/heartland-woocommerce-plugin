@@ -35,6 +35,9 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section.
 
 == Changelog ==
+= 1.11.1=
+* Add action hook (`wc_securesubmit_order_credit_card_details`) to provide card type and last four digits of the card number upon successful payment
+
 = 1.11.0 =
 * Add PayPal Credit as a payment option. All settings for PayPal apply to PayPal Credit
 * Fix styling issues with TwentySeventeen theme
