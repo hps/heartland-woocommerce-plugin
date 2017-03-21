@@ -162,8 +162,8 @@ class WC_Gateway_SecureSubmit_Payment
                       ? 'captured'
                       : 'authorized';
                 $order->add_order_note(__('SecureSubmit payment ' . $verb .($authenticated ? ' and authenticated' : ''), 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
+                do_action('wc_securesubmit_order_credit_card_details', $orderId, $card_type, $last_four);
                 $order->payment_complete($response->transactionId);
-		do_action('wc_securesubmit_order_credit_card_details', $orderId, $card_type, $last_four);
                 WC()->cart->empty_cart();
 
                 return array(
