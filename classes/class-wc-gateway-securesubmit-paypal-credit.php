@@ -22,7 +22,7 @@ class WC_Gateway_SecureSubmit_PayPal_Credit extends WC_Gateway_SecureSubmit_PayP
         $this->method_title = __('Heartland Paypal Credit', 'wc_securesubmit');
         $this->enabled      =
             WC_Gateway_SecureSubmit_PayPal::instance()->enabled === 'yes' &&
-            WC_Gateway_SecureSubmit_PayPal::instance()->enable_credit;
+            WC_Gateway_SecureSubmit_PayPal::instance()->enable_credit ? 'yes' : 'no';
         $this->title        = apply_filters(
             'wc_securesubmit_paypal_credit_title',
             $this->title . sprintf(' %s', __('Credit', 'wc_securesubmit'))
