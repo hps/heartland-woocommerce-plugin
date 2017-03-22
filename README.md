@@ -19,6 +19,9 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+####1.11.2
+* Patch Errant paypall prompt
+
 ####1.11.1
 * Add action hook (`wc_securesubmit_order_credit_card_details`) to provide card type and last four digits of the card number upon successful payment
 
