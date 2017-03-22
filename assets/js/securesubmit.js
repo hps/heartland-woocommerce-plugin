@@ -494,7 +494,7 @@
             click: function (e) {
                 var isCredit = e.target.id === 'hps_paypal_shortcut_express_button_credit';
 
-                if (jQuery('[name="payment_method"][value^="heartland_paypal"]').length !== 0
+                if (jQuery('[name="payment_method"][value^="heartland_paypal"]').length === 0
                     && !jQuery('[name="payment_method"][value^="heartland_paypal"]').is(':checked')
                 ) {
                     return true;
