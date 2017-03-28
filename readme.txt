@@ -35,6 +35,10 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section.
 
 == Changelog ==
+= 1.11.2=
+* Fix errant PayPal prompt
+* Move call of `wc_securesubmit_order_credit_card_details` so that it is called before order confirmation email is sent
+
 = 1.11.1=
 * Add action hook (`wc_securesubmit_order_credit_card_details`) to provide card type and last four digits of the card number upon successful payment
 
