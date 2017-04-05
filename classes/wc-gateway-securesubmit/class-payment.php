@@ -23,7 +23,7 @@ class WC_Gateway_SecureSubmit_Payment
         $exp_month = isset($_POST['exp_month']) ? woocommerce_clean($_POST['exp_month']) : '';
         $exp_year = isset($_POST['exp_year']) ? woocommerce_clean($_POST['exp_year']) : '';
         $card_type = isset($_POST['card_type']) ? woocommerce_clean($_POST['card_type']) : '';
-	
+
         if (isset($_POST['save_card']) && $_POST['save_card'] === "true") {
             $save_card_to_customer = true;
         } else {
@@ -63,8 +63,15 @@ class WC_Gateway_SecureSubmit_Payment
                 $hpstoken->tokenValue = $securesubmit_token;
             }
 
+            $orderId = null;
+            if (method_exists($order, 'get_id')) {
+                $orderId = $order->get_id();
+            } else {
+                $orderId = $order->id;
+            }
+
             $details = new HpsTransactionDetails();
-            $details->invoiceNumber = $order->id;
+            $details->invoiceNumber = $orderId;
 
             try {
                 if ($this->parent->paymentaction == 'sale') {
@@ -115,8 +122,15 @@ class WC_Gateway_SecureSubmit_Payment
                     $authenticated = true;
                 }
 
+                $orderTotal = null;
+                if (method_exists($object, 'get_total')) {
+                    $orderTotal = $object->get_total();
+                } else {
+                    $orderTotal = $order->order_total;
+                }
+
                 $response = $builder
-                    ->withAmount($order->order_total)
+                    ->withAmount($orderTotal)
                     ->withCurrency(strtolower(get_woocommerce_currency()))
                     ->withToken($hpstoken)
                     ->withCardHolder($cardHolder)
@@ -154,7 +168,7 @@ class WC_Gateway_SecureSubmit_Payment
                     $session_applied_gift_card = WC()->session->get('securesubmit_gift_card_applied');
                     if (!empty($session_applied_gift_card)) {
                         $gift_card_order_placement = new giftCardOrderPlacement();
-                        $gift_card_order_placement->processGiftCardPayment($order->id);
+                        $gift_card_order_placement->processGiftCardPayment($orderId);
                     }
                 }
 
@@ -176,8 +190,8 @@ class WC_Gateway_SecureSubmit_Payment
                 if ($e->getCode()== HpsExceptionCodes::POSSIBLE_FRAUD_DETECTED && $this->parent->email_fraud == 'yes' && $this->parent->fraud_address != '') {
                     wc_mail(
                         $this->parent->fraud_address,
-                        'Suspicious order ' . ($this->parent->allow_fraud == 'yes' ? 'allowed' : 'declined') . ' (' . $order->id . ')',
-                        'Hello,<br><br>Heartland has determined that you should review order ' . $order->id . ' for the amount of ' . $order->order_total . '.<p><br></p>'.
+                        'Suspicious order ' . ($this->parent->allow_fraud == 'yes' ? 'allowed' : 'declined') . ' (' . $orderId . ')',
+                        'Hello,<br><br>Heartland has determined that you should review order ' . $orderId . ' for the amount of ' . $orderTotal . '.<p><br></p>'.
                         '<p>You have received this email because you have configured the \'Email store owner on suspicious orders\' settings in the [WooCommerce | Checkout | SecureSubmit] options page.</p>'
                     );
                 }

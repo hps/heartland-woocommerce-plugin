@@ -22,12 +22,19 @@ class WC_Gateway_SecureSubmit_MasterPass_Refund
                 throw new Exception(__('Order cannot be found', 'wc_securesubmit'));
             }
 
-            $masterpassOrderId = get_post_meta($order->id, '_masterpass_order_id', true);
+            $orderId = null;
+            if (method_exists($order, 'get_id')) {
+                $orderId = $order->get_id();
+            } else {
+                $orderId = $order->id;
+            }
+
+            $masterpassOrderId = get_post_meta($orderId, '_masterpass_order_id', true);
             if (!$masterpassOrderId) {
                 throw new Exception(__('MasterPass order id cannot be found', 'wc_securesubmit'));
             }
 
-            $masterpassPaymentStatus = get_post_meta($order->id, '_masterpass_payment_status', true);
+            $masterpassPaymentStatus = get_post_meta($orderId, '_masterpass_payment_status', true);
             if ($masterpassPaymentStatus === 'authorized') {
                 throw new Exception(__(sprintf('Transaction has not been captured'), 'wc_securesubmit'));
             }
@@ -46,7 +53,7 @@ class WC_Gateway_SecureSubmit_MasterPass_Refund
                 $orderData
             );
 
-            update_post_meta($order->id, '_masterpass_payment_status', 'refunded', 'captured');
+            update_post_meta($orderId, '_masterpass_payment_status', 'refunded', 'captured');
             $order->add_order_note(__('MasterPass payment refunded', 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
             return true;
         } catch (Exception $e) {

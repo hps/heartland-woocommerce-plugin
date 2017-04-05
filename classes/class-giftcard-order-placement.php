@@ -16,7 +16,13 @@ class giftCardOrderPlacement {
 
     public function addItemsToPostOrderDisplay( $rows, $order_object ) {
 
-        $order_id           = $order_object->id;
+        $order_id = null;
+        if (method_exists($order, 'get_id')) {
+            $order_id = $order_object->get_id();
+        } else {
+            $order_id = $order_object->id;
+        }
+
         $applied_gift_cards = unserialize( get_post_meta( $order_id, '_securesubmit_used_card_data', TRUE ) );
         $original_balance   = get_post_meta( $order_id, '_securesubmit_original_reported_total', TRUE );
 

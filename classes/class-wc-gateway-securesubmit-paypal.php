@@ -324,7 +324,11 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
     {
         $buyer = new HpsBuyerData();
         if ($order instanceof WC_Order) {
-            $buyer->emailAddress = $order->billing_email;
+            if (method_exists($order, 'get_billing_email')) {
+                $buyer->emailAddress = $order->get_billing_email();
+            } else {
+                $buyer->emailAddress = $order->billing_email;
+            }
         }
         $buyer->cancelUrl = wc_get_cart_url();
         $buyer->returnUrl = add_query_arg(
@@ -354,8 +358,8 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
             }
 
             $payment = new HpsPaymentData();
-            $payment->subtotal = $order->subtotal - $order->get_cart_discount_total() - $order->tax_total;
-            $payment->shippingAmount = $order->shipping_total;
+            $payment->subtotal = $order->get_subtotal() - $order->get_cart_discount_total() - $order->get_total_tax();
+            $payment->shippingAmount = $order->get_total_shipping();
             $payment->taxAmount = $taxAmount;
         }
         $payment->paymentType = $this->paymentaction == 'authorization' ? 'Authorization' : 'Sale';
@@ -369,13 +373,13 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
         }
 
         $shippingInfo = new HpsShippingInfo();
-        $shippingInfo->name = $order->shipping_first_name . ' ' . $order->shipping_last_name;
+        $shippingInfo->name = $order->get_shipping_first_name() . ' ' . $order->get_shipping_last_name();
         $shippingInfo->address = new HpsAddress();
-        $shippingInfo->address->address = $order->shipping_address_1;
-        $shippingInfo->address->city = $order->shipping_city;
-        $shippingInfo->address->state = $order->shipping_state;
-        $shippingInfo->address->zip = $order->shipping_postcode;
-        $shippingInfo->address->country = $order->shipping_country;
+        $shippingInfo->address->address = $order->get_shipping_address_1();
+        $shippingInfo->address->city = $order->get_shipping_city();
+        $shippingInfo->address->state = $order->get_shipping_state();
+        $shippingInfo->address->zip = $order->get_shipping_postcode();
+        $shippingInfo->address->country = $order->get_shipping_country();
 
         return $shippingInfo;
     }

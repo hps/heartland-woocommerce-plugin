@@ -62,9 +62,16 @@ class WC_Gateway_SecureSubmit_MasterPass_Payment
             $order->payment_complete($transactionId);
             $cart->empty_cart();
 
-            update_post_meta($order->id, '_transaction_id', $transactionId);
-            update_post_meta($order->id, '_masterpass_order_id', $authenticate->orderId);
-            update_post_meta($order->id, '_masterpass_payment_status', 'sale' === $this->masterpass->paymentAction ? 'captured' : 'authorized');
+            $orderId = null;
+            if (method_exists($order, 'get_total')) {
+                $orderId = $order->get_total();
+            } else {
+                $orderId = $order->id;
+            }
+
+            update_post_meta($orderId, '_transaction_id', $transactionId);
+            update_post_meta($orderId, '_masterpass_order_id', $authenticate->orderId);
+            update_post_meta($orderId, '_masterpass_payment_status', 'sale' === $this->masterpass->paymentAction ? 'captured' : 'authorized');
 
             return array(
                 'result'   => 'success',

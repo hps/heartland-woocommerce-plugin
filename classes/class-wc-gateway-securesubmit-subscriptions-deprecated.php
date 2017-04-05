@@ -55,12 +55,33 @@ class WC_Gateway_SecureSubmit_Subscriptions_Deprecated extends WC_Gateway_Secure
 
     public function maybeRenderSubscriptionPaymentMethod($paymentMethodToDisplay, $subscriptionDetails, WC_Order $order)
     {
-        if ($this->id !== $order->recurring_payment_method || !$order->customer_user) {
+        $orderRecurringPaymentMethod = null;
+        if (method_exists($order, 'get_recurring_payment_method')) {
+            $orderRecurringPaymentMethod = $order->get_recurring_payment_method();
+        } else {
+            $orderRecurringPaymentMethod = $order->recurring_payment_method;
+        }
+
+        $orderCustomerUser = null;
+        if (method_exists($order, 'get_customer_user')) {
+            $orderCustomerUser = $order->get_customer_user();
+        } else {
+            $orderCustomerUser = $order->customer_user;
+        }
+
+        if ($this->id !== $orderRecurringPaymentMethod || !$orderCustomerUser) {
             return $paymentMethodToDisplay;
         }
 
-        $userId = $order->customer_user;
-        $token  = get_post_meta($order->id, '_securesubmit_card_token', true);
+        $orderId = null;
+        if (method_exists($order, 'get_id')) {
+            $orderId = $order->get_id();
+        } else {
+            $orderId = $order->id;
+        }
+
+        $userId = $orderCustomerUser;
+        $token  = get_post_meta($orderId, '_securesubmit_card_token', true);
         $cards  = get_user_meta($userId, '_secure_submit_card', false);
 
         if ($cards) {
@@ -82,7 +103,14 @@ class WC_Gateway_SecureSubmit_Subscriptions_Deprecated extends WC_Gateway_Secure
 
     protected function saveTokenMeta($order, $token)
     {
-        add_post_meta($order->id, '_securesubmit_card_token', $token, true);
+        $orderId = null;
+        if (method_exists($order, 'get_id')) {
+            $orderId = $order->get_id();
+        } else {
+            $orderId = $order->id;
+        }
+
+        add_post_meta($orderId, '_securesubmit_card_token', $token, true);
     }
 }
 new WC_Gateway_SecureSubmit_Subscriptions();

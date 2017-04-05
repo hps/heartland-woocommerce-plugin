@@ -211,7 +211,14 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 
     public function process_capture($order)
     {
-        if (!$this->isTransactionActiveOnGateway($order->id)) {
+        $orderId = null;
+        if (method_exists($order, 'get_id')) {
+            $orderId = $order->get_id();
+        } else {
+            $orderId = $order->id;
+        }
+
+        if (!$this->isTransactionActiveOnGateway($orderId)) {
             $this->displayUserError('Payment already captured');
             return;
         }
@@ -229,9 +236,16 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 
     public function getOrderTransactionId($order)
     {
+        $orderId = null;
+        if (method_exists($order, 'get_id')) {
+            $orderId = $order->get_id();
+        } else {
+            $orderId = $order->id;
+        }
+
         $transactionId = false;
         $args = array(
-            'post_id' => $order->id,
+            'post_id' => $orderId,
             'approve' => 'approve',
         );
 
@@ -283,21 +297,21 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
     public function getOrderAddress($order)
     {
         $hpsaddress = new HpsAddress();
-        $hpsaddress->address = $order->billing_address_1;
-        $hpsaddress->city = $order->billing_city;
-        $hpsaddress->state = $order->billing_state;
-        $hpsaddress->zip = $order->billing_postcode;
-        $hpsaddress->country = $order->billing_country;
+        $hpsaddress->address = $order->get_billing_address_1();
+        $hpsaddress->city = $order->get_billing_city();
+        $hpsaddress->state = $order->get_billing_state();
+        $hpsaddress->zip = $order->get_billing_postcode();
+        $hpsaddress->country = $order->get_billing_country();
         return $hpsaddress;
     }
 
     public function getOrderCardHolder($order, $hpsaddress)
     {
         $cardHolder = new HpsCardHolder();
-        $cardHolder->firstName = $order->billing_first_name;
-        $cardHolder->lastName = $order->billing_last_name;
-        $cardHolder->phone = $order->billing_phone;
-        $cardHolder->email = $order->billing_email;
+        $cardHolder->firstName = $order->get_billing_first_name();
+        $cardHolder->lastName = $order->get_billing_last_name();
+        $cardHolder->phone = $order->get_billing_phone();
+        $cardHolder->email = $order->get_billing_email();
         $cardHolder->address = $hpsaddress;
         return $cardHolder;
     }

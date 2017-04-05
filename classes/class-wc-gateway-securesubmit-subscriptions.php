@@ -155,17 +155,35 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
 
     protected function saveTokenMeta($order, $token)
     {
-        add_post_meta($order->id, '_securesubmit_card_token', $token, true);
+        $orderId = null;
+        if (method_exists($order, 'get_id')) {
+            $orderId = $order->get_id();
+        } else {
+            $orderId = $order->id;
+        }
+        add_post_meta($orderId, '_securesubmit_card_token', $token, true);
         // save to subscriptions in order
-        foreach(wcs_get_subscriptions_for_order($order->id) as $subscription) {
-            update_post_meta($subscription->id, '_securesubmit_card_token', $token);
+        foreach(wcs_get_subscriptions_for_order($orderId) as $subscription) {
+            $subscriptionId = null;
+            if (method_exists($subscription, 'get_id')) {
+                $subscriptionId = $subscription->get_id();
+            } else {
+                $subscriptionId = $subscription->id;
+            }
+            update_post_meta($subscriptionId, '_securesubmit_card_token', $token);
         }
     }
 
     public function scheduledSubscriptionPayment($amount, $order, $productId = null)
     {
+        $orderPostStatus = null;
+        if (method_exists($order, 'get_post_status')) {
+            $orderPostStatus = $order->get_post_status();
+        } else {
+            $orderPostStatus = $order->post_status;
+        }
         // TODO: why is this necessary to prevent double authorization?
-        if ($order->post_status !== 'wc-pending') {
+        if ($orderPostStatus !== 'wc-pending') {
             return;
         }
 
@@ -180,10 +198,16 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
     {
         global $woocommerce;
 
-        if (!is_object($order)) {
-            $order = new WC_Order($order);
+        $order = wc_get_order($order);
+
+        $orderId = null;
+        if (method_exists($order, 'get_id')) {
+            $orderId = $order->get_id();
+        } else {
+            $orderId = $order->id;
         }
-        $tokenValue = get_post_meta($order->id, '_securesubmit_card_token', true);
+
+        $tokenValue = get_post_meta($orderId, '_securesubmit_card_token', true);
         $token = new HpsTokenData();
         $token->tokenValue = $tokenValue;
 
@@ -201,7 +225,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
             $cardHolder = $this->getOrderCardHolder($order, $hpsaddress);
 
             $details = new HpsTransactionDetails();
-            $details->invoiceNumber = $order->id;
+            $details->invoiceNumber = $orderId;
 
             $response = null;
             if ($amount == 0) {
@@ -227,7 +251,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
                 ($amount == 0 ? 'verify' : 'payment'),
                 $response->transactionId
             ));
-            add_post_meta($order->id, '_transaction_id', $response->transactionId, true);
+            add_post_meta($orderId, '_transaction_id', $response->transactionId, true);
 
             return $response;
         } catch (Exception $e) {
@@ -237,15 +261,36 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
 
     public function updateFailingPaymentMethod($old, $new, $key = null)
     {
-        update_post_meta($old->id, '_securesubmit_card_token', get_post_meta($new->id, '_securesubmit_card_token', true));
+        $oldOrderId = null;
+        if (method_exists($old, 'get_id')) {
+            $oldOrderId = $old->get_id();
+        } else {
+            $oldOrderId = $old->id;
+        }
+
+        $newOrderId = null;
+        if (method_exists($new, 'get_id')) {
+            $newOrderId = $new->get_id();
+        } else {
+            $newOrderId = $new->id;
+        }
+
+        update_post_meta($oldOrderId, '_securesubmit_card_token', get_post_meta($newOrderId, '_securesubmit_card_token', true));
     }
 
     public function addSubscriptionPaymentMeta($meta, $subscription)
     {
+        $subscriptionId = null;
+        if (method_exists($subscription, 'get_id')) {
+            $subscriptionId = $subscription->get_id();
+        } else {
+            $subscriptionId = $subscription->id;
+        }
+
         $meta[$this->id] = array(
             'post_meta' => array(
                 '_securesubmit_card_token' => array(
-                    'value' => get_post_meta($subscription->id, '_securesubmit_card_token', true),
+                    'value' => get_post_meta($subscriptionId, '_securesubmit_card_token', true),
                     'label' => 'SecureSubmit payment token',
                 ),
             ),
@@ -265,7 +310,14 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
 
     public function deleteResubscribeMeta($order)
     {
-        delete_user_meta($order->id, '_securesubmit_card_token');
+        $orderId = null;
+        if (method_exists($order, 'get_id')) {
+            $orderId = $order->get_id();
+        } else {
+            $orderId = $order->id;
+        }
+
+        delete_user_meta($orderId, '_securesubmit_card_token');
     }
 }
 new WC_Gateway_SecureSubmit_Subscriptions();
