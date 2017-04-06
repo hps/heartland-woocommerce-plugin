@@ -171,6 +171,7 @@ class WooCommerceSecureSubmitGateway
 
     protected function loadClasses()
     {
+        include_once('classes/class-util.php');
         include_once('classes/class-wc-gateway-securesubmit.php');
         include_once('classes/class-wc-gateway-securesubmit-paypal.php');
         include_once('classes/class-wc-gateway-securesubmit-paypal-credit.php');
