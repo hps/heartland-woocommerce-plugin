@@ -324,11 +324,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
     {
         $buyer = new HpsBuyerData();
         if ($order instanceof WC_Order) {
-            if (method_exists($order, 'get_billing_email')) {
-                $buyer->emailAddress = $order->get_billing_email();
-            } else {
-                $buyer->emailAddress = $order->billing_email;
-            }
+            $buyer->emailAddress = WC_SecureSubmit_Util::getData($order, 'get_billing_email', 'billing_email');
         }
         $buyer->cancelUrl = wc_get_cart_url();
         $buyer->returnUrl = add_query_arg(

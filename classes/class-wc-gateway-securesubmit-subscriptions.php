@@ -155,33 +155,19 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
 
     protected function saveTokenMeta($order, $token)
     {
-        $orderId = null;
-        if (method_exists($order, 'get_id')) {
-            $orderId = $order->get_id();
-        } else {
-            $orderId = $order->id;
-        }
+        $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
         add_post_meta($orderId, '_securesubmit_card_token', $token, true);
+
         // save to subscriptions in order
         foreach(wcs_get_subscriptions_for_order($orderId) as $subscription) {
-            $subscriptionId = null;
-            if (method_exists($subscription, 'get_id')) {
-                $subscriptionId = $subscription->get_id();
-            } else {
-                $subscriptionId = $subscription->id;
-            }
+            $subscriptionId = WC_SecureSubmit_Util::getData($subscription, 'get_id', 'id');
             update_post_meta($subscriptionId, '_securesubmit_card_token', $token);
         }
     }
 
     public function scheduledSubscriptionPayment($amount, $order, $productId = null)
     {
-        $orderPostStatus = null;
-        if (method_exists($order, 'get_post_status')) {
-            $orderPostStatus = $order->get_post_status();
-        } else {
-            $orderPostStatus = $order->post_status;
-        }
+        $orderPostStatus = WC_SecureSubmit_Util::getData($order, 'get_post_status', 'post_status');
         // TODO: why is this necessary to prevent double authorization?
         if ($orderPostStatus !== 'wc-pending') {
             return;
@@ -200,12 +186,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
 
         $order = wc_get_order($order);
 
-        $orderId = null;
-        if (method_exists($order, 'get_id')) {
-            $orderId = $order->get_id();
-        } else {
-            $orderId = $order->id;
-        }
+        $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
 
         $tokenValue = get_post_meta($orderId, '_securesubmit_card_token', true);
         $token = new HpsTokenData();
@@ -261,31 +242,15 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
 
     public function updateFailingPaymentMethod($old, $new, $key = null)
     {
-        $oldOrderId = null;
-        if (method_exists($old, 'get_id')) {
-            $oldOrderId = $old->get_id();
-        } else {
-            $oldOrderId = $old->id;
-        }
-
-        $newOrderId = null;
-        if (method_exists($new, 'get_id')) {
-            $newOrderId = $new->get_id();
-        } else {
-            $newOrderId = $new->id;
-        }
+        $oldOrderId = WC_SecureSubmit_Util::getData($old, 'get_id', 'id');
+        $newOrderId = WC_SecureSubmit_Util::getData($new, 'get_id', 'id');
 
         update_post_meta($oldOrderId, '_securesubmit_card_token', get_post_meta($newOrderId, '_securesubmit_card_token', true));
     }
 
     public function addSubscriptionPaymentMeta($meta, $subscription)
     {
-        $subscriptionId = null;
-        if (method_exists($subscription, 'get_id')) {
-            $subscriptionId = $subscription->get_id();
-        } else {
-            $subscriptionId = $subscription->id;
-        }
+        $subscriptionId = WC_SecureSubmit_Util::getData($subscription, 'get_id', 'id');
 
         $meta[$this->id] = array(
             'post_meta' => array(
@@ -310,13 +275,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
 
     public function deleteResubscribeMeta($order)
     {
-        $orderId = null;
-        if (method_exists($order, 'get_id')) {
-            $orderId = $order->get_id();
-        } else {
-            $orderId = $order->id;
-        }
-
+        $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
         delete_user_meta($orderId, '_securesubmit_card_token');
     }
 }

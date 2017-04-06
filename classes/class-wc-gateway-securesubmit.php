@@ -211,12 +211,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 
     public function process_capture($order)
     {
-        $orderId = null;
-        if (method_exists($order, 'get_id')) {
-            $orderId = $order->get_id();
-        } else {
-            $orderId = $order->id;
-        }
+        $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
 
         if (!$this->isTransactionActiveOnGateway($orderId)) {
             $this->displayUserError('Payment already captured');
@@ -236,13 +231,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 
     public function getOrderTransactionId($order)
     {
-        $orderId = null;
-        if (method_exists($order, 'get_id')) {
-            $orderId = $order->get_id();
-        } else {
-            $orderId = $order->id;
-        }
-
+        $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
         $transactionId = false;
         $args = array(
             'post_id' => $orderId,

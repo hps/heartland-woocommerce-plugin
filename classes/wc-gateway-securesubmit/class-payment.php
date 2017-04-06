@@ -63,12 +63,7 @@ class WC_Gateway_SecureSubmit_Payment
                 $hpstoken->tokenValue = $securesubmit_token;
             }
 
-            $orderId = null;
-            if (method_exists($order, 'get_id')) {
-                $orderId = $order->get_id();
-            } else {
-                $orderId = $order->id;
-            }
+            $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
 
             $details = new HpsTransactionDetails();
             $details->invoiceNumber = $orderId;
@@ -122,12 +117,7 @@ class WC_Gateway_SecureSubmit_Payment
                     $authenticated = true;
                 }
 
-                $orderTotal = null;
-                if (method_exists($object, 'get_total')) {
-                    $orderTotal = $object->get_total();
-                } else {
-                    $orderTotal = $order->order_total;
-                }
+                $orderTotal = WC_SecureSubmit_Util::getData($order, 'get_total', 'order_total');
 
                 $response = $builder
                     ->withAmount($orderTotal)

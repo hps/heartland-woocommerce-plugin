@@ -55,30 +55,14 @@ class WC_Gateway_SecureSubmit_Subscriptions_Deprecated extends WC_Gateway_Secure
 
     public function maybeRenderSubscriptionPaymentMethod($paymentMethodToDisplay, $subscriptionDetails, WC_Order $order)
     {
-        $orderRecurringPaymentMethod = null;
-        if (method_exists($order, 'get_recurring_payment_method')) {
-            $orderRecurringPaymentMethod = $order->get_recurring_payment_method();
-        } else {
-            $orderRecurringPaymentMethod = $order->recurring_payment_method;
-        }
-
-        $orderCustomerUser = null;
-        if (method_exists($order, 'get_customer_user')) {
-            $orderCustomerUser = $order->get_customer_user();
-        } else {
-            $orderCustomerUser = $order->customer_user;
-        }
+        $orderRecurringPaymentMethod = WC_SecureSubmit_Util::getData($order, 'get_recurring_payment_method', 'recurring_payment_method');
+        $orderCustomerUser = WC_SecureSubmit_Util::getData($object, 'get_customer_user', 'customer_user');
 
         if ($this->id !== $orderRecurringPaymentMethod || !$orderCustomerUser) {
             return $paymentMethodToDisplay;
         }
 
-        $orderId = null;
-        if (method_exists($order, 'get_id')) {
-            $orderId = $order->get_id();
-        } else {
-            $orderId = $order->id;
-        }
+        $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
 
         $userId = $orderCustomerUser;
         $token  = get_post_meta($orderId, '_securesubmit_card_token', true);
@@ -103,13 +87,7 @@ class WC_Gateway_SecureSubmit_Subscriptions_Deprecated extends WC_Gateway_Secure
 
     protected function saveTokenMeta($order, $token)
     {
-        $orderId = null;
-        if (method_exists($order, 'get_id')) {
-            $orderId = $order->get_id();
-        } else {
-            $orderId = $order->id;
-        }
-
+        $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
         add_post_meta($orderId, '_securesubmit_card_token', $token, true);
     }
 }

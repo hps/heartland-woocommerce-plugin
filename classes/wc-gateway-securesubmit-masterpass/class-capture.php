@@ -20,12 +20,7 @@ class WC_Gateway_SecureSubmit_MasterPass_Capture
                 throw new Exception(__('Order cannot be found', 'wc_securesubmit'));
             }
 
-            $orderId = null;
-            if (method_exists($order, 'get_id')) {
-                $orderId = $order->get_id();
-            } else {
-                $orderId = $order->id;
-            }
+            $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
 
             $masterpassOrderId = get_post_meta($orderId, '_masterpass_order_id', true);
             if (!$masterpassOrderId) {
