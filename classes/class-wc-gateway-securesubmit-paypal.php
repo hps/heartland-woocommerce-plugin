@@ -336,7 +336,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
     }
 
     /**
-     * @param $order
+     * @param WC_Order|WC_Cart $order
      * @return HpsPaymentData
      */
     public function getPaymentData($order)
@@ -354,8 +354,8 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
             }
 
             $payment = new HpsPaymentData();
-            $payment->subtotal = $order->get_subtotal() - $order->get_cart_discount_total() - $order->get_total_tax();
-            $payment->shippingAmount = $order->get_total_shipping();
+            $payment->subtotal = $order->subtotal - $order->get_cart_discount_total() - $taxAmount;
+            $payment->shippingAmount = $order->shipping_total;
             $payment->taxAmount = $taxAmount;
         }
         $payment->paymentType = $this->paymentaction == 'authorization' ? 'Authorization' : 'Sale';
@@ -410,10 +410,11 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
             }
         } else {
             foreach ($order->get_cart() as $item) {
+
                 $lineItem = $this->createLineItem(
-                    $item['data']->post->post_name,
+                    get_post(WC_SecureSubmit_Util::getData($item['data'], 'get_id', 'post'))->post_name,
                     $item['product_id'],
-                    $item['data']->price,
+                    WC_SecureSubmit_Util::getData($item['data'], 'get_price', 'price'),
                     $item['quantity'],
                     $item['data']->get_sku()
                 );
