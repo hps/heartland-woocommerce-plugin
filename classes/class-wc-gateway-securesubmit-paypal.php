@@ -134,6 +134,8 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
         $params = array(
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'env' => $this->testmode ? 'sandbox' : 'production',
+            'isCheckout' => is_checkout() || is_checkout_pay_page() ? 'true' : 'false',
+            'isCart' => is_cart() ? 'true' : 'false',
         );
 
         wp_localize_script('woocommerce_securesubmit', 'wc_securesubmit_paypal_params', $params);

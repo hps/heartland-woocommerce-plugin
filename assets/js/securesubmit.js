@@ -493,10 +493,11 @@
             button: buttons,
             click: function (e) {
                 var isCredit = e.target.id === 'hps_paypal_shortcut_express_button_credit';
+                var checkoutPageNotUsed = wc_securesubmit_paypal_params.isCheckout === 'true'
+                    && (jQuery('[name="payment_method"][value^="heartland_paypal"]').length === 0
+                    || !jQuery('[name="payment_method"][value^="heartland_paypal"]').is(':checked'));
 
-                if (jQuery('[name="payment_method"][value^="heartland_paypal"]').length === 0
-                    || !jQuery('[name="payment_method"][value^="heartland_paypal"]').is(':checked')
-                ) {
+                if (checkoutPageNotUsed) {
                     return true;
                 }
 
