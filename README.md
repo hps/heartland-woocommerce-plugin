@@ -19,6 +19,9 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+####1.11.3
+* Add support for WooCommerce 3.0
+
 ####1.11.2
 * Fix errant PayPal prompt
 * Move call of `wc_securesubmit_order_credit_card_details` so that it is called before order confirmation email is sent
