@@ -16,7 +16,8 @@ class giftCardOrderPlacement {
 
     public function addItemsToPostOrderDisplay( $rows, $order_object ) {
 
-        $order_id           = $order_object->id;
+        $order_id = WC_SecureSubmit_Util::getData($order_object, 'get_id', 'id');
+
         $applied_gift_cards = unserialize( get_post_meta( $order_id, '_securesubmit_used_card_data', TRUE ) );
         $original_balance   = get_post_meta( $order_id, '_securesubmit_original_reported_total', TRUE );
 

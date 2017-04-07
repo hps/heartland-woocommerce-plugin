@@ -134,6 +134,8 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
         $params = array(
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'env' => $this->testmode ? 'sandbox' : 'production',
+            'isCheckout' => is_checkout() || is_checkout_pay_page() ? 'true' : 'false',
+            'isCart' => is_cart() ? 'true' : 'false',
         );
 
         wp_localize_script('woocommerce_securesubmit', 'wc_securesubmit_paypal_params', $params);
@@ -324,7 +326,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
     {
         $buyer = new HpsBuyerData();
         if ($order instanceof WC_Order) {
-            $buyer->emailAddress = $order->billing_email;
+            $buyer->emailAddress = WC_SecureSubmit_Util::getData($order, 'get_billing_email', 'billing_email');
         }
         $buyer->cancelUrl = wc_get_cart_url();
         $buyer->returnUrl = add_query_arg(
@@ -336,7 +338,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
     }
 
     /**
-     * @param $order
+     * @param WC_Order|WC_Cart $order
      * @return HpsPaymentData
      */
     public function getPaymentData($order)
@@ -354,7 +356,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
             }
 
             $payment = new HpsPaymentData();
-            $payment->subtotal = $order->subtotal - $order->get_cart_discount_total() - $order->tax_total;
+            $payment->subtotal = $order->subtotal - $order->get_cart_discount_total() - $taxAmount;
             $payment->shippingAmount = $order->shipping_total;
             $payment->taxAmount = $taxAmount;
         }
@@ -369,13 +371,13 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
         }
 
         $shippingInfo = new HpsShippingInfo();
-        $shippingInfo->name = $order->shipping_first_name . ' ' . $order->shipping_last_name;
+        $shippingInfo->name = $order->get_shipping_first_name() . ' ' . $order->get_shipping_last_name();
         $shippingInfo->address = new HpsAddress();
-        $shippingInfo->address->address = $order->shipping_address_1;
-        $shippingInfo->address->city = $order->shipping_city;
-        $shippingInfo->address->state = $order->shipping_state;
-        $shippingInfo->address->zip = $order->shipping_postcode;
-        $shippingInfo->address->country = $order->shipping_country;
+        $shippingInfo->address->address = $order->get_shipping_address_1();
+        $shippingInfo->address->city = $order->get_shipping_city();
+        $shippingInfo->address->state = $order->get_shipping_state();
+        $shippingInfo->address->zip = $order->get_shipping_postcode();
+        $shippingInfo->address->country = $order->get_shipping_country();
 
         return $shippingInfo;
     }
@@ -410,10 +412,11 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
             }
         } else {
             foreach ($order->get_cart() as $item) {
+
                 $lineItem = $this->createLineItem(
-                    $item['data']->post->post_name,
+                    get_post(WC_SecureSubmit_Util::getData($item['data'], 'get_id', 'post'))->post_name,
                     $item['product_id'],
-                    $item['data']->price,
+                    WC_SecureSubmit_Util::getData($item['data'], 'get_price', 'price'),
                     $item['quantity'],
                     $item['data']->get_sku()
                 );

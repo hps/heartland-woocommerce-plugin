@@ -20,12 +20,14 @@ class WC_Gateway_SecureSubmit_MasterPass_Void
                 throw new Exception(__('Order cannot be found', 'wc_securesubmit'));
             }
 
-            $masterpassOrderId = get_post_meta($order->id, '_masterpass_order_id', true);
+            $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
+
+            $masterpassOrderId = get_post_meta($orderId, '_masterpass_order_id', true);
             if (!$masterpassOrderId) {
                 throw new Exception(__('MasterPass order id cannot be found', 'wc_securesubmit'));
             }
 
-            $masterpassPaymentStatus = get_post_meta($order->id, '_masterpass_payment_status', true);
+            $masterpassPaymentStatus = get_post_meta($orderId, '_masterpass_payment_status', true);
             if ($masterpassPaymentStatus !== 'authorized') {
                 throw new Exception(__(sprintf('Transaction has already been %s', $masterpassPaymentStatus), 'wc_securesubmit'));
             }
@@ -36,7 +38,7 @@ class WC_Gateway_SecureSubmit_MasterPass_Void
                 $masterpassOrderId
             );
 
-            update_post_meta($order->id, '_masterpass_payment_status', 'voided', 'authorized');
+            update_post_meta($orderId, '_masterpass_payment_status', 'voided', 'authorized');
 
             $order->add_order_note(__('MasterPass payment voided', 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
             return true;

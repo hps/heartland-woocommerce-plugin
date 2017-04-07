@@ -47,7 +47,6 @@ class WC_Gateway_SecureSubmit_PayPal_Credit extends WC_Gateway_SecureSubmit_PayP
 
     public function maybeAddExpressButtonToCartPage()
     {
-        error_log('add credit button');
         if ($this->enabled != 'yes') {
             return;
         }

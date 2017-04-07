@@ -55,12 +55,17 @@ class WC_Gateway_SecureSubmit_Subscriptions_Deprecated extends WC_Gateway_Secure
 
     public function maybeRenderSubscriptionPaymentMethod($paymentMethodToDisplay, $subscriptionDetails, WC_Order $order)
     {
-        if ($this->id !== $order->recurring_payment_method || !$order->customer_user) {
+        $orderRecurringPaymentMethod = WC_SecureSubmit_Util::getData($order, 'get_recurring_payment_method', 'recurring_payment_method');
+        $orderCustomerUser = WC_SecureSubmit_Util::getData($object, 'get_customer_user', 'customer_user');
+
+        if ($this->id !== $orderRecurringPaymentMethod || !$orderCustomerUser) {
             return $paymentMethodToDisplay;
         }
 
-        $userId = $order->customer_user;
-        $token  = get_post_meta($order->id, '_securesubmit_card_token', true);
+        $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
+
+        $userId = $orderCustomerUser;
+        $token  = get_post_meta($orderId, '_securesubmit_card_token', true);
         $cards  = get_user_meta($userId, '_secure_submit_card', false);
 
         if ($cards) {
@@ -82,7 +87,8 @@ class WC_Gateway_SecureSubmit_Subscriptions_Deprecated extends WC_Gateway_Secure
 
     protected function saveTokenMeta($order, $token)
     {
-        add_post_meta($order->id, '_securesubmit_card_token', $token, true);
+        $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
+        add_post_meta($orderId, '_securesubmit_card_token', $token, true);
     }
 }
 new WC_Gateway_SecureSubmit_Subscriptions();

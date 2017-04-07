@@ -31,7 +31,7 @@ class WC_Gateway_SecureSubmit_PayPal_CreateSession
         if (null != $orderId && !isset($expressCheckout) || false === $isExpressCheckout) {
             $order = wc_get_order($orderId);
 
-            $orderTotal = $order->order_total;
+            $orderTotal = WC_SecureSubmit_Util::getData($order, 'get_total', 'order_total');
             $shippingInfo = $this->parent->getShippingInfo($order);
             $buyer = $this->parent->getBuyerData($order);
             $payment = $this->parent->getPaymentData($order);
