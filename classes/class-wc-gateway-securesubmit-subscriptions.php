@@ -62,15 +62,15 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
         global $woocommerce;
 
         $order = new WC_Order($orderId);
-        $securesubmitToken = isset($_POST['securesubmit_token']) ? woocommerce_clean($_POST['securesubmit_token']) : '';
+        $securesubmitToken = isset($_POST['securesubmit_token']) ? $this->cleanValue($_POST['securesubmit_token']) : '';
         $useStoredCard = false;
 
         // used for card saving:
-        $last_four = isset($_POST['last_four']) ? woocommerce_clean($_POST['last_four']) : '';
-        $exp_month = isset($_POST['exp_month']) ? woocommerce_clean($_POST['exp_month']) : '';
-        $exp_year = isset($_POST['exp_year']) ? woocommerce_clean($_POST['exp_year']) : '';
-        $card_type = isset($_POST['card_type']) ? woocommerce_clean($_POST['card_type']) : '';
-        $saveCard = isset($_POST['save_card']) ? woocommerce_clean($_POST['save_card']) : '';
+        $last_four = isset($_POST['last_four']) ? $this->cleanValue($_POST['last_four']) : '';
+        $exp_month = isset($_POST['exp_month']) ? $this->cleanValue($_POST['exp_month']) : '';
+        $exp_year = isset($_POST['exp_year']) ? $this->cleanValue($_POST['exp_year']) : '';
+        $card_type = isset($_POST['card_type']) ? $this->cleanValue($_POST['card_type']) : '';
+        $saveCard = isset($_POST['save_card']) ? $this->cleanValue($_POST['save_card']) : '';
 
         try {
             if (empty($securesubmitToken)) {

@@ -286,21 +286,21 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
     public function getOrderAddress($order)
     {
         $hpsaddress = new HpsAddress();
-        $hpsaddress->address = $order->get_billing_address_1();
-        $hpsaddress->city = $order->get_billing_city();
-        $hpsaddress->state = $order->get_billing_state();
-        $hpsaddress->zip = $order->get_billing_postcode();
-        $hpsaddress->country = $order->get_billing_country();
+        $hpsaddress->address = WC_SecureSubmit_Util::getData($order, 'get_billing_address_1', 'billing_address_1');
+        $hpsaddress->city = WC_SecureSubmit_Util::getData($order, 'get_billing_city', 'billing_city');
+        $hpsaddress->state = WC_SecureSubmit_Util::getData($order, 'get_billing_state', 'billing_state');
+        $hpsaddress->zip = WC_SecureSubmit_Util::getData($order, 'get_billing_postcode', 'billing_postcode');
+        $hpsaddress->country = WC_SecureSubmit_Util::getData($order, 'get_billing_country', 'billing_country');
         return $hpsaddress;
     }
 
     public function getOrderCardHolder($order, $hpsaddress)
     {
         $cardHolder = new HpsCardHolder();
-        $cardHolder->firstName = $order->get_billing_first_name();
-        $cardHolder->lastName = $order->get_billing_last_name();
-        $cardHolder->phone = $order->get_billing_phone();
-        $cardHolder->email = $order->get_billing_email();
+        $cardHolder->firstName = WC_SecureSubmit_Util::getData($order, 'get_billing_first_name', 'billing_first_name');
+        $cardHolder->lastName = WC_SecureSubmit_Util::getData($order, 'get_billing_last_name', 'billing_last_name');
+        $cardHolder->phone = WC_SecureSubmit_Util::getData($order, 'get_billing_phone', 'billing_phone');
+        $cardHolder->email = WC_SecureSubmit_Util::getData($order, 'get_billing_email', 'billing_email');
         $cardHolder->address = $hpsaddress;
         return $cardHolder;
     }
@@ -318,6 +318,16 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $value = null;
         if (isset($this->settings[$setting])) {
             $value = $this->settings[$setting];
+        }
+        return $value;
+    }
+
+    public function cleanValue($value)
+    {
+        if (function_exists('wc_clean')) {
+            return wc_clean($value);
+        } elseif (function_exists('woocommerce_clean')) {
+            return woocommerce_clean($value);
         }
         return $value;
     }
