@@ -35,6 +35,9 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section.
 
 == Changelog ==
+= 1.11.4 =
+* Fix issue with WooCommerce 3.0 changes running with WooCommerce 2.6
+
 = 1.11.3 =
 * Add support for WooCommerce 3.0
 
