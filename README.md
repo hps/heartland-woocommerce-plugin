@@ -19,6 +19,9 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+####1.11.4
+* Fix issue with WooCommerce 3.0 changes running with WooCommerce 2.6
+
 ####1.11.3
 * Add support for WooCommerce 3.0
 

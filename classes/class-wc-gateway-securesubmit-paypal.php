@@ -370,14 +370,15 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
             return null;
         }
 
-        $shippingInfo = new HpsShippingInfo();
-        $shippingInfo->name = $order->get_shipping_first_name() . ' ' . $order->get_shipping_last_name();
+        $shippingInfo->name =
+            WC_SecureSubmit_Util::getData($order, 'get_shipping_first_name', 'shipping_first_name') . ' ' .
+            WC_SecureSubmit_Util::getData($order, 'get_shipping_last_name', 'shipping_last_name');
         $shippingInfo->address = new HpsAddress();
-        $shippingInfo->address->address = $order->get_shipping_address_1();
-        $shippingInfo->address->city = $order->get_shipping_city();
-        $shippingInfo->address->state = $order->get_shipping_state();
-        $shippingInfo->address->zip = $order->get_shipping_postcode();
-        $shippingInfo->address->country = $order->get_shipping_country();
+        $shippingInfo->address->address = WC_SecureSubmit_Util::getData($order, 'get_shipping_address_1', 'shipping_address_1');
+        $shippingInfo->address->city = WC_SecureSubmit_Util::getData($order, 'get_shipping_city', 'shipping_city');
+        $shippingInfo->address->state = WC_SecureSubmit_Util::getData($order, 'get_shipping_state', 'shipping_state');
+        $shippingInfo->address->zip = WC_SecureSubmit_Util::getData($order, 'get_shipping_postcode', 'shipping_postcode');
+        $shippingInfo->address->country = WC_SecureSubmit_Util::getData($order, 'get_shipping_country', 'shipping_country');
 
         return $shippingInfo;
     }

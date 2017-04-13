@@ -16,13 +16,13 @@ class WC_Gateway_SecureSubmit_Payment
     public function call($orderId)
     {
         $order = wc_get_order($orderId);
-        $securesubmit_token = isset($_POST['securesubmit_token']) ? woocommerce_clean($_POST['securesubmit_token']) : '';
+        $securesubmit_token = isset($_POST['securesubmit_token']) ? $this->parent->cleanValue($_POST['securesubmit_token']) : '';
 
         // used for card saving:
-        $last_four = isset($_POST['last_four']) ? woocommerce_clean($_POST['last_four']) : '';
-        $exp_month = isset($_POST['exp_month']) ? woocommerce_clean($_POST['exp_month']) : '';
-        $exp_year = isset($_POST['exp_year']) ? woocommerce_clean($_POST['exp_year']) : '';
-        $card_type = isset($_POST['card_type']) ? woocommerce_clean($_POST['card_type']) : '';
+        $last_four = isset($_POST['last_four']) ? $this->parent->cleanValue($_POST['last_four']) : '';
+        $exp_month = isset($_POST['exp_month']) ? $this->parent->cleanValue($_POST['exp_month']) : '';
+        $exp_year = isset($_POST['exp_year']) ? $this->parent->cleanValue($_POST['exp_year']) : '';
+        $card_type = isset($_POST['card_type']) ? $this->parent->cleanValue($_POST['card_type']) : '';
 
         if (isset($_POST['save_card']) && $_POST['save_card'] === "true") {
             $save_card_to_customer = true;
