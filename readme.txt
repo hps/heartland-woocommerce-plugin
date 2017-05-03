@@ -35,6 +35,10 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section.
 
 == Changelog ==
+= 1.11.5 =
+* Fix issue with WooCommerce 3.0 + WooCommerce Subscriptions that caused renewal payments to fail
+* Remove deprecation notice from gift card code directly accessing object property
+
 = 1.11.4 =
 * Fix issue with WooCommerce 3.0 changes running with WooCommerce 2.6
 
