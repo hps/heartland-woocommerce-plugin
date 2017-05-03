@@ -426,8 +426,8 @@ class WC_Gateway_SecureSubmit_GiftCards
         $cart = WC()->cart->get_cart();
 
         foreach ( $cart as $cart_item ) {
-
-            $subscription_position = strpos( $cart_item[ 'data' ]->product_type, 'subscription' );
+            $productType = WC_SecureSubmit_Util::getData($cart_item['data'], 'get_product_type', 'product_type');
+            $subscription_position = strpos( $productType, 'subscription' );
 
             if ( $subscription_position !== FALSE ) {
 
