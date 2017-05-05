@@ -168,8 +168,12 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
     public function scheduledSubscriptionPayment($amount, $order, $productId = null)
     {
         $orderPostStatus = WC_SecureSubmit_Util::getData($order, 'get_post_status', 'post_status');
+        if (empty($orderPostStatus)) {
+            $orderPostStatus = get_post_status(WC_SecureSubmit_Util::getData($order, 'get_id', 'id'));
+        }
+
         // TODO: why is this necessary to prevent double authorization?
-        if ($orderPostStatus !== 'wc-pending') {
+        if ($orderPostStatus !== 'wc-pending' && $orderPostStatus !== 'pending') {
             return;
         }
 
