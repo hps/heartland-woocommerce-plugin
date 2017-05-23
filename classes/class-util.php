@@ -19,7 +19,7 @@ class WC_SecureSubmit_Util
             return $object->{$method}();
         }
 
-        if (property_exists($object, $property)) {
+        if (property_exists($object, $property) || isset($object->{$property})) {
             return $object->{$property};
         }
 
