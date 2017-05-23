@@ -19,6 +19,9 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+####1.11.6
+* Fix issue with utility class when testing existence of properties on classes with magic methods
+
 ####1.11.5
 * Fix issue with WooCommerce 3.0 + WooCommerce Subscriptions that caused renewal payments to fail
 * Remove deprecation notice from gift card code directly accessing object property
