@@ -15,24 +15,24 @@ This plugin provides a Heartland Payment Systems Gateway addon to the WooCommerc
 Features of SecureSubmit:
 
 * Only two configuration fields: public and secret API key
-* Simple to install and configure.
+* Simple to install and configure
 * Tokenized payments help reduce PCI Scope
-* Enables credit card saving for a friction-reduced checkout.
+* Enables credit card saving for a friction-reduced checkout
 
 == Installation ==
 After you have installed and configured the main WooCommerce plugin use the following steps to install the Heartland Payment Systems Gateway addon:
-1. In your WordPress admin, go to Plugins > Add New and search for "WooCommerce SecureSubmit".
-2. Click Install, once installed click Activate.
-3. Configure and Enable the gateway in WooCommerce by adding your public and secret Api Keys.
+1. In your WordPress admin, go to Plugins > Add New and search for "WooCommerce SecureSubmit"
+2. Click Install, once installed click Activate
+3. Configure and Enable the gateway in WooCommerce by adding your public and secret Api Keys
 
 == How do I get started? ==
 Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://developer.heartlandpaymentsystems.com/SecureSubmit/
 
 == Screenshots ==
 
-1. The SecureSubmit gateway configuration screen.
-2. A view of the front-end payment form.
-3. A view of the Manage Cards section.
+1. The SecureSubmit gateway configuration screen
+2. A view of the front-end payment form
+3. A view of the Manage Cards section
 
 == Changelog ==
 = 1.11.6 =
