@@ -10,7 +10,7 @@ SecureSubmit allows merchants to take PCI-Friendly Credit Card payments on WooCo
 
 == Description ==
 
-This plugin provides a Heartland Payment Systems Gatway addon to the WooCommerce plugin using our SecureSubmit card tokenization library.
+This plugin provides a Heartland Payment Systems Gateway addon to the WooCommerce plugin using our SecureSubmit card tokenization library.
 
 Features of SecureSubmit:
 
