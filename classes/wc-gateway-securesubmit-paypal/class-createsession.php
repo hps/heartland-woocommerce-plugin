@@ -51,7 +51,7 @@ class WC_Gateway_SecureSubmit_PayPal_CreateSession
         $response;
         try {
             $response = $this->parent->getPorticoService()->createSession(
-                $orderTotal,
+                wc_format_decimal($orderTotal, 2),
                 $currency,
                 $buyer,
                 $payment,

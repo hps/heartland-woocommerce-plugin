@@ -360,7 +360,11 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
             $payment->shippingAmount = $order->shipping_total;
             $payment->taxAmount = $taxAmount;
         }
+
         $payment->paymentType = $this->paymentaction == 'authorization' ? 'Authorization' : 'Sale';
+        $payment->subtotal = wc_format_decimal($payment->subtotal, 2);
+        $payment->shippingAmount = wc_format_decimal($payment->shippingAmount, 2);
+        $payment->taxAmount = wc_format_decimal($payment->taxAmount, 2);
         return $payment;
     }
 
