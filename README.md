@@ -19,6 +19,9 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+#### 1.11.8
+* Update token expiration on token request
+
 #### 1.11.7
 * Fix amount issue with PayPal transactions by normalizing amounts sent to the gateway
 
