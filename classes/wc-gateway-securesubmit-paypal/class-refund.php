@@ -28,7 +28,7 @@ class WC_Gateway_SecureSubmit_PayPal_Refund
             $response = $porticoService->refund(
                 $order->get_transaction_id(),
                 $isPartial,
-                $amount
+                wc_format_decimal($amount, 2)
             );
         } catch (Exception $e) {
             $error = __('Error processing refund:', 'wc_securesubmit') . ' "' . $e->getMessage() . '"';
