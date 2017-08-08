@@ -1,7 +1,7 @@
 === WooCommerce SecureSubmit Gateway ===
 Contributors: markhagan
 Tags: woocommerce, woo, commerce, heartland, payment, systems, gateway, token, tokenize, save cards
-Tested up to: 4.7
+Tested up to: 4.8
 Stable tag: trunk
 License: Custom
 License URI: https://github.com/hps/heartland-woocommerce-plugin/blob/master/LICENSE
@@ -35,6 +35,9 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section.
 
 == Changelog ==
+= 1.11.7 =
+* Fix amount issue with PayPal transactions by normalizing amounts sent to the gateway
+
 = 1.11.6 =
 * Fix issue with utility class when testing existence of properties on classes with magic methods
 
