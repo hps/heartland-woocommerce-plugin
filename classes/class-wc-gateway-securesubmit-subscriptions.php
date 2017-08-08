@@ -113,7 +113,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
 
                         if ($response->tokenData->responseCode == '0' && !$useStoredCard) {
                             try {
-                                $uteResponse = $chargeService->updateTokenExpiration()
+                                $uteResponse = $this->getCreditService()->updateTokenExpiration()
                                     ->withToken($tokenval)
                                     ->withExpMonth($exp_month)
                                     ->withExpYear($exp_year)
