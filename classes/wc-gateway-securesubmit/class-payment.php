@@ -135,6 +135,22 @@ class WC_Gateway_SecureSubmit_Payment
                         $tokenval = $response->tokenData->tokenValue;
 
                         if ($response->tokenData->responseCode == '0') {
+                            try {
+                                $uteResponse = $chargeService->updateTokenExpiration()
+                                    ->withToken($tokenval)
+                                    ->withExpMonth($exp_month)
+                                    ->withExpYear($exp_year)
+                                    ->execute();
+                                $cards = get_user_meta(get_current_user_id(), '_secure_submit_card', false);
+                                foreach ($cards as $card) {
+                                    if ($card['token_value'] === (string)$tokenval) {
+                                        delete_user_meta(get_current_user_id(), '_secure_submit_card', $card);
+                                        break;
+                                    }
+                                }
+                            } catch (Exception $e) {
+                                /** om nom nom */
+                            }
                             switch (strtolower($card_type)) {
                                 case 'mastercard':
                                     $card_type = 'MasterCard';

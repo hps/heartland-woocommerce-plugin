@@ -112,6 +112,22 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
                         $saveToOrder = false;
 
                         if ($response->tokenData->responseCode == '0' && !$useStoredCard) {
+                            try {
+                                $uteResponse = $chargeService->updateTokenExpiration()
+                                    ->withToken($tokenval)
+                                    ->withExpMonth($exp_month)
+                                    ->withExpYear($exp_year)
+                                    ->execute();
+                                $cards = get_user_meta(get_current_user_id(), '_secure_submit_card', false);
+                                foreach ($cards as $card) {
+                                    if ($card['token_value'] === (string)$tokenval) {
+                                        delete_user_meta(get_current_user_id(), '_secure_submit_card', $card);
+                                        break;
+                                    }
+                                }
+                            } catch (Exception $e) {
+                                /** om nom nom */
+                            }
                             add_user_meta(get_current_user_id(), '_secure_submit_card', array(
                                 'last_four' => $last_four,
                                 'exp_month' => $exp_month,
