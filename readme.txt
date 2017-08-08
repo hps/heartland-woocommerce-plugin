@@ -35,6 +35,9 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section
 
 == Changelog ==
+= 1.11.8 =
+* Update token expiration on token request
+
 = 1.11.7 =
 * Fix amount issue with PayPal transactions by normalizing amounts sent to the gateway
 
