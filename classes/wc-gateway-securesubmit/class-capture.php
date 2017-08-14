@@ -32,7 +32,7 @@ class WC_Gateway_SecureSubmit_Capture
             try {
                 $response = $chargeService->capture()
                     ->withTransactionId($transactionId)
-                    ->withAmount($order->get_total() - $order->get_total_refunded())
+                    ->withAmount(wc_format_decimal($order->get_total() - $order->get_total_refunded(), 2))
                     ->execute();
                 $order->add_order_note(__('SecureSubmit payment captured', 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
                 return true;

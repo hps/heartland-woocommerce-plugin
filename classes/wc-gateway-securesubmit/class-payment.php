@@ -117,7 +117,7 @@ class WC_Gateway_SecureSubmit_Payment
                     $authenticated = true;
                 }
 
-                $orderTotal = WC_SecureSubmit_Util::getData($order, 'get_total', 'order_total');
+                $orderTotal = wc_format_decimal(WC_SecureSubmit_Util::getData($order, 'get_total', 'order_total'), 2);
 
                 $response = $builder
                     ->withAmount($orderTotal)

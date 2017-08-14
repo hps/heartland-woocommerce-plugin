@@ -193,7 +193,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
             return;
         }
 
-        $result = $this->processSubscriptionPayment($order, $amount);
+        $result = $this->processSubscriptionPayment($order, wc_format_decimal($amount, 2));
 
         if (is_wp_error($result)) {
             $order->update_status('failed', sprintf(__('SecureSubmit transaction failed: %s', 'wc_securesubmit'), $result->get_error_message()));
@@ -205,6 +205,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
         global $woocommerce;
 
         $order = wc_get_order($order);
+        $amount = wc_format_decimal($amount, 2);
 
         $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
 

@@ -19,6 +19,9 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+#### 1.11.9
+* Reformat all amounts being sent to the payment gateway to have only two decimal places
+
 #### 1.11.8
 * Update token expiration on token request
 

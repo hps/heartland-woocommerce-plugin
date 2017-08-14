@@ -31,7 +31,7 @@ class WC_Gateway_SecureSubmit_Refund
             $chargeService = $this->parent->getCreditService();
             try {
                 $response = $chargeService->refund()
-                    ->withAmount($amount)
+                    ->withAmount(wc_format_decimal($amount, 2))
                     ->withCurrency(strtolower(get_woocommerce_currency()))
                     ->withTransactionId($transactionId)
                     ->execute();
