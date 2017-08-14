@@ -187,7 +187,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                     'OrderDetails' => array(
                         'OrderNumber' => $orderNumber,
                         // Centinel requires amounts in pennies
-                        'Amount' => 100 * WC()->cart->total,
+                        'Amount' => 100 * wc_format_decimal(WC()->cart->total, 2),
                         'CurrencyCode' => '840',
                     ),
                 ),
@@ -222,6 +222,9 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 
     public function process_refund($orderId, $amount = null, $reason = '')
     {
+        if ($amount !== null) {
+            $amount = wc_format_decimal($amount, 2);
+        }
         if ($this->isTransactionActiveOnGateway($orderId)) {
             return $this->reverse->call($orderId, $amount, $reason);
         } else {

@@ -27,9 +27,9 @@ class WC_Gateway_SecureSubmit_Reverse
             return false;
         }
 
-        $originalAmount = $order->get_total();
-        $totalRefunded = $order->get_total_refunded();
-        $newAmount = $originalAmount - $order->get_total_refunded();
+        $originalAmount = wc_format_decimal($order->get_total(), 2);
+        $totalRefunded = wc_format_decimal($order->get_total_refunded(), 2);
+        $newAmount = wc_format_decimal($originalAmount - $order->get_total_refunded(), 2);
 
         if ($newAmount < 0) {
             // total reversed is more than original auth amount

@@ -35,6 +35,9 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section
 
 == Changelog ==
+= 1.11.9 =
+* Reformat all amounts being sent to the payment gateway to have only two decimal places
+
 = 1.11.8 =
 * Update token expiration on token request
 

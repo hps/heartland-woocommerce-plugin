@@ -280,6 +280,9 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
      */
     public function process_refund($orderId, $amount = null, $reason = '')
     {
+        if ($amount !== null) {
+            $amount = wc_format_decimal($amount, 2);
+        }
         return $this->refund->call($orderId, $amount, $reason);
     }
 
@@ -438,7 +441,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
             $discountItem = new HpsLineItem();
             $discountItem->name = 'Discount';
             $discountItem->number = 'discount';
-            $discountItem->amount = 0 - $order->get_total_discount();
+            $discountItem->amount = wc_format_decimal(0 - $order->get_total_discount(), 2);
             $lineItems[] = $discountItem;
         }
 
@@ -473,7 +476,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
         }
         $item->amount = number_format($amount, 2);
         $item->quantity = $quantity;
-        $item->taxAmount = $tax;
+        $item->taxAmount = wc_format_decimal($tax, 2);
 
         return $item;
     }

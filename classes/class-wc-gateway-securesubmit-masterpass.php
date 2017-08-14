@@ -248,6 +248,9 @@ class WC_Gateway_SecureSubmit_MasterPass extends WC_Payment_Gateway
      */
     public function process_refund($orderId, $amount = null, $reason = '')
     {
+        if ($amount !== null) {
+            $amount = wc_format_decimal($amount, 2);
+        }
         return $this->refund->call($orderId, $amount, $reason);
     }
 

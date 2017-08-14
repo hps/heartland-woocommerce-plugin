@@ -31,7 +31,7 @@ class WC_Gateway_SecureSubmit_Subscriptions_Deprecated extends WC_Gateway_Secure
 
     public function scheduledSubscriptionPayment($amount, $order, $productId = null)
     {
-        $result = $this->processSubscriptionPayment($order, $amount);
+        $result = $this->processSubscriptionPayment($order, wc_format_decimal($amount, 2));
 
         if (is_wp_error($result)) {
             WC_Subscriptions_Manager::process_subscription_payment_failure_on_order($order, $productId);

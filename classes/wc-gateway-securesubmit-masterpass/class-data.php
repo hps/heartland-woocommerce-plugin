@@ -96,8 +96,8 @@ class WC_Gateway_SecureSubmit_MasterPass_Data
     public function getPaymentData($cart)
     {
         $data = new HpsPaymentData();
-        $data->taxAmount = $cart->tax_total;
-        $data->shippingAmount = $cart->shipping_total;
+        $data->taxAmount = wc_format_decimal($cart->tax_total, 2);
+        $data->shippingAmount = wc_format_decimal($cart->shipping_total, 2);
         return $data;
     }
 
@@ -151,7 +151,7 @@ class WC_Gateway_SecureSubmit_MasterPass_Data
             $item->name = $cartItem['data']->post->post_title;
             $item->description = $cartItem['data']->post->post_excerpt;
             $item->quantity = $cartItem['quantity'];
-            $item->amount = $cartItem['line_total'] / $item->quantity;
+            $item->amount = wc_format_decimal($cartItem['line_total'] / $item->quantity, 2);
             $items[] = $item;
         }
 
