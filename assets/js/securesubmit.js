@@ -452,6 +452,10 @@
             data: data,
             dataType: 'json',
             success: function (response) {
+                if (response.result == 'fail') {
+                    paypal.checkout.closeFlow();
+                    return;
+                }
                 paypal.checkout.startFlow(response.redirect);
             },
             error: function (response) {
@@ -475,24 +479,20 @@
 
     function paypalIncontextReady() {
         var buttons = [];
-
-        jQuery('[id^="hps_paypal_shortcut_"]').each(function (i, el) { buttons.push(el); });
-
-        if (buttons && buttons.length === 0) {
-            var checkoutSubmit = jQuery('#place_order');
-            if (checkoutSubmit && checkoutSubmit[0]) {
-                buttons.push(checkoutSubmit[0]);
-            } else {
-                paypal.checkout.closeFlow();
-                return;
-            }
+        var checkoutSubmit = jQuery('#place_order');
+        if (checkoutSubmit && checkoutSubmit[0]) {
+            buttons.push(checkoutSubmit[0]);
+        } else {
+            paypal.checkout.closeFlow();
+            return;
         }
 
         paypal.checkout.setup('undefined', {
             environment: wc_securesubmit_paypal_params.env,
             button: buttons,
             click: function (e) {
-                var isCredit = e.target.id === 'hps_paypal_shortcut_express_button_credit';
+                var isCredit = (jQuery('[name="payment_method"][value^="heartland_paypal_credit"]').length !== 0
+                    && jQuery('[name="payment_method"][value^="heartland_paypal_credit"]').is(':checked'));
                 var checkoutPageNotUsed = wc_securesubmit_paypal_params.isCheckout === 'true'
                     && (jQuery('[name="payment_method"][value^="heartland_paypal"]').length === 0
                     || !jQuery('[name="payment_method"][value^="heartland_paypal"]').is(':checked'));
@@ -538,6 +538,58 @@
                 .on('checkout_place_order_heartland_paypal_credit', wc_securesubmit_paypal_params.handler);
 
             window.paypalCheckoutReady = paypalIncontextReady;
+
+            if (wc_securesubmit_paypal_params.isCheckout != 'true') {
+                var paypalData = {
+                    action: 'wc_securesubmit_paypal_start_incontext',
+                    paypalexpress_initiated: 'true'
+                };
+                paypal.Button.render({
+                    env: wc_securesubmit_paypal_params.env,
+                    payment: function () {
+                        return paypal.request.post(wc_securesubmit_paypal_params.ajaxUrl, paypalData)
+                            .then(function (resp) {
+                                if (resp.result == 'fail') {
+                                    paypal.checkout.closeFlow();
+                                    return;
+                                }
+                                return resp.token;
+                            });
+                    },
+                    onAuthorize: function (resp, actions) {
+                        return actions.redirect();
+                    },
+                    onCancel: function (resp, actions) {
+                        return actions.redirect();
+                    }
+                }, '#hps_paypal_shortcut_express_button');
+
+                var paypalCreditData = {
+                    action: 'wc_securesubmit_paypal_start_incontext',
+                    paypalexpress_initiated: 'true',
+                    paypalexpress_credit: 'true'
+                };
+                paypal.Button.render({
+                    env: wc_securesubmit_paypal_params.env,
+                    style: { label: 'credit' },
+                    payment: function () {
+                        return paypal.request.post(wc_securesubmit_paypal_params.ajaxUrl, paypalCreditData)
+                            .then(function (resp) {
+                                if (resp.result == 'fail') {
+                                    paypal.checkout.closeFlow();
+                                    return;
+                                }
+                                return resp.token;
+                            });
+                    },
+                    onAuthorize: function (resp, actions) {
+                        return actions.redirect();
+                    },
+                    onCancel: function (resp, actions) {
+                        return actions.redirect();
+                    }
+                }, '#hps_paypal_shortcut_express_button_credit');
+            }
         }
     });
 
