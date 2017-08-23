@@ -102,6 +102,11 @@ class WC_Gateway_SecureSubmit_PayPal_ReviewOrder
         </script>
         ";
 
+        $checkoutForm = $this->parent->getSession('checkout_form');
+        if (isset($checkoutForm['terms'])) {
+            $_POST['terms'] = $checkoutForm['terms'];
+        }
+
         //Allow override in theme: <theme_name>/woocommerce/paypal-paypal-review-order.php
         $template = plugin_dir_path(dirname(dirname(__FILE__))) . 'templates/';
         wc_get_template('paypal-review-order.php', array(), '', $template);
