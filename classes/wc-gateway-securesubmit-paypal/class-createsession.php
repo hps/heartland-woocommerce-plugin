@@ -75,7 +75,8 @@ class WC_Gateway_SecureSubmit_PayPal_CreateSession
 
         return array(
             'result' => 'success',
-            'redirect' => $response->redirectUrl
+            'redirect' => $response->redirectUrl,
+            'token' => $response->sessionId,
         );
     }
 }

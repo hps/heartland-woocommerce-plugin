@@ -3,12 +3,5 @@
         &mdash; <?php _e('or', 'wc_securesubmit') ?> &mdash;
     </p>
 </div>
-<div style="float: right;clear: right;">
-    <form id="pp-credit">
-        <button style="background: none;" name="paypalexpress_credit">
-            <img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/ppcredit-logo-medium.png"
-                 alt="<?php _e('Checkout with PayPal Credit', 'wc_securesubmit') ?>"
-                 id="hps_paypal_shortcut_express_button_credit" />
-        </button>
-    </form>
+<div id="hps_paypal_shortcut_express_button_credit" style="float: right;clear: right;">
 </div>
