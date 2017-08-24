@@ -165,6 +165,11 @@ class WC_Gateway_SecureSubmit_PayPal_FinalizeOrder
             $_POST['billing_postcode'] = $this->maybeGet(WC()->customer, 'postcode', $_POST['billing_postcode']);
         }
 
+        $checkoutForm = $this->parent->getSession('checkout_form');
+        if (isset($checkoutForm['terms'])) {
+            $_POST['terms'] = $checkoutForm['terms'];
+        }
+
         $wpnonce = wp_create_nonce('woocommerce-process_checkout');
         $_POST['_wpnonce'] = $wpnonce;
         $this->parent->setSession('ppexpress_checkout_form', serialize($_POST));
