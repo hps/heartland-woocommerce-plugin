@@ -3,8 +3,8 @@ Contributors: markhagan
 Tags: woocommerce, woo, commerce, heartland, payment, systems, gateway, token, tokenize, save cards
 Tested up to: 4.8
 Stable tag: trunk
-License: Custom
-License URI: https://github.com/hps/heartland-woocommerce-plugin/blob/master/LICENSE
+License: GPLv2
+License URI: https://github.com/hps/heartland-woocommerce-plugin/blob/master/LICENSE.md
 
 SecureSubmit allows merchants to take PCI-Friendly Credit Card payments on WooCommerce using Heartland Payment Systems Payment Gateway.
 
@@ -35,6 +35,10 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section
 
 == Changelog ==
+= 1.11.10 =
+* Fix PayPal button issue in Firefox on cart page
+* Fix PayPal checkout issue when Terms and Conditions are set up through WooCommerce
+
 = 1.11.9 =
 * Reformat all amounts being sent to the payment gateway to have only two decimal places
 

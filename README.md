@@ -19,6 +19,10 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+#### 1.11.10
+* Fix PayPal button issue in Firefox on cart page
+* Fix PayPal checkout issue when Terms and Conditions are set up through WooCommerce
+
 #### 1.11.9
 * Reformat all amounts being sent to the payment gateway to have only two decimal places
 
