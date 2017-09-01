@@ -37,16 +37,19 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
 
     public function process_payment($orderId)
     {
-        if (class_exists('WC_Subscriptions_Order') && $this->orderHasSubscription($orderId)) {
+        if (($this->orderHasSubscription($orderId)
+                || (function_exists('wcs_is_subscription') && wcs_is_subscription($orderId)))
+        ) {
             return $this->processSubscription($orderId);
         } else {
             return parent::process_payment($orderId);
         }
     }
 
-    protected function orderHasSubscription($order)
+    protected function orderHasSubscription($orderId)
     {
-        return function_exists('wcs_order_contains_subscription') && (wcs_order_contains_subscription($order) || wcs_order_contains_renewal($order));
+        return function_exists('wcs_order_contains_subscription')
+            && (wcs_order_contains_subscription($orderId) || wcs_order_contains_renewal($orderId));
     }
 
     protected function orderGetTotal($order)
