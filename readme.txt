@@ -36,7 +36,8 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 
 == Changelog ==
 = 1.11.11 =
-* Fix issue with subscription produts. Gift cards will be disabled for subscription products
+* Fix issues with subscription products. Gift cards will be disabled for subscription products
+* Fix issues with subscription products. Prevent amount error when updating payment
 
 = 1.11.10 =
 * Fix PayPal button issue in Firefox on cart page
