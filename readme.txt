@@ -35,6 +35,10 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section
 
 == Changelog ==
+= 1.11.11 =
+* Fix issues with subscription products. Gift cards will be disabled for subscription products
+* Fix issues with subscription products. Prevent amount error when updating payment
+
 = 1.11.10 =
 * Fix PayPal button issue in Firefox on cart page
 * Fix PayPal checkout issue when Terms and Conditions are set up through WooCommerce
