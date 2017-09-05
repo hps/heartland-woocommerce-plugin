@@ -399,9 +399,7 @@ class WC_Gateway_SecureSubmit_GiftCards
 
         if ( $subscriptions_active ) {
 
-            $cart_has_subscription_products = ( $this->cartHasSubscriptionProducts() ) ? FALSE : TRUE;
-
-            return $cart_has_subscription_products;
+            return ( $this->cartHasSubscriptionProducts() ) ? FALSE : TRUE;
 
         }
 
@@ -424,9 +422,10 @@ class WC_Gateway_SecureSubmit_GiftCards
     protected function cartHasSubscriptionProducts() {
 
         $cart = WC()->cart->get_cart();
-
+        
         foreach ( $cart as $cart_item ) {
-            $productType = WC_SecureSubmit_Util::getData($cart_item['data'], 'get_product_type', 'product_type');
+            
+            $productType = WC_SecureSubmit_Util::getData($cart_item['data'], 'get_type', 'product_type');
             $subscription_position = strpos( $productType, 'subscription' );
 
             if ( $subscription_position !== FALSE ) {
