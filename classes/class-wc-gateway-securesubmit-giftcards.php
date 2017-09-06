@@ -11,8 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *  - Gift Card has zero balance
  */
 
-class WC_Gateway_SecureSubmit_GiftCards
-    extends WC_Gateway_SecureSubmit {
+class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit {
 
     protected $gift_card               = NULL;
     protected $gift_card_submitted     = NULL;
@@ -399,7 +398,21 @@ class WC_Gateway_SecureSubmit_GiftCards
 
         if ( $subscriptions_active ) {
 
-            return ( $this->cartHasSubscriptionProducts() ) ? FALSE : TRUE;
+            if ( !empty($_GET['change_payment_method']) ) {
+
+                $product = get_post($_GET['change_payment_method']);
+
+                if ( FALSE !== strpos( $product->post_type, 'subscription') ) {
+
+                    return FALSE;
+
+                }
+
+            } else {
+
+                return ( $this->cartHasSubscriptionProducts() ) ? FALSE : TRUE;
+
+            }
 
         }
 
