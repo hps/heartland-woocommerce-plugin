@@ -31,6 +31,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $this->public_key              = $this->getSetting('public_key');
         $this->custom_error            = $this->getSetting('custom_error');
         $this->paymentaction           = $this->getSetting('paymentaction');
+        $this->dynamic_descriptor      = $this->getSetting('dynamic_descriptor');
         $this->enable_anti_fraud       = ($this->getSetting('enable_anti_fraud') == 'yes' ? true : false);
         $this->allow_fraud             = $this->getSetting('allow_fraud');
         $this->email_fraud             = $this->getSetting('email_fraud');
