@@ -110,6 +110,12 @@ return array(
             'authorization' => __('Authorize', 'wc_securesubmit'),
         ),
     ),
+    'dynamic_descriptor' => array(
+        'title'       => __('Dynamic Descriptor', 'wc_securesubmit'),
+        'type'        => 'text',
+        'description' => __('During any Capture or Authorize call, if this box has a value, pass it along in the Dynamic Descriptor field.', 'wc_securesubmit'),
+        'default'     => __('', 'wc_securesubmit'),
+    ),
     'use_iframes' => array(
         'title'       => __('Use iFrames', 'wc_securesubmit'),
         'label'       => __('Host the payment fields on Heartland\'s servers', 'wc_securesubmit'),
