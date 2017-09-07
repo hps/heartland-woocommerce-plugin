@@ -401,8 +401,7 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit {
             if ( !empty($_GET['change_payment_method']) ) {
 
                 $subscription = new WC_Subscription($_GET['change_payment_method']);
-
-                if ( !empty($subscription) ) {
+                if ( !empty($subscription) && (FALSE !== strpos($subscription->order_type, 'subscription')) ) {
 
                     return FALSE;
 
