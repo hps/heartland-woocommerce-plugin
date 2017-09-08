@@ -115,6 +115,10 @@ return array(
         'type'        => 'text',
         'description' => __('During any Capture or Authorize call, this value will be passed along in the Dynamic Descriptor field.', 'wc_securesubmit'),
         'default'     => __('', 'wc_securesubmit'),
+        'class'       => 'txndescriptor',
+        'custom_attributes' => array(
+            'maxlength' => 18,
+        ),
     ),
     'use_iframes' => array(
         'title'       => __('Use iFrames', 'wc_securesubmit'),
