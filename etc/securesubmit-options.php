@@ -113,7 +113,7 @@ return array(
     'txndescriptor' => array(
         'title'       => __('Order Transaction Descriptor', 'wc_securesubmit'),
         'type'        => 'text',
-        'description' => __('During any Capture or Authorize call, this value will be passed along in the Dynamic Descriptor field.', 'wc_securesubmit'),
+        'description' => __('During a Capture or Authorize payment action, this value will be passed along as the TxnDescriptor. Please contact <a href="mailto:securesubmitcert@e-hps.com?Subject=WooCommerce%20SecureSubmit%20TxnDescriptor Option">securesubmitcert@e-hps.com</a> with any question regarding this option.', 'wc_securesubmit'),
         'default'     => __('', 'wc_securesubmit'),
         'class'       => 'txndescriptor',
         'custom_attributes' => array(
