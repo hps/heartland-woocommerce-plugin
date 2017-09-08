@@ -128,6 +128,7 @@ class WC_Gateway_SecureSubmit_Payment
                     ->withDetails($details)
                     ->withSecureEcommerce($secureEcommerce)
                     ->withAllowDuplicates(true)
+                    ->withTxnDescriptor($this->parent->txndescriptor)
                     ->execute();
 
                 if ($save_card_to_customer) {
