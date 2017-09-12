@@ -175,12 +175,29 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
     protected function saveTokenMeta($order, $token)
     {
         $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
+        $order = wc_get_order($orderId);
         add_post_meta($orderId, '_securesubmit_card_token', $token, true);
+
+        if (method_exists($order, 'set_payment_method')) {
+            $order->set_payment_method($this->id, array(
+                'post_meta' => array(
+                    '_securesubmit_card_token' => $token,
+                ),
+            ));
+        }
 
         // save to subscriptions in order
         foreach(wcs_get_subscriptions_for_order($orderId) as $subscription) {
             $subscriptionId = WC_SecureSubmit_Util::getData($subscription, 'get_id', 'id');
             update_post_meta($subscriptionId, '_securesubmit_card_token', $token);
+
+            if (method_exists($order, 'set_payment_method')) {
+                $order->set_payment_method($this->id, array(
+                    'post_meta' => array(
+                        '_securesubmit_card_token' => $token,
+                    ),
+                ));
+            }
         }
     }
 
@@ -203,12 +220,12 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
         }
     }
 
-    public function processSubscriptionPayment($order, $amount, $tokenData = null, $requestMulti = false)
+    public function processSubscriptionPayment($order, $initialPayment, $tokenData = null, $requestMulti = false)
     {
         global $woocommerce;
 
         $order = wc_get_order($order);
-        $amount = wc_format_decimal($amount, 2);
+        $amount = wc_format_decimal($order->get_total(), 2);
 
         $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
 
@@ -233,7 +250,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
             $details->invoiceNumber = $orderId;
 
             $response = null;
-            if ($amount == 0) {
+            if ($amount == 0 || (method_exists($order, 'needs_payment') && !$order->needs_payment())) {
                 $response = $chargeService->verify()
                     ->withToken($token)
                     ->withCardHolder($cardHolder)
