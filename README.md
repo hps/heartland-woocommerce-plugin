@@ -19,6 +19,11 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+#### 1.11.12
+* Fix issue with payment updates. Prevent payment method update from charging.
+* Add new setting to SecureSubmit that will pass a value as the TxnDescriptor.
+* Fixed issue with subscription products. Disable gift cards when users change payment.
+
 #### 1.11.11
 * Fix issues with subscription products. Gift cards will be disabled for subscription products
 * Fix issues with subscription products. Prevent amount error when updating payment
