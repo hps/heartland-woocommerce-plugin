@@ -110,6 +110,16 @@ return array(
             'authorization' => __('Authorize', 'wc_securesubmit'),
         ),
     ),
+    'txndescriptor' => array(
+        'title'       => __('Order Transaction Descriptor', 'wc_securesubmit'),
+        'type'        => 'text',
+        'description' => __('During a Capture or Authorize payment action, this value will be passed along as the TxnDescriptor. Please contact <a href="mailto:securesubmitcert@e-hps.com?Subject=WooCommerce%20SecureSubmit%20TxnDescriptor Option">securesubmitcert@e-hps.com</a> with any question regarding this option.', 'wc_securesubmit'),
+        'default'     => __('', 'wc_securesubmit'),
+        'class'       => 'txndescriptor',
+        'custom_attributes' => array(
+            'maxlength' => 18,
+        ),
+    ),
     'use_iframes' => array(
         'title'       => __('Use iFrames', 'wc_securesubmit'),
         'label'       => __('Host the payment fields on Heartland\'s servers', 'wc_securesubmit'),
