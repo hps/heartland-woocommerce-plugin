@@ -176,7 +176,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
     {
         $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
         $order = wc_get_order($orderId);
-        add_post_meta($orderId, '_securesubmit_card_token', $token, true);
+        update_post_meta($orderId, '_securesubmit_card_token', $token);
 
         if (method_exists($order, 'set_payment_method')) {
             $order->set_payment_method($this->id, array(
@@ -307,7 +307,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
     public function validateSubscriptionPaymentMeta($methodId, $meta)
     {
         if ($this->id === $methodId) {
-            $token = $meta['post_meta']['_securesubmit_card_token']['value'];
+            $token = $meta['post_meta']['_securesubmit_card_token'];
             if (!isset($token) || empty($token)) {
                 throw new Exception(__('A SecureSubmit payment token is required.', 'wc_securesubmit'));
             }
