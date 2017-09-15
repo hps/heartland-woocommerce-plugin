@@ -359,7 +359,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
             }
 
             $payment = new HpsPaymentData();
-            $payment->subtotal = $order->subtotal - $order->get_cart_discount_total() - $taxAmount;
+            $payment->subtotal = $order->subtotal_ex_tax - $order->get_cart_discount_total();
             $payment->shippingAmount = $order->shipping_total;
             $payment->taxAmount = $taxAmount;
         }
@@ -378,7 +378,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
         }
 
         $shippingInfo->name =
-            WC_SecureSubmit_Util::getData($order, 'get_shipping_first_name', 'shipping_first_name') . ' ' .
+            WC_SecureSubmit_Util::getData($order, 'get_shipping_first_name', 	'shipping_first_name') . ' ' .
             WC_SecureSubmit_Util::getData($order, 'get_shipping_last_name', 'shipping_last_name');
         $shippingInfo->address = new HpsAddress();
         $shippingInfo->address->address = WC_SecureSubmit_Util::getData($order, 'get_shipping_address_1', 'shipping_address_1');
