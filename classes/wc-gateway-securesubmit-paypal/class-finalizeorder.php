@@ -40,6 +40,9 @@ class WC_Gateway_SecureSubmit_PayPal_FinalizeOrder
         $this->cleanupDummyValues($order);
 
         $payment = $porticoSessionInfo->payment;
+        if ( empty($payment->invoiceNumber) ) {
+            $payment->invoiceNumber = $orderId;
+        }
         $orderTotal = wc_format_decimal($payment->subtotal + $payment->shippingAmount + $payment->taxAmount, 2);
         $currency = strtolower(get_woocommerce_currency());
         //call portico with sale
