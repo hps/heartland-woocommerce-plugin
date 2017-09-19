@@ -19,6 +19,11 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+#### 1.11.13
+* Fix issue with subscriptions. When there is a change payment, the existing post meta record needs to be updated with the new token.
+* Fix issue with Avatax extension. The shipping tax was being subtracted from the subtotal incorrectly.
+* Pass order id with PayPal transactions.
+
 #### 1.11.12
 * Fix issue with payment updates. Prevent payment method update from charging.
 * Add new setting to SecureSubmit that will pass a value as the TxnDescriptor.
