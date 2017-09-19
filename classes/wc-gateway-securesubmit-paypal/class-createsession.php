@@ -35,6 +35,9 @@ class WC_Gateway_SecureSubmit_PayPal_CreateSession
             $shippingInfo = $this->parent->getShippingInfo($order);
             $buyer = $this->parent->getBuyerData($order);
             $payment = $this->parent->getPaymentData($order);
+            if ( empty($payment->invoiceNumber) ) {
+                $payment->invoiceNumber = $orderId;
+            }
             $lineItems = $this->parent->getLineItems($order);
         } else {
             $orderTotal = $woocommerce->cart->total;

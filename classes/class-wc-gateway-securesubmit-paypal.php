@@ -377,6 +377,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
             return null;
         }
 
+        $shippingInfo = new HpsShippingInfo();
         $shippingInfo->name =
             WC_SecureSubmit_Util::getData($order, 'get_shipping_first_name', 'shipping_first_name') . ' ' .
             WC_SecureSubmit_Util::getData($order, 'get_shipping_last_name', 'shipping_last_name');
