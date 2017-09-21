@@ -393,11 +393,11 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit {
     }
 
     public function giftCardsAllowed() {
-        
+
         $subscriptions_active = $this->subscriptionsActive();
 
         if ( $subscriptions_active ) {
-            
+
             if ( !empty($_GET['change_payment_method']) ) {
 
                 $subscription = new WC_Subscription($_GET['change_payment_method']);
@@ -434,9 +434,9 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit {
     protected function cartHasSubscriptionProducts() {
 
         $cart = WC()->cart->get_cart();
-        
+
         foreach ( $cart as $cart_item ) {
-            
+
             $productType = WC_SecureSubmit_Util::getData($cart_item['data'], 'get_type', 'product_type');
             $subscription_position = strpos( $productType, 'subscription' );
 

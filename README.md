@@ -19,6 +19,9 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+#### 1.11.14
+* Fix issue with gift card fields still showing for subscription change paymemts.
+
 #### 1.11.13
 * Fix issue with subscriptions. When there is a change payment, the existing post meta record needs to be updated with the new token.
 * Fix issue with Avatax extension. The shipping tax was being subtracted from the subtotal incorrectly.
