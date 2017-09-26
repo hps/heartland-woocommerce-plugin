@@ -143,14 +143,24 @@ class WC_Gateway_SecureSubmit_PayPal_FinalizeOrder
         $_POST['billing_state'] = $this->maybeGet($hpsShippingInfo->address, 'state');
         $_POST['billing_postcode'] = $this->maybeGet($hpsShippingInfo->address, 'zip');
 
-        // Try the shipping country code first
+        /**
+         * Country Code Bug:
+         * There is a scenarios where the country code gets confused/lost when passed
+         * back to the review order action.
+         *
+         * First, look for the country code in the shipping info object.
+         * If that is missing for whatever reason, then we will kepe looking elsewhere.
+         */
         $countryCode = $this->maybeGet($hpsShippingInfo, 'countryCode');
         if ( empty($countryCode) ) {
-            // Then try the shipping address country value
+            /*
+             * If the country code is missing from the shipping info object,
+             * then look for the country in the address object
+             */
             $countryCode = $this->maybeGet($hpsShippingInfo->address, 'country');
         }
         if ( empty($countryCode) ) {
-            // Worst case scenarios, try the shipping address country code
+            // Worst case scenarios, use the country code in the buyers data object
             $countryCode = $this->maybeGet($hpsBuyerData, 'countryCode');
         }
         $_POST['billing_country'] = $countryCode;
