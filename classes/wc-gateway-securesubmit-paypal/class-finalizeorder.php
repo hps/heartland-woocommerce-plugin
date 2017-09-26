@@ -142,7 +142,18 @@ class WC_Gateway_SecureSubmit_PayPal_FinalizeOrder
         $_POST['billing_city'] = $this->maybeGet($hpsShippingInfo->address, 'city');
         $_POST['billing_state'] = $this->maybeGet($hpsShippingInfo->address, 'state');
         $_POST['billing_postcode'] = $this->maybeGet($hpsShippingInfo->address, 'zip');
-        $_POST['billing_country'] = $this->maybeGet($hpsBuyerData, 'countryCode');
+
+        // Try the shipping country code first
+        $countryCode = $this->maybeGet($hpsShippingInfo, 'countryCode');
+        if ( empty($countryCode) ) {
+            // Then try the shipping address country value
+            $countryCode = $this->maybeGet($hpsShippingInfo->address, 'country');
+        }
+        if ( empty($countryCode) ) {
+            // Worst case scenarios, try the shipping address country code
+            $countryCode = $this->maybeGet($hpsBuyerData, 'countryCode');
+        }
+        $_POST['billing_country'] = $countryCode;
         $_POST['billing_email'] = $this->maybeGet($hpsBuyerData, 'emailAddress');
         $_POST['billing_phone'] = $this->maybeGet($hpsBuyerData, 'phone', '5555555555');
 
