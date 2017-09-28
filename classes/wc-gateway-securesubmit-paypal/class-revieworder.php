@@ -38,15 +38,13 @@ class WC_Gateway_SecureSubmit_PayPal_ReviewOrder
           * @var HpsAltPaymentSessionInfo
           */
         $sessionInfo = $this->parent->getPorticoService()->sessionInfo($_GET['token']);
-        $shippingInfo = $sessionInfo->shipping;
-
         if (empty($sessionInfo)) {
             return;
         }
 
         $this->parent->setSession('paypal_session_info', serialize($sessionInfo));
 
-
+        $shippingInfo = $sessionInfo->shipping;
         if (!isset($shippingInfo->address->country)) {
             return;
         }
