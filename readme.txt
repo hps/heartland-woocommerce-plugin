@@ -35,6 +35,9 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section
 
 == Changelog ==
+= 1.11.15 =
+* Fix issue with PayPal passing back the billing country inconsistantly
+
 = 1.11.14 =
 * Fix issue with gift card fields still showing for subscription change paymemts.
 

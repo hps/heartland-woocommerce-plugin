@@ -19,6 +19,9 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+#### 1.11.15
+* Fix issue with PayPal passing back the billing country inconsistantly
+
 #### 1.11.14
 * Fix issue with gift card fields still showing for subscription change paymemts.
 
