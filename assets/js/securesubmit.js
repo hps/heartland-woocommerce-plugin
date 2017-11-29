@@ -601,6 +601,8 @@
         } else if (giftCardResponse.error === 0) {
             jQuery('#gift-card-success').text("Your gift card was applied to the order.").show('fast');
             jQuery('body').trigger('update_checkout');
+            jQuery('#gift-card-number').val('');
+            jQuery('#gift-card-pin').val('');
         }
     }
 
