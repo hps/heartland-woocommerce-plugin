@@ -19,6 +19,9 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+#### 1.11.16
+* Fix issue with gift cards not being applied correctly at checkout.
+
 #### 1.11.15
 * Fix issue with PayPal passing back the billing country inconsistantly
 
