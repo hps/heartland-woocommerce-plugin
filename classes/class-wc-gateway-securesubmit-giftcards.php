@@ -90,69 +90,35 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit {
         $gift_card_object_entered = WC()->session->get( 'securesubmit_gift_card_object' );
         $gift_card_object_applied = WC()->session->get( 'securesubmit_gift_card_applied' );
 
-        $cart_totals = WC()->session->get('cart_totals');
-        $cart_total = round($cart_totals['total'], 2);
-            
-        if ( empty( $gift_card_object_applied ) ) {
+        $original_total = $this->getOriginalCartTotal();
+
+        if ( is_object($gift_card_object_applied) && count(get_object_vars($gift_card_object_applied)) > 0 ) {
 
             $securesubmit_data                 = new stdClass;
-            $securesubmit_data->original_total = $cart_total;
-            WC()->session->set( 'securesubmit_data', $securesubmit_data);
-
-        } else {
-
-            $securesubmit_data   = WC()->session->get( 'securesubmit_data' );
-            if ( !empty($securesubmit_data) && !empty($securesubmit_data->original_total) ) {
-                $original_total      = round( $securesubmit_data->original_total, 2 );
-            } else {
-                $original_total = $cart_total;
-                $securesubmit_data->original_total = $original_total;
-                WC()->session->set( 'securesubmit_data', $securesubmit_data );
-            }
-            
-            $session_info        = WC()->session;
-            $cart_contents_total = $session_info->cart_contents_total;
-            $tax_total           = $session_info->tax_total;
-            $shipping_total      = $session_info->shipping_total;
-            $shipping_tax_total  = $session_info->shipping_tax_total;
-            $fee_total           = $session_info->fee_total;
-
-            /*
-             * Need to hand-roll the cart total previous to gift card due to already having overridden the total.
-             * WC->session->cart_contents_total takes into account any coupons that discount cart items.
-             */
-            $comparison_total = round( array_sum( array(
-                                                      $cart_contents_total,
-                                                      $tax_total,
-                                                      $shipping_total,
-                                                      $shipping_tax_total,
-                                                      $fee_total,
-                                                  ) ), 2 );
-
-            if ( $original_total !== $comparison_total ) {
-
-                $securesubmit_data->original_total = $comparison_total;
-
-                WC()->session->set( 'securesubmit_data', $securesubmit_data );
-
-                $this->updateGiftCardTotals();
-
-            }
-
         }
+            $securesubmit_data->original_total = $original_total;
+            WC()->session->set( 'securesubmit_data', $securesubmit_data );
 
-        if ( ! empty( $gift_card_object_entered ) ) {
+            $this->updateGiftCardTotals();
+
+        if ( is_object($gift_card_object_entered) && count(get_object_vars($gift_card_object_entered)) > 0 ) {
             if ( $gift_card_object_entered->temp_balance === '0.00' ) {
 
                 WC()->session->__unset( 'securesubmit_gift_card_object' );
 
-                $zero_balance_message = apply_filters( 'securesubmit_zero_balance_message', sprintf( __( '%s has a balance of zero and could not be applied to this order.', 'wc_securesubmit' ), $gift_card_object_entered->gift_card_name ) );
+                $zero_balance_message = apply_filters(
+                    'securesubmit_zero_balance_message',
+                    sprintf(
+                        __( '%s has a balance of zero and could not be applied to this order.', 'wc_securesubmit' ),
+                        $gift_card_object_entered->gift_card_name
+                    )
+                );
 
                 wc_add_notice( $zero_balance_message, 'error' );
 
             } else {
 
-                if ( empty( $gift_card_object_applied ) ) {
+                if ( is_object($gift_card_object_applied) && count(get_object_vars($gift_card_object_applied)) > 0 ) {
 
                     $gift_card_object_applied = new stdClass;
 
@@ -181,14 +147,19 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit {
         // No gift cards if there are subscription products in the cart
         if ( $gift_cards_allowed ) {
 
+            $original_total = $this->getOriginalCartTotal();
+
             $gift_card_object_applied = $this->updateGiftCardCartTotal();
 
-            if ( ! empty( $gift_card_object_applied ) ) {
+            if ( is_object($gift_card_object_applied) && count(get_object_vars($gift_card_object_applied)) > 0 ) {
+
                 $securesubmit_data = WC()->session->get( 'securesubmit_data' );
-                $original_total    = $securesubmit_data->original_total;
+                $securesubmit_data->original_total = $original_total;
+                WC()->session->set( 'securesubmit_data', $securesubmit_data );
+
                 $message           = __( 'Total Before Gift Cards', 'wc_securesubmit' );
 
-                $order_total_html = '<tr id="securesubmit_order_total" class="order-total">';
+                $order_total_html  = '<tr id="securesubmit_order_total" class="order-total">';
                 $order_total_html .= '<th>' . $message . '</th>';
                 $order_total_html .= '<td data-title="' . esc_attr( $message ) . '">' . wc_price( $original_total ) . '</td>';
                 $order_total_html .= '</tr>';
@@ -199,7 +170,7 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit {
 
                     $remove_link = '<a href="#" id="' . $applied_gift_card->gift_card_id . '" class="securesubmit-remove-gift-card">(Remove)</a>';
 
-                    $gift_card_html = '<tr class="fee">';
+                    $gift_card_html  = '<tr class="fee">';
                     $gift_card_html .= '<th>' . $applied_gift_card->gift_card_name . ' ' . $remove_link . '</th>';
                     $gift_card_html .= '<td data-title="' . esc_attr( $applied_gift_card->gift_card_name ) . '">' . wc_price( $applied_gift_card->used_amount ) . '</td>';
                     $gift_card_html .= '</tr>';
@@ -216,8 +187,7 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit {
 
             $this->removeAllGiftCardsFromSession();
 
-            if ( ! empty( $applied_cards ) ) {
-
+            if ( is_object($applied_cards) && count(get_object_vars($applied_cards)) > 0 ) {
                 wc_add_notice( __( 'Sorry, we are unable to allow gift cards to be used when purchasing a subscription. Any gift cards already applied to the order have been cleared', 'wc_securesubmit' ), 'notice' );
 
             }
@@ -270,10 +240,9 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit {
 
         $gift_cards = WC()->session->get( 'securesubmit_gift_card_applied' );
 
-        if ( ! empty( $gift_cards ) ) {
+        if ( is_object($gift_cards) && count(get_object_vars($gift_cards)) > 0 ) {
 
             $gift_card_totals = $this->getGiftCardTotals();
-
             $cart_total = $cart_total + $gift_card_totals;
 
         }
@@ -327,15 +296,9 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit {
                     $response = $this->giftCardService()->void( $card->transaction_id )->execute();
 
                 }
-                catch( HpsArgumentException $e ) {
-
-                }
-                catch( HpsCreditException $e ) {
-
-                }
-                catch( Exception $e ) {
-
-                }
+                catch( HpsArgumentException $e ) {}
+                catch( HpsCreditException $e ) {}
+                catch( Exception $e ) {}
 
                 if ( isset( $response->responseCode ) && $response->responseCode === '0' ) {
 
@@ -463,45 +426,26 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit {
         $gift_cards_applied = WC()->session->get( 'securesubmit_gift_card_applied' );
         $securesubmit_data  = WC()->session->get( 'securesubmit_data' );
 
-        if ( !empty($securesubmit_data) && !empty($securesubmit_data->original_total) ) {
-            $original_total     = $securesubmit_data->original_total;
-        } else {
-            $cart_totals = WC()->session->get('cart_totals');
-            $original_total = round($cart_totals['total'], 2);
-            $securesubmit_data->original_total = $original_total;
-            WC()->session->set( 'securesubmit_data', $securesubmit_data );
-        }
+        $original_total = $this->getOriginalCartTotal();
         $remaining_total = $original_total;
 
-        if ( !empty($gift_cards_applied) ) {
+        if ( is_object($gift_cards_applied) && count(get_object_vars($gift_cards_applied)) > 0 ) {
+
             foreach ( $gift_cards_applied as $gift_card ) {
 
                 $order_total_after_gift_card = $remaining_total - $gift_card->temp_balance;
 
-                if ( $order_total_after_gift_card >= 0 ) {
+                if ( $order_total_after_gift_card > 0 ) {
 
-                    //$gift_card->used_amount = $this->convertToNegativeAmount( $gift_card->temp_balance );
                     $gift_card->used_amount = $gift_card->temp_balance;
 
                 } else {
 
-                    //$gift_card->used_amount = $this->convertToNegativeAmount( $remaining_total );
                     $gift_card->used_amount = $remaining_total;
 
                 }
 
                 $gift_cards_applied->{$gift_card->gift_card_id} = $gift_card;
-
-                if ( $gift_card->used_amount === 0.00 ) {
-
-                    unset( $gift_cards_applied->{$gift_card->gift_card_id} );
-
-                    $message = sprintf( __( '%s has been removed from your checkout because the order amount cannot go below zero.', 'wc_securesubmit' ), $gift_card->gift_card_name );
-
-                    wc_add_notice( $message, 'notice' );
-
-                }
-
                 $remaining_total = $remaining_total - $gift_card->used_amount;
 
             }
@@ -550,11 +494,11 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit {
 
         if ( round( $gift_card_object->temp_balance, 2 ) <= $cart_total ) {
 
-            $gift_card_applied_amount = $this->convertToNegativeAmount( $gift_card_object->temp_balance );
+            $gift_card_applied_amount = $gift_card_object->temp_balance;
 
         } else {
 
-            $gift_card_applied_amount = $this->convertToNegativeAmount( $cart_total );
+            $gift_card_applied_amount = $cart_total;
 
         }
 
@@ -617,6 +561,23 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit {
 
         return $gift_card;
 
+    }
+
+    protected function getOriginalCartTotal() {
+
+        $cart_totals = WC()->session->get('cart_totals');
+        $original_total = round(
+            array_sum(
+                array(
+                    $cart_totals['cart_contents_total'],
+                    $cart_totals['tax_total'],
+                    $cart_totals['shipping_total'],
+                    $cart_totals['shipping_tax_total'],
+                    $cart_totals['fee_total'],
+                )
+            ), 2
+        );
+        return $original_total;
     }
 
 }
