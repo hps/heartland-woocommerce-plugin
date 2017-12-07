@@ -19,6 +19,9 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 Changelog
 ------------
+#### 1.11.18
+* Fix notices and warnings when applying gift cards
+
 #### 1.11.17
 * Fix issue with applying gift cards.
 

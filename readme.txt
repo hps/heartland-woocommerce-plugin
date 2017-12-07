@@ -35,6 +35,9 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section
 
 == Changelog ==
+= 1.11.18 =
+* Fix notices and warnings when applying gift cards
+
 = 1.11.17 =
 * Fix issue with applying gift cards.
 

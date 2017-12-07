@@ -92,14 +92,15 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit {
 
         $original_total = $this->getOriginalCartTotal();
 
-        if ( is_object($gift_card_object_applied) && count(get_object_vars($gift_card_object_applied)) > 0 ) {
-
-            $securesubmit_data                 = new stdClass;
+        $securesubmit_data = WC()->session->get('securesubmit_data');
+        if ( !is_object($securesubmit_data) ) {
+            $securesubmit_data = new stdClass;
         }
-            $securesubmit_data->original_total = $original_total;
-            WC()->session->set( 'securesubmit_data', $securesubmit_data );
 
-            $this->updateGiftCardTotals();
+        $securesubmit_data->original_total = $original_total;
+        WC()->session->set( 'securesubmit_data', $securesubmit_data );
+
+        $this->updateGiftCardTotals();
 
         if ( is_object($gift_card_object_entered) && count(get_object_vars($gift_card_object_entered)) > 0 ) {
             if ( $gift_card_object_entered->temp_balance === '0.00' ) {
@@ -569,11 +570,11 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit {
         $original_total = round(
             array_sum(
                 array(
-                    $cart_totals['cart_contents_total'],
-                    $cart_totals['tax_total'],
-                    $cart_totals['shipping_total'],
-                    $cart_totals['shipping_tax_total'],
-                    $cart_totals['fee_total'],
+                    ( !empty($cart_totals['cart_contents_total']) ? $cart_totals['cart_contents_total'] : 0),
+                    ( !empty($cart_totals['tax_total']) ? $cart_totals['tax_total'] : 0),
+                    ( !empty($cart_totals['shipping_total']) ? $cart_totals['shipping_total'] : 0),
+                    ( !empty($cart_totals['shipping_tax_total']) ? $cart_totals['shipping_tax_total'] : 0),
+                    ( !empty($cart_totals['fee_total']) ? $cart_totals['fee_total'] : 0),
                 )
             ), 2
         );
