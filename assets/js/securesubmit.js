@@ -242,7 +242,11 @@
 
       addClass(ul, 'woocommerce_error');
       addClass(ul, 'woocommerce-error');
-      li.appendChild(document.createTextNode(response.error.message));
+      li.appendChild(
+        document.createTextNode(
+          response.error.message.replace('undefined', 'missing')
+        )
+      );
       ul.appendChild(li);
 
       document
