@@ -90,14 +90,15 @@
       var card = document.getElementById('securesubmit_card_number');
       var cvv = document.getElementById('securesubmit_card_cvv');
       var expiration = document.getElementById('securesubmit_card_expiration');
+      var month = '';
+      var year = '';
 
-      if (!expiration || !expiration.value) {
-        return false;
+      if (expiration && expiration.value) {
+        var split = expiration.value.split(' / ');
+        month = split[0].replace(/^\s+|\s+$/g, '');
+        year = split[1].replace(/^\s+|\s+$/g, '');
       }
 
-      var split = expiration.value.split(' / ');
-      var month = split[0].replace(/^\s+|\s+$/g, '');
-      var year = split[1].replace(/^\s+|\s+$/g, '');
       options.Consumer = {
         Account: {
           AccountNumber: card.value.replace(/\D/g, ''),
