@@ -71,6 +71,8 @@ class WC_Gateway_SecureSubmit_Payment
             try {
                 if ($this->parent->paymentaction == 'sale') {
                     $builder = $chargeService->charge();
+                } elseif ($this->parent->paymentaction == 'verify') {
+                    $builder = $chargeService->verify();
                 } else {
                     $builder = $chargeService->authorize();
                 }
@@ -119,17 +121,25 @@ class WC_Gateway_SecureSubmit_Payment
 
                 $orderTotal = wc_format_decimal(WC_SecureSubmit_Util::getData($order, 'get_total', 'order_total'), 2);
 
-                $response = $builder
-                    ->withAmount($orderTotal)
-                    ->withCurrency(strtolower(get_woocommerce_currency()))
-                    ->withToken($hpstoken)
-                    ->withCardHolder($cardHolder)
-                    ->withRequestMultiUseToken($save_card_to_customer)
-                    ->withDetails($details)
-                    ->withSecureEcommerce($secureEcommerce)
-                    ->withAllowDuplicates(true)
-                    ->withTxnDescriptor($this->parent->txndescriptor)
-                    ->execute();
+                if ($this->parent->paymentaction == 'verify') {
+                    $response = $builder
+                        ->withToken($hpstoken)
+                        ->withCardHolder($cardHolder)
+                        ->withRequestMultiUseToken(true)
+                        ->execute();
+                } else {
+                    $response = $builder
+                        ->withAmount($orderTotal)
+                        ->withCurrency(strtolower(get_woocommerce_currency()))
+                        ->withToken($hpstoken)
+                        ->withCardHolder($cardHolder)
+                        ->withRequestMultiUseToken($save_card_to_customer)
+                        ->withDetails($details)
+                        ->withSecureEcommerce($secureEcommerce)
+                        ->withAllowDuplicates(true)
+                        ->withTxnDescriptor($this->parent->txndescriptor)
+                        ->execute();
+                }
 
                 if ($save_card_to_customer) {
                     if (is_user_logged_in()) {
@@ -171,6 +181,20 @@ class WC_Gateway_SecureSubmit_Payment
                     }
                 }
 
+                if ($this->parent->paymentaction == 'verify') {
+                    $tokenval = $response->tokenData->tokenValue;
+                    
+                    if ($response->tokenData->responseCode == '0') {
+                        update_post_meta($orderId, '_verify_secure_submit_card', array(
+                            'last_four' => $last_four,
+                            'exp_month' => $exp_month,
+                            'exp_year' => $exp_year,
+                            'token_value' => (string) $tokenval,
+                            'card_type' => $card_type,
+                        ));
+                    }
+                }
+
                 if ($this->parent->allow_gift_cards) {
                     $session_applied_gift_card = WC()->session->get('securesubmit_gift_card_applied');
                     if (!empty($session_applied_gift_card)) {
@@ -179,9 +203,16 @@ class WC_Gateway_SecureSubmit_Payment
                     }
                 }
 
-                $verb = $this->parent->paymentaction == 'sale'
-                      ? 'captured'
-                      : 'authorized';
+                $verb = '';
+
+                if ($this->parent->paymentaction == 'sale') {
+                    $verb = 'captured';
+                } elseif ($this->parent->paymentaction == 'verify') {
+                    $verb = 'verified';
+                } else {
+                    $verb = 'authorized';
+                }
+
                 $order->add_order_note(__('SecureSubmit payment ' . $verb .($authenticated ? ' and authenticated' : ''), 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
                 do_action('wc_securesubmit_order_credit_card_details', $orderId, $card_type, $last_four);
                 $order->payment_complete($response->transactionId);
