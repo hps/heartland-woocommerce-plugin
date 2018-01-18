@@ -61,7 +61,6 @@ class HpsCreditServiceCaptureBuilder extends HpsBuilderAbstract
         if ($this->directMarketData != null && $this->directMarketData->invoiceNumber != null) {
             $hpsCreditAddToBatch->appendChild($this->_hydrateDirectMarketData($this->directMarketData, $xml));
         }
-
         $hpsTransaction->appendChild($hpsCreditAddToBatch);
         $response = $this->service->doRequest($hpsTransaction);
         $this->_processChargeGatewayResponse($response, 'CreditAddToBatch');
