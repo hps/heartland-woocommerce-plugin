@@ -67,6 +67,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
         $order = new WC_Order($orderId);
         $securesubmitToken = isset($_POST['securesubmit_token']) ? $this->cleanValue($_POST['securesubmit_token']) : '';
         $useStoredCard = false;
+        $saveToOrder = false;
 
         // used for card saving:
         $last_four = isset($_POST['last_four']) ? $this->cleanValue($_POST['last_four']) : '';
@@ -90,6 +91,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
                 if (isset($cards[$_POST['secure_submit_card']]['token_value'])) {
                     $hpstoken->tokenValue = (string)$cards[(int)$_POST['secure_submit_card']]['token_value'];
                     $useStoredCard = true;
+                    $saveToOrder = true;
                 } else {
                     throw new Exception(__('Invalid saved card.', 'wc_securesubmit'));
                 }
@@ -187,7 +189,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
         }
 
         // save to subscriptions in order
-        foreach(wcs_get_subscriptions_for_order($orderId) as $subscription) {
+        foreach (wcs_get_subscriptions_for_order($orderId) as $subscription) {
             $subscriptionId = WC_SecureSubmit_Util::getData($subscription, 'get_id', 'id');
             update_post_meta($subscriptionId, '_securesubmit_card_token', $token);
 
