@@ -71,10 +71,13 @@ class WC_Gateway_SecureSubmit_Payment
             try {
                 if ($this->parent->paymentaction == 'sale') {
                     $builder = $chargeService->charge();
+                    update_post_meta($orderId, '_payment_action', 'sale');
                 } elseif ($this->parent->paymentaction == 'verify') {
                     $builder = $chargeService->verify();
+                    update_post_meta($orderId, '_payment_action', 'verify');
                 } else {
                     $builder = $chargeService->authorize();
+                    update_post_meta($orderId, '_payment_action', 'authorize');
                 }
 
                 $secureEcommerce = null;
@@ -191,8 +194,14 @@ class WC_Gateway_SecureSubmit_Payment
                             'exp_year' => $exp_year,
                             'token_value' => (string) $tokenval,
                             'card_type' => $card_type,
-                        ));
-                    }
+                    ));
+
+                    update_post_meta($orderId, '_verify_Amount', $orderTotal);
+                    update_post_meta($orderId, '_verify_Currency', strtolower(get_woocommerce_currency()));
+                    update_post_meta($orderId, '_verify_Details', $details);
+                    update_post_meta($orderId, '_verify_Descriptor', $this->parent->txndescriptor);
+                    update_post_meta($orderId, '_verify_Cardholder', $cardHolder);
+
                 }
 
                 if ($this->parent->allow_gift_cards) {

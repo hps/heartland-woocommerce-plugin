@@ -21,6 +21,8 @@ class WC_Gateway_SecureSubmit_Capture
             return false;
         }
 
+        $payment_action = get_post_meta($orderId, '_payment_action', true);
+
         $transactionId = $this->parent->getOrderTransactionId($order);
 
         if (!$transactionId) {
@@ -30,10 +32,30 @@ class WC_Gateway_SecureSubmit_Capture
         try {
             $chargeService = $this->parent->getCreditService();
             try {
-                $response = $chargeService->capture()
-                    ->withTransactionId($transactionId)
-                    ->withAmount(wc_format_decimal($order->get_total() - $order->get_total_refunded(), 2))
-                    ->execute();
+                if ($payment_action == 'verify') {
+                    $verify_card = get_post_meta($orderId, '_verify_secure_submit_card', true);
+                    $verify_amount = get_post_meta($orderId, '_verify_Amount', true);
+                    $verify_currency = get_post_meta($orderId, '_verify_Currency', true);
+                    $verify_details = get_post_meta($orderId, '_verify_Details', true);
+                    $verify_descriptor = get_post_meta($orderId, '_verify_Descriptor', true);
+                    $verify_cardholder = get_post_meta($orderId, '_verify_Cardholder', true);
+
+                    $response = $chargeService->charge()
+                        ->withAmount(wc_format_decimal($order->get_total() - $order->get_total_refunded(), 2))
+                        ->withCurrency($verify_currency)
+                        ->withToken($verify_card->token_value) // does this need to be a hpstoken object?
+                        ->withCardHolder($verify_cardholder)
+                        ->withDetails($details)
+                        ->withAllowDuplicates(true)
+                        ->withTxnDescriptor($verify_descriptor)
+                        ->execute();
+                } else {
+                    $response = $chargeService->capture()
+                        ->withTransactionId($transactionId)
+                        ->withAmount(wc_format_decimal($order->get_total() - $order->get_total_refunded(), 2))
+                        ->execute();
+                }
+
                 $order->add_order_note(__('SecureSubmit payment captured', 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
                 return true;
             } catch (HpsException $e) {
