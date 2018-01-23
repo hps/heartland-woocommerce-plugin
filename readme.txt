@@ -35,6 +35,10 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section
 
 == Changelog ==
+= 1.11.20 =
+* Ensure subscriptionhas token when a previously stored card is used for payment
+* Prevent missing expiration date from preventing checkout submit
+
 = 1.11.19 =
 * Fix JavaScript error on order confirmation screen
 * Prevent missing expiration date from preventing checkout submit
