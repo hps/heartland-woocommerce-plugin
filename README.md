@@ -20,6 +20,11 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 1.11.20
+
+* Ensure subscriptionhas token when a previously stored card is used for payment
+* Prevent missing expiration date from preventing checkout submit
+
 #### 1.11.19
 
 * Fix JavaScript error on order confirmation screen
