@@ -1,7 +1,7 @@
 === WooCommerce SecureSubmit Gateway ===
 Contributors: markhagan
 Tags: woocommerce, woo, commerce, heartland, payment, systems, gateway, token, tokenize, save cards
-Tested up to: 4.8
+Tested up to: Wordpress 4.9.4 and WooCommerce 3.3.1
 Stable tag: trunk
 License: GPLv2
 License URI: https://github.com/hps/heartland-woocommerce-plugin/blob/master/LICENSE.md
@@ -35,6 +35,7 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section
 
 == Changelog ==
+
 = 1.11.20 =
 * Ensure subscriptionhas token when a previously stored card is used for payment
 * Prevent missing expiration date from preventing checkout submit
