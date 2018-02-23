@@ -186,3 +186,4 @@ if ($this->allow_gift_cards && $gift_cards_allowed) : // Allow customers to pay 
     window.securesubmitLoadEvents = window.securesubmitLoadEvents || function () {};
     window.securesubmitLoadEvents();
 </script>
+

@@ -17,12 +17,16 @@ div.payment_method_securesubmit image {
 }
 
 .resized .saved-card.active {
-    border-color:transparent;
     margin:7px 0;
 }
 
 .resized .saved-card {
     height:auto;
+}
+
+.resized .saved-card {
+    height:auto;
+    padding:5px;
 }
 
 .resized .saved-card-selector {
@@ -32,10 +36,21 @@ div.payment_method_securesubmit image {
     padding: 0px !important;
 }
 
+.resized  .securesubmit-content {
+    padding: 0em;
+}
+
 .resized .saved-card-info-new {
     height:auto;
     padding-left:7px;
     padding-top:0px;
+}
+
+.resized #payment .payment_methods li p {
+    padding-top:3px !important;
+}
+.resized .saved-card-info {
+    padding-top:0px !important;
 }
 
 .resized .ss-section-header h6 {
@@ -45,6 +60,10 @@ div.payment_method_securesubmit image {
 .resized .saved-card p {
     font-size:14px !important;
     padding-left:13px !important;
+}
+
+.resized .saved-card .card-type-logo {
+    display:none;
 }
 
 .resized .woocommerce-checkout #payment .payment_method_securesubmit div.payment_box {
@@ -57,6 +76,10 @@ div.payment_method_securesubmit image {
 
 .resized #heartland-field[name="cardNumber"] + .extra-div-1 {
     display:none !important;
+}
+
+.resized #payment .securesubmit-content div.form-row {
+	padding: 0em 1em;
 }
 
 /*fix css mistake in rosa theme*/
@@ -420,7 +443,7 @@ html body .woocommerce .payment_method_securesubmit iframe{
 /* credit card fields labels */
 
 #payment .securesubmit-content div.form-row {
-	padding: 0em 1em;
+	padding: 1em;
 }
 
 .payment_method_securesubmit div.payment_box .securesubmit_new_card .securesubmit_new_card_info label {
@@ -445,9 +468,9 @@ html body .woocommerce .payment_method_securesubmit iframe{
 .securesubmit_new_card .card-type-logo {
    display: block;
    width: 56px;
-   height: 44px;
+   height: 40px;
    position: absolute;
-   top: 4px;
+   top: 0px;
    right: 10px;
    background-position: center;
    background-repeat: no-repeat;
@@ -485,11 +508,25 @@ html body .woocommerce .payment_method_securesubmit iframe{
 
 #securesubmit_card_number.card-type-amex + .card-type-logo {
    background-image: url(../../assets/images/ss-inputcard-amex@2x.png);
+   top:4px;
 }
 
 #securesubmit_card_number.card-type-mastercard + .card-type-logo {
    background-image: url(../../assets/images/ss-inputcard-mastercard@2x.png);
 }
+
+#securesubmit_card_number.card-type-visa.invalid + .card-type-logo,
+#securesubmit_card_number.card-type-amex.invalid + .card-type-logo,
+#securesubmit_card_number.card-type-jcb.invalid + .card-type-logo,
+#securesubmit_card_number.card-type-discover.invalid + .card-type-logo,
+#securesubmit_card_number.card-type-mastercard.invalid + .card-type-logo {
+    background-position: bottom;
+    top:4px;
+ }
+
+ .securesubmit-content {
+     padding: 0 1.5em;
+ }
 
 .ss-cvv {
    position: relative;
@@ -520,6 +557,7 @@ html body .woocommerce .payment_method_securesubmit iframe{
 }
 
 input:focus,
+textarea:focus,
 textarea:focus,
 input::selection,
 textarea::selection {

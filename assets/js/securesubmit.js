@@ -381,12 +381,12 @@
           margin: '0 .5em 0 0',
           'max-width': '100%',
           outline: '0',
-          padding: '15px 13px 13px 13px',
+          padding: '13px 13px 13px 13px',
           'vertical-align': 'middle',
           width: '100%',
-        },      
+        },
         'input:focus': {
-           border:'1px solid #3989e3 !important'
+          border: '1px solid #3989e3 !important'
         },
         '#heartland-field-body': {
           width: '100%',
@@ -398,72 +398,82 @@
         '#heartland-field[name="cardNumber"] + .extra-div-1': {
           display: 'block',
           width: '56px',
-          height: '44px',
+          'height': '40px',
           position: 'absolute',
           top: '4px',
           right: '10px',
           'background-position': 'center',
           'background-repeat': 'no-repeat',
           'background-size': '59px 35px',
-          'background-image': 
-          'url("' +
-          wc_securesubmit_params.images_dir + '/ss-inputcard-blank@2x.png")', 
+          'background-image':
+            'url("' +
+            wc_securesubmit_params.images_dir + '/ss-inputcard-blank@2x.png")',
           'background-position': 'right'
-        },        
+        },
         '#securesubmit_card_number': {
-          'background-image':'none'
+          'background-image': 'none'
         },
         '#heartland-frame-cardNumber': {
           'height': '50px'
         },
+        '#heartland-field[name="cardNumber"].valid + .extra-div-1': {
+          'background-size': '50px 80px',
+          'height': '40px',
+          'background-position': 'top'
+        },
         '#heartland-field[name="cardNumber"].invalid + .extra-div-1': {
-          'background-position': 'bottom',
+          'background-size': '50px 80px',
+          'top': '4'
         },
         '#heartland-field.card-type-visa + .extra-div-1': {
           'background-image':
             'url("' +
             wc_securesubmit_params.images_dir +
-            '/ss-inputcard-visa@2x.png")',
-            'background-size':'50px 80px',
-            'height':'40px',
-            'background-position':'top'
+            '/ss-inputcard-visa@2x.png")'
+        },
+        '#heartland-field.card-type-visa.invalid + .extra-div-1': {
+          'background-position': 'bottom',
         },
         '#heartland-field.card-type-jcb + .extra-div-1': {
-          'top':'4px',
+          'top': '4px',
           'background-image':
             'url("' +
             wc_securesubmit_params.images_dir +
-            '/ss-inputcard-jcb@2x.png")',
-            'background-size':'50px 80px',
-            'height':'40px'
+            '/ss-inputcard-jcb@2x.png")'
+        },
+        '#heartland-field.card-type-jcb.invalid + .extra-div-1': {
+          'background-position': 'bottom',
         },
         '#heartland-field.card-type-discover + .extra-div-1': {
           'background-image':
             'url("' +
             wc_securesubmit_params.images_dir +
-            '/ss-inputcard-discover@2x.png")',
-            'background-size':'50px 80px',
-            'height':'40px'
+            '/ss-inputcard-discover@2x.png")'
+        },
+        '#heartland-field.card-type-discover.invalid + .extra-div-1': {
+          'background-position': 'bottom',
         },
         '#heartland-field.card-type-amex + .extra-div-1': {
           'background-image':
             'url("' +
             wc_securesubmit_params.images_dir +
-            '/ss-inputcard-amex@2x.png")',
-            'background-size':'55px 80px',
-            'height':'40px'
+            '/ss-inputcard-amex@2x.png")'
+        },
+        '#heartland-field.card-type-amex.invalid + .extra-div-1': {
+          'background-position': 'bottom',
         },
         '#heartland-field.card-type-mastercard + .extra-div-1': {
           'background-image':
             'url("' +
             wc_securesubmit_params.images_dir +
-            '/ss-inputcard-mastercard@2x.png")',
-            'background-size': '50px 80px',
-            'height':'40px'
+            '/ss-inputcard-mastercard@2x.png")'
+        },
+        '#heartland-field.card-type-mastercard.invalid + .extra-div-1': {
+          'background-position': 'bottom',
         },
         '@media only screen and (max-width : 290px)': {
-          '#heartland-frame-cardExpiration' : {
-            display:'block'
+          '#heartland-frame-cardExpiration': {
+            display: 'block'
           },
         },
         // Card CVV
@@ -496,30 +506,16 @@
       wc_securesubmit_params.hpsReadyHandler = function() {
         setTimeout(function() {
           document.getElementById('heartland-frame-cardNumber').style.height =
-            '52px';
+            '49px';
           document.getElementById(
             'heartland-frame-cardExpiration'
           ).style.height =
-            '52px';
+            '49px';
           document.getElementById('heartland-frame-cardCvv').style.height =
-            '52px';     
+            '49px';     
         }, 500);
       };
     }
-
-    function formResize() {  
-      var outer = document.getElementById('payment');
-      var ssWrapper = document.getElementsByClassName('woocommerce-checkout')[0];   
-      console.log('ssWrapper');
-          if (outer.offsetWidth < 300) {        
-            ssWrapper.classList.add('resized');
-          }
-          else {
-            ssWrapper.classList.remove('resized');         
-          } 
-      }
-    Heartland.Events.addHandler(window, 'resize', formResize );
-    Heartland.Events.addHandler(window, 'load', formResize );
 
     Heartland.Events.removeHandler(
       document,
@@ -638,6 +634,20 @@
         }
         wc_securesubmit_params.handler = handler;
       }
+
+      function formResize() {
+        var outer = document.getElementById('payment');
+        var ssWrapper = document.getElementsByClassName('woocommerce-checkout')[0];
+        console.log('ssWrapper');
+        if (outer.offsetWidth < 400) {
+          ssWrapper.className += ' resized';
+        }
+        else {
+          ssWrapper.className = ssWrapper.className.replace(' resized', '');
+        }
+      }
+      Heartland.Events.addHandler(window, 'resize', formResize);
+      Heartland.Events.addHandler(window, 'load', formResize);
 
       jQuery('form#order_review')
         .off('submit', wc_securesubmit_params.handler)
