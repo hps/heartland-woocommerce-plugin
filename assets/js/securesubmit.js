@@ -384,6 +384,9 @@
           padding: '15px 13px 13px 13px',
           'vertical-align': 'middle',
           width: '100%',
+        },      
+        'input:focus': {
+           border:'1px solid #3989e3 !important'
         },
         '#heartland-field-body': {
           width: '100%',
@@ -399,46 +402,68 @@
           position: 'absolute',
           top: '4px',
           right: '10px',
-          'background-position': 'bottom',
+          'background-position': 'center',
           'background-repeat': 'no-repeat',
-          'background-size': '56px auto',
+          'background-size': '59px 35px',
+          'background-image': 
+          'url("' +
+          wc_securesubmit_params.images_dir + '/ss-inputcard-blank@2x.png")', 
+          'background-position': 'right'
+        },        
+        '#securesubmit_card_number': {
+          'background-image':'none'
         },
-        '#heartland-field[name="cardNumber"].valid + .extra-div-1': {
-          'background-position': 'top',
+        '#heartland-frame-cardNumber': {
+          'height': '50px'
+        },
+        '#heartland-field[name="cardNumber"].invalid + .extra-div-1': {
+          'background-position': 'bottom',
         },
         '#heartland-field.card-type-visa + .extra-div-1': {
           'background-image':
             'url("' +
             wc_securesubmit_params.images_dir +
             '/ss-inputcard-visa@2x.png")',
+            'background-size':'50px 80px',
+            'height':'40px',
+            'background-position':'top'
         },
         '#heartland-field.card-type-jcb + .extra-div-1': {
+          'top':'4px',
           'background-image':
             'url("' +
             wc_securesubmit_params.images_dir +
             '/ss-inputcard-jcb@2x.png")',
+            'background-size':'50px 80px',
+            'height':'40px'
         },
         '#heartland-field.card-type-discover + .extra-div-1': {
           'background-image':
             'url("' +
             wc_securesubmit_params.images_dir +
             '/ss-inputcard-discover@2x.png")',
+            'background-size':'50px 80px',
+            'height':'40px'
         },
         '#heartland-field.card-type-amex + .extra-div-1': {
           'background-image':
             'url("' +
             wc_securesubmit_params.images_dir +
             '/ss-inputcard-amex@2x.png")',
+            'background-size':'55px 80px',
+            'height':'40px'
         },
         '#heartland-field.card-type-mastercard + .extra-div-1': {
           'background-image':
             'url("' +
             wc_securesubmit_params.images_dir +
             '/ss-inputcard-mastercard@2x.png")',
+            'background-size': '50px 80px',
+            'height':'40px'
         },
         '@media only screen and (max-width : 290px)': {
-          '#heartland-field[name="cardNumber"] + .extra-div-1': {
-            display: 'none',
+          '#heartland-frame-cardExpiration' : {
+            display:'block'
           },
         },
         // Card CVV
@@ -477,10 +502,25 @@
           ).style.height =
             '52px';
           document.getElementById('heartland-frame-cardCvv').style.height =
-            '52px';
+            '52px';     
         }, 500);
       };
     }
+
+    function formResize() {  
+      var outer = document.getElementById('payment');
+      var ssWrapper = document.getElementsByClassName('woocommerce-checkout')[0];   
+      console.log('ssWrapper');
+          if (outer.offsetWidth < 300) {        
+            ssWrapper.classList.add('resized');
+          }
+          else {
+            ssWrapper.classList.remove('resized');         
+          } 
+      }
+    Heartland.Events.addHandler(window, 'resize', formResize );
+    Heartland.Events.addHandler(window, 'load', formResize );
+
     Heartland.Events.removeHandler(
       document,
       'securesubmitIframeReady',

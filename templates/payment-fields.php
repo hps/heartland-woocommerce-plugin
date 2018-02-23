@@ -81,7 +81,7 @@
       <?php $newClass .= !is_user_logged_in() ? ' no-saved-cards' : ''; ?>
       <?php $newClass .= is_user_logged_in() ? ' logged-in-no-saved-cards' : ''; ?>
     <?php endif; ?>
-    <div class="securesubmit-content new-card-content <?php echo $newClass;?>" style="<?php echo $styletag; ?>">
+    <div class="securesubmit-content new-card-content" id="new-card-content" <?php echo $newClass;?>" style="<?php echo $styletag; ?>">
         <div class="securesubmit_new_card">
             <div class="securesubmit_new_card_info">
                 <div class="form-row form-row-wide no-bottom-margin no-bottom-padding hideable">
@@ -100,7 +100,7 @@
                 </div>
                 <div class="clear"></div>
                 <div class="form-row hideable no-bottom-margin">
-                    <div class="form-row-first half-row">
+                    <div class="form-row-first half-row" id="exp-wrapper">
                         <label for="securesubmit_card_expiration">
                             <?php _e("Expiration date", 'wc_securesubmit') ?>
                             <span class="required">*</span>
@@ -111,7 +111,7 @@
                             <input id="securesubmit_card_expiration" type="tel" autocomplete="off" class="input-text expiry-date" placeholder="MM / YYYY" />
                         <?php endif; ?>
                     </div>
-                    <div class="form-row-last half-row">
+                    <div class="form-row-last half-row" id="cvv-wrapper">
                         <label for="securesubmit_card_cvv">
                             <?php _e("Security code", 'wc_securesubmit') ?>
                             <span class="required">*</span>
@@ -139,7 +139,6 @@
                     </div>
                 <?php endif; ?>
             </div>
-
             <div class="clear"></div>
         </div>
     </div>
@@ -175,7 +174,6 @@ if ($this->allow_gift_cards && $gift_cards_allowed) : // Allow customers to pay 
           <!-- End Gift Card -->
     </fieldset>
 <?php endif; ?>
-
 <?php if ($this->use_iframes): // Create the iframes when WC refreshes the payment fields ?>
     <script>
         window.securesubmitLoadIframes = window.securesubmitLoadIframes || function () {};
@@ -183,6 +181,7 @@ if ($this->allow_gift_cards && $gift_cards_allowed) : // Allow customers to pay 
     </script>
 <?php endif; ?>
 <?php // Attach the field event handlers when WC refreshes the payment fields ?>
+        
 <script>
     window.securesubmitLoadEvents = window.securesubmitLoadEvents || function () {};
     window.securesubmitLoadEvents();
