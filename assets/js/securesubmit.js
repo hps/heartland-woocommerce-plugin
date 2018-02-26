@@ -405,76 +405,65 @@
           'background-position': 'center',
           'background-repeat': 'no-repeat',
           'background-size': '59px 35px',
-          'background-image':
-            'url("' +
-            wc_securesubmit_params.images_dir + '/ss-inputcard-blank@2x.png")',
-          'background-position': 'right'
-        },
-        '#securesubmit_card_number': {
-          'background-image': 'none'
-        },
-        '#heartland-frame-cardNumber': {
-          'height': '50px'
         },
         '#heartland-field[name="cardNumber"].valid + .extra-div-1': {
           'background-size': '50px 80px',
           'height': '40px',
-          'background-position': 'top'
+          'background-position': 'top',
+          'background-image':
+            'url("' +
+            wc_securesubmit_params.images_dir + '/ss-inputcard-blank@2x.png")'
         },
         '#heartland-field[name="cardNumber"].invalid + .extra-div-1': {
           'background-size': '50px 80px',
-          'top': '4'
+          'top': '4',
+          'background-image':'none'
         },
-        '#heartland-field.card-type-visa + .extra-div-1': {
+        '#heartland-field[name="cardNumber"].card-type-visa + .extra-div-1': {
           'background-image':
             'url("' +
             wc_securesubmit_params.images_dir +
             '/ss-inputcard-visa@2x.png")'
         },
-        '#heartland-field.card-type-visa.invalid + .extra-div-1': {
+        '#heartland-field[name="cardNumber"].card-type-visa.invalid + .extra-div-1': {
           'background-position': 'bottom',
         },
-        '#heartland-field.card-type-jcb + .extra-div-1': {
+        '#heartland-field[name="cardNumber"].card-type-jcb + .extra-div-1': {
           'top': '4px',
           'background-image':
             'url("' +
             wc_securesubmit_params.images_dir +
             '/ss-inputcard-jcb@2x.png")'
         },
-        '#heartland-field.card-type-jcb.invalid + .extra-div-1': {
+        '#heartland-field[name="cardNumber"].card-type-jcb.invalid + .extra-div-1': {
           'background-position': 'bottom',
         },
-        '#heartland-field.card-type-discover + .extra-div-1': {
+        '#heartland-field[name="cardNumber"].card-type-discover + .extra-div-1': {
           'background-image':
             'url("' +
             wc_securesubmit_params.images_dir +
             '/ss-inputcard-discover@2x.png")'
         },
-        '#heartland-field.card-type-discover.invalid + .extra-div-1': {
+        '#heartland-field[name="cardNumber"].card-type-discover.invalid + .extra-div-1': {
           'background-position': 'bottom',
         },
-        '#heartland-field.card-type-amex + .extra-div-1': {
+        '#heartland-field[name="cardNumber"].card-type-amex + .extra-div-1': {
           'background-image':
             'url("' +
             wc_securesubmit_params.images_dir +
             '/ss-inputcard-amex@2x.png")'
         },
-        '#heartland-field.card-type-amex.invalid + .extra-div-1': {
+        '#heartland-field[name="cardNumber"].card-type-amex.invalid + .extra-div-1': {
           'background-position': 'bottom',
         },
-        '#heartland-field.card-type-mastercard + .extra-div-1': {
+        '#heartland-field[name="cardNumber"].card-type-mastercard + .extra-div-1': {
           'background-image':
             'url("' +
             wc_securesubmit_params.images_dir +
             '/ss-inputcard-mastercard@2x.png")'
         },
-        '#heartland-field.card-type-mastercard.invalid + .extra-div-1': {
+        '#heartland-field[name="cardNumber"].card-type-mastercard.invalid + .extra-div-1': {
           'background-position': 'bottom',
-        },
-        '@media only screen and (max-width : 290px)': {
-          '#heartland-frame-cardExpiration': {
-            display: 'block'
-          },
         },
         // Card CVV
         '#heartland-field[name="cardCvv"] + .extra-div-1': {
@@ -638,7 +627,6 @@
       function formResize() {
         var outer = document.getElementById('payment');
         var ssWrapper = document.getElementsByClassName('woocommerce-checkout')[0];
-        console.log('ssWrapper');
         if (outer.offsetWidth < 400) {
           ssWrapper.className += ' resized';
         }

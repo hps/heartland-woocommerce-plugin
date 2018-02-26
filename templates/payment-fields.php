@@ -21,7 +21,7 @@
             <!-- Start LOGGED IN SAVED CARDS -->
             <?php $cards = get_user_meta(get_current_user_id(), '_secure_submit_card', false); ?>
             <?php if (is_user_logged_in() && isset($cards)): ?>
-                <div class="saved-creditcards-list-header saved-creditcards-list form-row form-row-wide no-bottom-margin no-bottom-padding">
+                <div class="saved-creditcards-list-header saved-creditcards-list form-row form-row-wide no-bottom-margin">
                     <div class="ss-section-header clearfix">
                         <h6>Select Payment Method</h6>
                         <a class="button" style="float:right;" href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')); ?>#saved-cards">
@@ -84,7 +84,7 @@
     <div class="securesubmit-content new-card-content" id="new-card-content" <?php echo $newClass;?>" style="<?php echo $styletag; ?>">
         <div class="securesubmit_new_card">
             <div class="securesubmit_new_card_info">
-                <div class="form-row form-row-wide no-bottom-margin no-bottom-padding hideable">
+                <div class="form-row form-row-wide no-bottom-margin hideable">
                     <label for="securesubmit_card_number">
                         <?php _e("Credit Card number", 'wc_securesubmit') ?>
                         <span class="required">*</span>
@@ -100,7 +100,7 @@
                 </div>
                 <div class="clear"></div>
                 <div class="form-row hideable no-bottom-margin">
-                    <div class="form-row-first half-row" id="exp-wrapper">
+                    <div class="form-row-first half-row">
                         <label for="securesubmit_card_expiration">
                             <?php _e("Expiration date", 'wc_securesubmit') ?>
                             <span class="required">*</span>
@@ -111,7 +111,7 @@
                             <input id="securesubmit_card_expiration" type="tel" autocomplete="off" class="input-text expiry-date" placeholder="MM / YYYY" />
                         <?php endif; ?>
                     </div>
-                    <div class="form-row-last half-row" id="cvv-wrapper">
+                    <div class="form-row-last half-row">
                         <label for="securesubmit_card_cvv">
                             <?php _e("Security code", 'wc_securesubmit') ?>
                             <span class="required">*</span>
@@ -129,7 +129,7 @@
                 </div>
 
                 <?php if ($this->allow_card_saving == 'yes'): ?>
-                    <div class="form-row form-row-wide no-top-margin no-top-padding no-bottom-paddig no-bottom-margin">
+                    <div class="form-row form-row-wide no-top-margin no-top-padding no-bottom-margin">
                         <p class="form-row form-row-wide securesubmit-save-cards">
                             <input type="checkbox" autocomplete="off" id="save_card" name="save_card" value="true" style="display:inline" />
                             <label for="save_card" style="display: inline;">
