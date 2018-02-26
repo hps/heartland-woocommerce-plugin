@@ -81,7 +81,7 @@
       <?php $newClass .= !is_user_logged_in() ? ' no-saved-cards' : ''; ?>
       <?php $newClass .= is_user_logged_in() ? ' logged-in-no-saved-cards' : ''; ?>
     <?php endif; ?>
-    <div class="securesubmit-content new-card-content" id="new-card-content" <?php echo $newClass;?>" style="<?php echo $styletag; ?>">
+    <div class="securesubmit-content new-card-content" <?php echo $newClass;?>" style="<?php echo $styletag; ?>">
         <div class="securesubmit_new_card">
             <div class="securesubmit_new_card_info">
                 <div class="form-row form-row-wide no-bottom-margin hideable">
