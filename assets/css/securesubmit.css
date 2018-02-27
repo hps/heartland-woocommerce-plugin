@@ -457,14 +457,6 @@ html body .woocommerce .payment_method_securesubmit iframe{
    white-space: normal !important;
 }
 
-#heartland-field-body, #heartland-field-wrapper {
-   width: 100%;
-}
-#heartland-field:focus,
-#heartland-field::selection {
-    border:1px solid #3989e3;
-}
-
 .securesubmit_new_card .card-type-logo {
    display: block;
    width: 56px;
