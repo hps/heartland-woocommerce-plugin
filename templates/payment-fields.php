@@ -21,7 +21,7 @@
             <!-- Start LOGGED IN SAVED CARDS -->
             <?php $cards = get_user_meta(get_current_user_id(), '_secure_submit_card', false); ?>
             <?php if (is_user_logged_in() && isset($cards)): ?>
-                <div class="saved-creditcards-list-header saved-creditcards-list form-row form-row-wide no-bottom-margin no-bottom-padding">
+                <div class="saved-creditcards-list-header saved-creditcards-list form-row form-row-wide no-bottom-margin">
                     <div class="ss-section-header clearfix">
                         <h6>Select Payment Method</h6>
                         <a class="button" style="float:right;" href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')); ?>#saved-cards">
@@ -81,10 +81,10 @@
       <?php $newClass .= !is_user_logged_in() ? ' no-saved-cards' : ''; ?>
       <?php $newClass .= is_user_logged_in() ? ' logged-in-no-saved-cards' : ''; ?>
     <?php endif; ?>
-    <div class="securesubmit-content new-card-content <?php echo $newClass;?>" style="<?php echo $styletag; ?>">
+    <div class="securesubmit-content new-card-content" <?php echo $newClass;?>" style="<?php echo $styletag; ?>">
         <div class="securesubmit_new_card">
             <div class="securesubmit_new_card_info">
-                <div class="form-row form-row-wide no-bottom-margin no-bottom-padding hideable">
+                <div class="form-row form-row-wide no-bottom-margin hideable">
                     <label for="securesubmit_card_number">
                         <?php _e("Credit Card number", 'wc_securesubmit') ?>
                         <span class="required">*</span>
@@ -129,7 +129,7 @@
                 </div>
 
                 <?php if ($this->allow_card_saving == 'yes'): ?>
-                    <div class="form-row form-row-wide no-top-margin no-top-padding no-bottom-paddig no-bottom-margin">
+                    <div class="form-row form-row-wide no-top-margin no-top-padding no-bottom-margin">
                         <p class="form-row form-row-wide securesubmit-save-cards">
                             <input type="checkbox" autocomplete="off" id="save_card" name="save_card" value="true" style="display:inline" />
                             <label for="save_card" style="display: inline;">
@@ -139,7 +139,6 @@
                     </div>
                 <?php endif; ?>
             </div>
-
             <div class="clear"></div>
         </div>
     </div>
@@ -175,7 +174,6 @@ if ($this->allow_gift_cards && $gift_cards_allowed) : // Allow customers to pay 
           <!-- End Gift Card -->
     </fieldset>
 <?php endif; ?>
-
 <?php if ($this->use_iframes): // Create the iframes when WC refreshes the payment fields ?>
     <script>
         window.securesubmitLoadIframes = window.securesubmitLoadIframes || function () {};
@@ -183,7 +181,9 @@ if ($this->allow_gift_cards && $gift_cards_allowed) : // Allow customers to pay 
     </script>
 <?php endif; ?>
 <?php // Attach the field event handlers when WC refreshes the payment fields ?>
+        
 <script>
     window.securesubmitLoadEvents = window.securesubmitLoadEvents || function () {};
     window.securesubmitLoadEvents();
 </script>
+
