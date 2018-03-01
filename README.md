@@ -20,6 +20,10 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 1.11.21
+
+* Fix UI quirks with storefront theme
+
 #### 1.11.20
 
 * Ensure subscriptionhas token when a previously stored card is used for payment
