@@ -36,6 +36,9 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 
 == Changelog ==
 
+= 1.11.21 =
+* Fix UI quirks with storefront theme
+
 = 1.11.20 =
 * Ensure subscriptionhas token when a previously stored card is used for payment
 * Prevent missing expiration date from preventing checkout submit
