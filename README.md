@@ -20,6 +20,10 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 1.11.22
+
+* Subscription renewal verification order note updated
+
 #### 1.11.21
 
 * Fix UI quirks with storefront theme

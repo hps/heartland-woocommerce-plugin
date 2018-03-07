@@ -252,12 +252,14 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
             $details->invoiceNumber = $orderId;
 
             $response = null;
+            $requestType = 'payment';
             if ($amount == 0 || (method_exists($order, 'needs_payment') && !$order->needs_payment())) {
                 $response = $chargeService->verify()
                     ->withToken($token)
                     ->withCardHolder($cardHolder)
                     ->withRequestMultiUseToken($requestMulti)
                     ->execute();
+                $requestType = 'verification request';
             } else {
                 $response = $chargeService->charge()
                     ->withAmount($amount)
@@ -272,7 +274,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
             $order->payment_complete($response->transactionId);
             $order->add_order_note(sprintf(
                 __('SecureSubmit %s completed (Transaction ID: %s)', 'wc_securesubmit'),
-                ($amount == 0 ? 'verify' : 'payment'),
+                $requestType,
                 $response->transactionId
             ));
             add_post_meta($orderId, '_transaction_id', $response->transactionId, true);
