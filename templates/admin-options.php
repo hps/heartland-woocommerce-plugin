@@ -4,7 +4,7 @@
     <table class="form-table">
         <?php $this->generate_settings_html(); ?>
     </table>
-    <script>
+    <script data-cfasync='false'>
         (function (window, document, $) {
             if (!$) { return; }
 

@@ -46,7 +46,7 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit {
 
         if ( ( is_checkout() || is_cart() ) && $this->getSetting( 'gift_cards' ) === 'yes' ) {
 
-            $html = '<script type="text/javascript">';
+            $html = '<script data-cfasync="false" type="text/javascript">';
             $html .= 'if( typeof ajaxurl === "undefined") { ';
             $html .= 'var ajaxurl = "' . admin_url( 'admin-ajax.php' ) . '";';
             $html .= '}';

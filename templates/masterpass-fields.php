@@ -40,7 +40,7 @@ if (!defined('ABSPATH')) {
     <?= __('Learn more', 'wc_securesubmit'); ?>
   </a>
 
-  <script type="text/javascript">
+  <script data-cfasync="false" type="text/javascript">
     window.securesubmitMasterPassLookup = window.securesubmitMasterPassLookup || function () {};
     window.securesubmitMasterPassLookup();
   </script>

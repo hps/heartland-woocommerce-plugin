@@ -162,7 +162,7 @@ if ($this->allow_gift_cards && $gift_cards_allowed) : // Allow customers to pay 
                             <p id="gift-card-success"></p>
                       </div>
                       <button id="apply-gift-card" class="button"><?php _e('Apply', 'wc_securesubmit'); ?></button>
-                      <script>
+                      <script data-cfasync="false">
                           jQuery("#apply-gift-card").on('click', function (event) {
                               event.preventDefault();
                               window.applyGiftCard();
@@ -175,14 +175,14 @@ if ($this->allow_gift_cards && $gift_cards_allowed) : // Allow customers to pay 
     </fieldset>
 <?php endif; ?>
 <?php if ($this->use_iframes): // Create the iframes when WC refreshes the payment fields ?>
-    <script>
+    <script data-cfasync="false">
         window.securesubmitLoadIframes = window.securesubmitLoadIframes || function () {};
         window.securesubmitLoadIframes();
     </script>
 <?php endif; ?>
 <?php // Attach the field event handlers when WC refreshes the payment fields ?>
         
-<script>
+<script data-cfasync="false">
     window.securesubmitLoadEvents = window.securesubmitLoadEvents || function () {};
     window.securesubmitLoadEvents();
 </script>

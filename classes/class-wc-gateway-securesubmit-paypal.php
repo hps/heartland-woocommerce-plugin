@@ -502,7 +502,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
     public function softRedirect($url)
     {
         ?>
-        <script type="application/javascript">window.location.href="<?php echo $url; ?>";</script>
+        <script data-cfasync="false" type="application/javascript">window.location.href="<?php echo $url; ?>";</script>
         <?php
     }
 
