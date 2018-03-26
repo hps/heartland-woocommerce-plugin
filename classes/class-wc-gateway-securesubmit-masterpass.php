@@ -53,6 +53,7 @@ class WC_Gateway_SecureSubmit_MasterPass extends WC_Payment_Gateway
         add_action('admin_notices', array($this, 'checks'));
         add_action('woocommerce_update_options_payment_gateways', array($this, 'process_admin_options'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
+        add_filter('script_loader_tag', array($this, 'utf8'), 10, 2);
 
         // class references
         self::$_instance   = $this;
@@ -386,5 +387,13 @@ class WC_Gateway_SecureSubmit_MasterPass extends WC_Payment_Gateway
         }
 
         throw new Exception(__($error, 'wc_securesubmit'));
+    }
+    
+    public function utf8($tag, $handle)
+    {
+        if (!in_array($handle, array('securesubmit', 'woocommerce_securesubmit', 'securesubmit_masterpass', 'woocommerce_securesubmit_masterpass'))) {
+            return $tag;
+        }
+        return str_replace(' src', ' data-cfasync="false" charset="utf-8" src', $tag);
     }
 }
