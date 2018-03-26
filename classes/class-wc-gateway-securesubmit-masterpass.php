@@ -391,7 +391,7 @@ class WC_Gateway_SecureSubmit_MasterPass extends WC_Payment_Gateway
     
     public function utf8($tag, $handle)
     {
-        if (!in_array($handle, array('securesubmit', 'woocommerce_securesubmit', 'securesubmit_masterpass', 'woocommerce_securesubmit_masterpass'))) {
+        if (!in_array($handle, array('securesubmit', 'woocommerce_securesubmit', 'securesubmit_masterpass', 'woocommerce_securesubmit_masterpass')) || strpos($tag, 'utf-8') !== false) {
             return $tag;
         }
         return str_replace(' src', ' data-cfasync="false" charset="utf-8" src', $tag);
