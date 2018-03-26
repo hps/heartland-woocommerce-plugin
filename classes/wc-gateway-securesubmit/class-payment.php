@@ -16,7 +16,9 @@ class WC_Gateway_SecureSubmit_Payment
     public function call($orderId)
     {
         $order = wc_get_order($orderId);
-        $securesubmit_token = isset($_POST['securesubmit_token']) ? $this->parent->cleanValue($_POST['securesubmit_token']) : '';
+        $securesubmit_token = isset($_POST['securesubmit_token'])
+            ? $this->parent->cleanValue($_POST['securesubmit_token'])
+            : '';
 
         // used for card saving:
         $last_four = isset($_POST['last_four']) ? $this->parent->cleanValue($_POST['last_four']) : '';
@@ -37,13 +39,21 @@ class WC_Gateway_SecureSubmit_Payment
 
             if (empty($securesubmit_token)) {
                 if (isset($_POST['secure_submit_card']) && $_POST['secure_submit_card'] === 'new') {
-                    throw new Exception(__('Please make sure your card details have been entered correctly and that your browser supports JavaScript.', 'wc_securesubmit'));
+                    throw new Exception(__(
+                        'Please make sure your card details have been entered correctly '
+                        . 'and that your browser supports JavaScript.',
+                        'wc_securesubmit'
+                    ));
                 }
             }
 
             $chargeService = $this->parent->getCreditService();
             $hpsaddress = $this->parent->getOrderAddress($order);
             $cardHolder = $this->parent->getOrderCardHolder($order, $hpsaddress);
+
+            if ($this->parent->paymentaction === 'verify') {
+                $save_card_to_customer = true;
+            }
 
             $hpstoken = new HpsTokenData();
 
@@ -71,14 +81,15 @@ class WC_Gateway_SecureSubmit_Payment
             try {
                 if ($this->parent->paymentaction == 'sale') {
                     $builder = $chargeService->charge();
-                    update_post_meta($orderId, '_payment_action', 'sale');
                 } elseif ($this->parent->paymentaction == 'verify') {
                     $builder = $chargeService->verify();
-                    update_post_meta($orderId, '_payment_action', 'verify');
                 } else {
                     $builder = $chargeService->authorize();
-                    update_post_meta($orderId, '_payment_action', 'authorize');
                 }
+                
+                error_log('payment action: ' . $this->parent->paymentaction);
+                $metaId = update_post_meta($orderId, '_heartland_order_payment_action', $this->parent->paymentaction);
+                error_log('payment action meta: ' . print_r($metaId ?: 'false', true));
 
                 $secureEcommerce = null;
                 $authenticated = false;
@@ -89,18 +100,18 @@ class WC_Gateway_SecureSubmit_Payment
                 ) {
                     $dataSource = '';
                     switch ($card_type) {
-                    case 'visa':
-                        $dataSource = 'Visa 3DSecure';
-                        break;
-                    case 'mastercard':
-                        $dataSource = 'MasterCard 3DSecure';
-                        break;
-                    case 'discover':
-                        $dataSource = 'Discover 3DSecure';
-                        break;
-                    case 'amex':
-                        $dataSource = 'AMEX 3DSecure';
-                        break;
+                        case 'visa':
+                            $dataSource = 'Visa 3DSecure';
+                            break;
+                        case 'mastercard':
+                            $dataSource = 'MasterCard 3DSecure';
+                            break;
+                        case 'discover':
+                            $dataSource = 'Discover 3DSecure';
+                            break;
+                        case 'amex':
+                            $dataSource = 'AMEX 3DSecure';
+                            break;
                     }
 
                     $cavv = isset($data->Payment->ExtendedData->CAVV)
@@ -128,7 +139,7 @@ class WC_Gateway_SecureSubmit_Payment
                     $response = $builder
                         ->withToken($hpstoken)
                         ->withCardHolder($cardHolder)
-                        ->withRequestMultiUseToken(true)
+                        ->withRequestMultiUseToken($save_card_to_customer)
                         ->execute();
                 } else {
                     $response = $builder
@@ -185,23 +196,25 @@ class WC_Gateway_SecureSubmit_Payment
                 }
 
                 if ($this->parent->paymentaction == 'verify') {
-                    $tokenval = $response->tokenData->tokenValue;
+                    if ($save_card_to_customer) {
+                        $tokenval = $response->tokenData->tokenValue;
+                    } else {
+                        $tokenval = $hpstoken->tokenValue;
+                    }
                     
-                    if ($response->tokenData->responseCode == '0') {
-                        update_post_meta($orderId, '_verify_secure_submit_card', array(
-                            'last_four' => $last_four,
-                            'exp_month' => $exp_month,
-                            'exp_year' => $exp_year,
-                            'token_value' => (string) $tokenval,
-                            'card_type' => $card_type,
+                    update_post_meta($orderId, '_verify_secure_submit_card', array(
+                        'last_four' => $last_four,
+                        'exp_month' => $exp_month,
+                        'exp_year' => $exp_year,
+                        'token_value' => (string) $tokenval,
+                        'card_type' => $card_type,
                     ));
 
-                    update_post_meta($orderId, '_verify_Amount', $orderTotal);
-                    update_post_meta($orderId, '_verify_Currency', strtolower(get_woocommerce_currency()));
-                    update_post_meta($orderId, '_verify_Details', $details);
-                    update_post_meta($orderId, '_verify_Descriptor', $this->parent->txndescriptor);
-                    update_post_meta($orderId, '_verify_Cardholder', $cardHolder);
-
+                    update_post_meta($orderId, '_verify_amount', $orderTotal);
+                    update_post_meta($orderId, '_verify_currency', strtolower(get_woocommerce_currency()));
+                    update_post_meta($orderId, '_verify_details', $details);
+                    update_post_meta($orderId, '_verify_descriptor', $this->parent->txndescriptor);
+                    update_post_meta($orderId, '_verify_cardholder', $cardHolder);
                 }
 
                 if ($this->parent->allow_gift_cards) {
@@ -214,17 +227,23 @@ class WC_Gateway_SecureSubmit_Payment
 
                 $verb = '';
 
-                if ($this->parent->paymentaction == 'sale') {
+                if ($this->parent->paymentaction === 'sale') {
                     $verb = 'captured';
-                } elseif ($this->parent->paymentaction == 'verify') {
+                } elseif ($this->parent->paymentaction === 'verify') {
                     $verb = 'verified';
                 } else {
                     $verb = 'authorized';
                 }
 
-                $order->add_order_note(__('SecureSubmit payment ' . $verb .($authenticated ? ' and authenticated' : ''), 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
+                $order->add_order_note(__(
+                    'SecureSubmit payment ' . $verb
+                    . ($authenticated ? ' and authenticated' : ''),
+                    'wc_securesubmit'
+                ) . ' (Transaction ID: ' . $response->transactionId . ')');
                 do_action('wc_securesubmit_order_credit_card_details', $orderId, $card_type, $last_four);
-                $order->payment_complete($response->transactionId);
+                if ($this->parent->paymentaction !== 'verify') {
+                    $order->payment_complete($response->transactionId);
+                }
                 WC()->cart->empty_cart();
 
                 return array(
@@ -234,7 +253,10 @@ class WC_Gateway_SecureSubmit_Payment
             } catch (HpsException $e) {
                 $this->updateVelocity($e);
 
-                if ($e->getCode()== HpsExceptionCodes::POSSIBLE_FRAUD_DETECTED && $this->parent->email_fraud == 'yes' && $this->parent->fraud_address != '') {
+                if ($e->getCode()== HpsExceptionCodes::POSSIBLE_FRAUD_DETECTED
+                    && $this->parent->email_fraud == 'yes'
+                    && $this->parent->fraud_address != ''
+                ) {
                     wc_mail(
                         $this->parent->fraud_address,
                         'Suspicious order ' . ($this->parent->allow_fraud == 'yes' ? 'allowed' : 'declined') . ' (' . $orderId . ')',
@@ -243,7 +265,9 @@ class WC_Gateway_SecureSubmit_Payment
                     );
                 }
 
-                if ($this->parent->allow_fraud == 'yes' && $e->getCode() == HpsExceptionCodes::POSSIBLE_FRAUD_DETECTED ) {
+                if ($this->parent->allow_fraud == 'yes'
+                    && $e->getCode() == HpsExceptionCodes::POSSIBLE_FRAUD_DETECTED
+                ) {
                     // we can skip the card saving: if it fails for possible fraud there will be no token.
                     $order->update_status('on-hold', __('<strong>Accepted suspicious transaction.</strong> Please use Virtual Terminal to review.', 'wc_securesubmit'));
                     $order->reduce_order_stock();
