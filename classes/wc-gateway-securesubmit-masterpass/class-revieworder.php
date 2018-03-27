@@ -39,7 +39,7 @@ class WC_Gateway_SecureSubmit_MasterPass_ReviewOrder
         if ($action && 'process_payment' === $action) {
             // if this point is reached, error
             // headers already sent at this point. redirect with js
-            echo '<script type="text/javascript">window.location.href = \'' . WC()->cart->get_checkout_url() . '\';</script>';
+            echo '<script data-cfasync="false" type="text/javascript">window.location.href = \'' . WC()->cart->get_checkout_url() . '\';</script>';
             wp_die();
         }
     }
@@ -64,7 +64,7 @@ class WC_Gateway_SecureSubmit_MasterPass_ReviewOrder
                 WC()->add_error($error);
             }
             // headers already sent at this point. redirect with js
-            echo '<script type="text/javascript">window.location.href = \'' . WC()->cart->get_checkout_url() . '\';</script>';
+            echo '<script data-cfasync="false" type="text/javascript">window.location.href = \'' . WC()->cart->get_checkout_url() . '\';</script>';
             wp_die();
         }
 

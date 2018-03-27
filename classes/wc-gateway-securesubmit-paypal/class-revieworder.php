@@ -92,7 +92,7 @@ class WC_Gateway_SecureSubmit_PayPal_ReviewOrder
     {
         wc_print_notices();
         echo "
-        <script>
+        <script data-cfasync='false'>
         jQuery(document).ready(function($) {
             // Inputs/selects which update totals instantly
             $('form.checkout').unbind( 'submit' );

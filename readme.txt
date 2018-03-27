@@ -36,6 +36,8 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 
 == Changelog ==
 
+= 1.11.23 =
+* Script tags updated to opt out Cloudflare Rocket loader
 
 = 1.11.22 =
 * Subscription renewal verification order note updated

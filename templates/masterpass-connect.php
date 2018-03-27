@@ -24,12 +24,12 @@ if (!defined('ABSPATH')) {
              alt="Connect with MasterPass" />
     </button>
 
-    <script type="text/javascript">var wc_securesubmit_masterpass_params = {ajaxUrl: '<?= admin_url('admin-ajax.php'); ?>'};</script>
+    <script data-cfasync="false" type="text/javascript">var wc_securesubmit_masterpass_params = {ajaxUrl: '<?= admin_url('admin-ajax.php'); ?>'};</script>
     <?php if ('production' === $masterpass->environment): ?>
-        <script type="text/javascript" src="https://www.masterpass.com/lightbox/Switch/integration/MasterPass.client.js"></script>
+        <script data-cfasync="false" type="text/javascript" src="https://www.masterpass.com/lightbox/Switch/integration/MasterPass.client.js"></script>
     <?php else: ?>
-        <script type="text/javascript" src="https://sandbox.masterpass.com/lightbox/Switch/integration/MasterPass.client.js"></script>
+        <script data-cfasync="false" type="text/javascript" src="https://sandbox.masterpass.com/lightbox/Switch/integration/MasterPass.client.js"></script>
     <?php endif;?>
-    <script type="text/javascript" src="<?= plugins_url('assets/js/masterpass.js', dirname(__FILE__)); ?>"></script>
+    <script data-cfasync="false" type="text/javascript" src="<?= plugins_url('assets/js/masterpass.js', dirname(__FILE__)); ?>"></script>
   <?php endif; ?>
 </div>

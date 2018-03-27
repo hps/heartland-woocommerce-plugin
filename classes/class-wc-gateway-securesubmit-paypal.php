@@ -95,10 +95,10 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
 
     public function utf8($tag, $handle)
     {
-        if (!in_array($handle, array('securesubmit', 'woocommerce_securesubmit'))) {
+        if (!in_array($handle, array('securesubmit', 'woocommerce_securesubmit', 'hps_wc_securesubmit_library')) || strpos($tag, 'utf-8') !== false) {
             return $tag;
         }
-        return str_replace(' src', ' charset="utf-8" src', $tag);
+        return str_replace(' src', ' data-cfasync="false" charset="utf-8" src', $tag);
     }
 
     public function paymentScripts()
@@ -502,7 +502,7 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
     public function softRedirect($url)
     {
         ?>
-        <script type="application/javascript">window.location.href="<?php echo $url; ?>";</script>
+        <script data-cfasync="false" type="application/javascript">window.location.href="<?php echo $url; ?>";</script>
         <?php
     }
 
@@ -530,5 +530,5 @@ class WC_Gateway_SecureSubmit_PayPal extends WC_Payment_Gateway
                 array('USD',)
             )
         );
-    }
+    }    
 }

@@ -76,10 +76,10 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 
     public function utf8($tag, $handle)
     {
-        if (!in_array($handle, array('securesubmit', 'woocommerce_securesubmit'))) {
+        if (!in_array($handle, array('securesubmit', 'woocommerce_securesubmit', 'hps_wc_securesubmit_library', 'woocommerce_securesubmit_removegiftcard')) || strpos($tag, 'utf-8') !== false) {
             return $tag;
         }
-        return str_replace(' src', ' charset="utf-8" src', $tag);
+        return str_replace(' src', ' data-cfasync="false" charset="utf-8" src', $tag);
     }
 
     public function checks()
