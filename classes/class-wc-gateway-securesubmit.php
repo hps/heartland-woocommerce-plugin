@@ -41,8 +41,8 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $this->fraud_velocity_timeout  = $this->getSetting('fraud_velocity_timeout');
         $this->allow_card_saving       = ($this->getSetting('allow_card_saving') == 'yes' ? true : false);
         $this->use_iframes             = ($this->getSetting('use_iframes') == 'yes' ? true : false);
-        $this->allow_gift_cards        = ($this->getSetting( 'gift_cards' ) == 'yes' ? true : false);
-        $this->gift_card_title         = $this->getSetting( 'gift_cards_gateway_title' );
+        $this->allow_gift_cards        = ($this->getSetting('gift_cards') == 'yes' ? true : false);
+        $this->gift_card_title         = $this->getSetting('gift_cards_gateway_title');
         $this->enable_threedsecure     = ($this->getSetting('enable_threedsecure') == 'yes' ? true : false);
         $this->threedsecure_api_identifier = $this->getSetting('threedsecure_api_identifier');
         $this->threedsecure_org_unit_id    = $this->getSetting('threedsecure_org_unit_id');
@@ -145,8 +145,10 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         include $path . '/templates/payment-fields.php';
     }
 
+    // @codingStandardsIgnoreStart PSR1.Methods.CamelCapsMethodName.NotCamelCaps
     public function payment_scripts()
     {
+        // @codingStandardsIgnoreEnd PSR1.Methods.CamelCapsMethodName.NotCamelCaps
         if (!is_checkout()) {
             return;
         }
@@ -213,8 +215,9 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
     public function process_capture($order)
     {
         $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
+        $payment_action = get_post_meta($orderId, '_heartland_order_payment_action', true);
 
-        if (!$this->isTransactionActiveOnGateway($orderId)) {
+        if ($payment_action != 'verify' && !$this->isTransactionActiveOnGateway($orderId)) {
             $this->displayUserError('Payment already captured');
             return;
         }

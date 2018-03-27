@@ -1,9 +1,18 @@
 <?php
 
+/**
+ * Class HpsAltPaymentResponse
+ */
 class HpsAltPaymentResponse extends HpsAuthorization
 {
     public $error = null;
-
+    /**
+     * @param        $rsp
+     * @param        $txnType
+     * @param string $returnType
+     *
+     * @return mixed
+     */
     public static function fromDict($rsp, $txnType, $returnType = 'HpsAltPaymentResponse')
     {
         $response = $rsp->Transaction->$txnType;
@@ -20,15 +29,14 @@ class HpsAltPaymentResponse extends HpsAuthorization
 
         return $altPayment;
     }
-
+    /**
+     * @param $pairs
+     *
+     * @return array
+     */
     public static function nvpToArray($pairs)
     {
         $array = array();
-
-        if (empty($pairs) || !isset($pairs->NameValuePair)) {
-            return $array;
-        }
-
         foreach ($pairs->NameValuePair as $pair) {
             $array[(string)$pair->Name] = (string)$pair->Value;
         }
