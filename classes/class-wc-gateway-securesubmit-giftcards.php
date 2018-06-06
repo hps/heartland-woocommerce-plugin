@@ -88,7 +88,14 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit {
     protected function updateGiftCardCartTotal() {
 
         $gift_card_object_entered = WC()->session->get( 'securesubmit_gift_card_object' );
+        if (is_null($gift_card_object_entered)) {
+            $gift_card_object_entered = (object)array();
+        }
+
         $gift_card_object_applied = WC()->session->get( 'securesubmit_gift_card_applied' );
+        if (is_null($gift_card_object_applied)) {
+            $gift_card_object_applied = (object)array();
+        }
 
         $original_total = $this->getOriginalCartTotal();
 
@@ -119,7 +126,7 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit {
 
             } else {
 
-                if ( is_object($gift_card_object_applied) && count(get_object_vars($gift_card_object_applied)) > 0 ) {
+                if ( !(is_object($gift_card_object_applied) && count(get_object_vars($gift_card_object_applied)) > 0) ) {
 
                     $gift_card_object_applied = new stdClass;
 
@@ -570,11 +577,12 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit {
         $original_total = round(
             array_sum(
                 array(
-                    ( !empty($cart_totals['cart_contents_total']) ? $cart_totals['cart_contents_total'] : 0),
-                    ( !empty($cart_totals['tax_total']) ? $cart_totals['tax_total'] : 0),
+                    ( !empty($cart_totals['subtotal']) ? $cart_totals['subtotal'] : 0),
+                    ( !empty($cart_totals['subtotal_tax']) ? $cart_totals['subtotal_tax'] : 0),
                     ( !empty($cart_totals['shipping_total']) ? $cart_totals['shipping_total'] : 0),
-                    ( !empty($cart_totals['shipping_tax_total']) ? $cart_totals['shipping_tax_total'] : 0),
+                    ( !empty($cart_totals['shipping_tax']) ? $cart_totals['shipping_tax'] : 0),
                     ( !empty($cart_totals['fee_total']) ? $cart_totals['fee_total'] : 0),
+                    ( !empty($cart_totals['fee_tax']) ? $cart_totals['fee_tax'] : 0),
                 )
             ), 2
         );
