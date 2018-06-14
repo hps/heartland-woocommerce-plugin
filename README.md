@@ -20,9 +20,14 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 1.11.24
+
+* Correct totals when gift cards are used
+
 #### 1.11.23
 
 * Script tags updated to opt out Cloudflare Rocket loader
+* Add support for verify-only checkouts
 
 #### 1.11.22
 
