@@ -13,7 +13,9 @@ jQuery(document).on( 'click', '.securesubmit-remove-gift-card', function (event)
   }).done(function () {
 
     jQuery('body').trigger('update_checkout');
-    jQuery(".button[name='update_cart']").trigger("click");
+    jQuery(".button[name='update_cart']")
+      .prop("disabled", true)
+      .trigger("click");
 
   });
 });
