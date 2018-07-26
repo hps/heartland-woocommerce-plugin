@@ -20,6 +20,10 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 1.11.25
+
+* Fix button on cart page to remove applied gift card
+
 #### 1.11.24
 
 * Correct totals when gift cards are used

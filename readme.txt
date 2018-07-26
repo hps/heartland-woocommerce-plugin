@@ -35,6 +35,8 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section
 
 == Changelog ==
+= 1.11.25 =
+* Fix button on cart page to remove applied gift card
 
 = 1.11.24 =
 * Correct totals when gift cards are used
