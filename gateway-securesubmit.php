@@ -35,6 +35,7 @@ class WooCommerceSecureSubmitGateway
         add_action('woocommerce_after_my_account', array($this, 'savedCards'));
         add_action('woocommerce_order_actions', array($securesubmit->capture, 'addOrderAction'));
         add_action('woocommerce_order_action_' . $securesubmit->id . '_capture', array($securesubmit, 'process_capture'));
+        add_action('woocommerce_pos_process_payment', array($securesubmit->payment, 'setPaymentDetails'), 10, 2);
 
         // MasterPass
         $masterpass = call_user_func(array(self::SECURESUBMIT_GATEWAY_CLASS . '_MasterPass', 'instance'));

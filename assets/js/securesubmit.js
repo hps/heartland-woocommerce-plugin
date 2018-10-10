@@ -344,6 +344,85 @@
       );
       Heartland.Card.attachCvvEvents('.securesubmit_new_card .card-cvc');
     }
+
+    if (window.wc_securesubmit_params.is_woocommerce_pos) {
+      POS.Entities.Order.Model.prototype.originalProcessGateway = POS.Entities.Order.Model.prototype.processGateway;
+      POS.Entities.Order.Model.prototype.processGateway = function () {
+        var data = this.gateways.findWhere({ active: true }).toJSON();
+        if (window.Heartland && ['securesubmit'].indexOf(data.method_id) !== -1){
+          return this.processHeartlandGateway(data);
+        }
+        this.set({
+          payment_details: data
+        });
+      };
+
+      POS.Entities.Order.Model.prototype.processHeartlandGateway = function (data) {
+        var deferred = new $.Deferred();
+        var self = this;
+
+        var securesubmitMethod = document.getElementById(
+          'payment_method_securesubmit'
+        );
+        var storedCards = document.querySelectorAll(
+          'input[name=secure_submit_card]'
+        );
+        var storedCardsChecked = filter(storedCards, function(el) {
+          return el.checked;
+        });
+        var token = document.getElementById('securesubmit_token');
+
+        var newCardUsed =
+          storedCardsChecked.length === 0 ||
+          (storedCardsChecked[0] && storedCardsChecked[0].value === 'new');
+        var securesubmitTokenObtained = token.value !== '';
+
+        if (newCardUsed && !securesubmitTokenObtained) {
+          var card = document.getElementById('securesubmit_card_number');
+          var cvv = document.getElementById('securesubmit_card_cvv');
+          var expiration = document.getElementById('securesubmit_card_expiration');
+          var month = '';
+          var year = '';
+
+          if (expiration && expiration.value) {
+            var split = expiration.value.split(' / ');
+            month = split[0].replace(/^\s+|\s+$/g, '');
+            year = split[1].replace(/^\s+|\s+$/g, '');
+          }
+
+          var options = {
+            publicKey: wc_securesubmit_params.key,
+            cardNumber: card.value.replace(/\D/g, ''),
+            cardCvv: cvv.value.replace(/\D/g, ''),
+            cardExpMonth: month.replace(/\D/g, ''),
+            cardExpYear: year.replace(/\D/g, ''),
+            success: function (resp) {
+              token.value = resp.token_value;
+              data.last_four = resp.last_four;
+              data.card_type = resp.card_type;
+              data.exp_month = resp.exp_month;
+              data.exp_year = resp.exp_year;
+              data.securesubmit_token = resp.token_value;
+              data.securesubmit_card_number = null;
+              data.securesubmit_card_cvv = null;
+              self.set({ payment_details: data });
+              deferred.resolve();
+            },
+            error: function (resp) {
+              token.value = '';
+              data.message = resp.error.message;
+              data.paid = false;
+              self.set({ payment_details: data });
+              deferred.reject();
+            },
+          };
+
+          new Heartland.HPS(options).tokenize();
+        }
+
+        return deferred;
+      };
+    }
   };
   window.securesubmitLoadEvents();
 
@@ -490,7 +569,11 @@
       };
     }
 
-    wc_securesubmit_params.hps = new Heartland.HPS(options);
+    if (wc_securesubmit_params.is_woocommerce_pos) {
+      // TODO: iFrame compatibility
+    } else {
+      wc_securesubmit_params.hps = new Heartland.HPS(options);
+    }
     if (!wc_securesubmit_params.hpsReadyHandler) {
       wc_securesubmit_params.hpsReadyHandler = function() {
         setTimeout(function() {
@@ -501,7 +584,7 @@
           ).style.height =
             '49px';
           document.getElementById('heartland-frame-cardCvv').style.height =
-            '49px';     
+            '49px';
         }, 500);
       };
     }
@@ -627,6 +710,11 @@
       function formResize() {
         var outer = document.getElementById('payment');
         var ssWrapper = document.getElementsByClassName('woocommerce-checkout')[0];
+
+        if (!outer || !ssWrapper) {
+          return;
+        }
+
         if (outer.offsetWidth < 400) {
           ssWrapper.className += ' resized';
         }

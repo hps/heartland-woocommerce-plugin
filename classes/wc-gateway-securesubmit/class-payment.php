@@ -7,15 +7,33 @@ if (!defined('ABSPATH')) {
 class WC_Gateway_SecureSubmit_Payment
 {
     protected $parent = null;
+    protected static $paymentDetails = null;
 
     public function __construct(&$parent = null)
     {
         $this->parent = $parent;
     }
 
+    /**
+     * Allows payment details to be set for WooCommerce POS initiated transactions
+     */
+    public function setPaymentDetails($paymentDetails, $order)
+    {
+        if (self::$paymentDetails === null) {
+            self::$paymentDetails = array();
+        }
+
+        self::$paymentDetails[$order->get_id()] = $paymentDetails;
+    }
+
     public function call($orderId)
     {
         $order = wc_get_order($orderId);
+
+        if (self::$paymentDetails !== null && !empty(self::$paymentDetails[$order->get_id()])) {
+            $_POST = array_merge($_POST, self::$paymentDetails[$order->get_id()]);
+        }
+
         $securesubmit_token = isset($_POST['securesubmit_token'])
             ? $this->parent->cleanValue($_POST['securesubmit_token'])
             : '';
@@ -86,7 +104,7 @@ class WC_Gateway_SecureSubmit_Payment
                 } else {
                     $builder = $chargeService->authorize();
                 }
-                
+
                 error_log('payment action: ' . $this->parent->paymentaction);
                 $metaId = update_post_meta($orderId, '_heartland_order_payment_action', $this->parent->paymentaction);
                 error_log('payment action meta: ' . print_r($metaId ?: 'false', true));
@@ -201,7 +219,7 @@ class WC_Gateway_SecureSubmit_Payment
                     } else {
                         $tokenval = $hpstoken->tokenValue;
                     }
-                    
+
                     update_post_meta($orderId, '_verify_secure_submit_card', array(
                         'last_four' => $last_four,
                         'exp_month' => $exp_month,

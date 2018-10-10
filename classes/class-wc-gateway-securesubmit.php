@@ -54,6 +54,8 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 
         // actions
         add_action('wp_enqueue_scripts', array($this, 'payment_scripts'));
+        add_filter('woocommerce_pos_enqueue_head_css', array($this, 'payment_css_pos'));
+        add_filter('woocommerce_pos_enqueue_footer_js', array($this, 'payment_scripts_pos'));
         add_action('admin_notices', array($this, 'checks'));
         add_action('woocommerce_update_options_payment_gateways', array($this, 'process_admin_options'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
@@ -143,6 +145,49 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
     {
         $path = dirname(plugin_dir_path(__FILE__));
         include $path . '/templates/payment-fields.php';
+    }
+
+    // @codingStandardsIgnoreStart PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+    public function payment_css_pos($styles)
+    {
+        $heartland = array(
+            'heartland-css' => sprintf(
+                '<link rel="stylesheet" type="text/css" src="%s">',
+                plugins_url('assets/css/securesubmit.css', dirname(__FILE__))
+            ),
+        );
+
+        return $styles + $heartland;
+    }
+
+    // @codingStandardsIgnoreStart PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+    public function payment_scripts_pos($scripts)
+    {
+        $securesubmit_params = array(
+            'key'         => $this->public_key,
+            'use_iframes' => $this->use_iframes,
+            'images_dir'  => plugins_url('assets/images', dirname(__FILE__)),
+            'is_woocommerce_pos' => true,
+        );
+
+        $isCert = false !== strpos($this->public_key, '_cert_');
+        $url = $isCert
+            ? 'https://hps.github.io/token/2.1/securesubmit.js'
+            : 'https://api.heartlandportico.com/SecureSubmit.v1/token/2.1/securesubmit.js';
+
+        $heartland = array(
+            'heartland-options' => sprintf(
+                '<script type="text/javascript">window.wc_securesubmit_params = %s;</script>',
+                json_encode($securesubmit_params)
+            ),
+            'heartland-hosted-js' => sprintf('<script src="%s"></script>', $url),
+            'heartland-js' => sprintf(
+                '<script src="%s"></script>',
+                plugins_url('assets/js/securesubmit.js', dirname(__FILE__))
+            ),
+        );
+
+        return $scripts + $heartland;
     }
 
     // @codingStandardsIgnoreStart PSR1.Methods.CamelCapsMethodName.NotCamelCaps

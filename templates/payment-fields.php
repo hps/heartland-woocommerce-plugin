@@ -181,7 +181,7 @@ if ($this->allow_gift_cards && $gift_cards_allowed) : // Allow customers to pay 
     </script>
 <?php endif; ?>
 <?php // Attach the field event handlers when WC refreshes the payment fields ?>
-        
+
 <script data-cfasync="false">
     window.securesubmitLoadEvents = window.securesubmitLoadEvents || function () {};
     window.securesubmitLoadEvents();
