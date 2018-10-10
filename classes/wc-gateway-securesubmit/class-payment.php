@@ -105,9 +105,7 @@ class WC_Gateway_SecureSubmit_Payment
                     $builder = $chargeService->authorize();
                 }
 
-                error_log('payment action: ' . $this->parent->paymentaction);
                 $metaId = update_post_meta($orderId, '_heartland_order_payment_action', $this->parent->paymentaction);
-                error_log('payment action meta: ' . print_r($metaId ?: 'false', true));
 
                 $secureEcommerce = null;
                 $authenticated = false;
