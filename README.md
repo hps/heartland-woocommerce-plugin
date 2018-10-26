@@ -20,6 +20,10 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 1.12.0
+
+* Remove PayPal
+
 #### 1.11.25
 
 * Fix button on cart page to remove applied gift card
