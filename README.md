@@ -23,6 +23,7 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 #### 1.12.0
 
 * Remove PayPal
+* Prevent payment scripts from loading on order-received page
 
 #### 1.11.25
 
