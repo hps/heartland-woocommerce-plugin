@@ -149,7 +149,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
     public function payment_scripts()
     {
         // @codingStandardsIgnoreEnd PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-        if (!is_checkout()) {
+        if (!is_checkout() || is_wc_endpoint_url( 'order-received' )) {
             return;
         }
 

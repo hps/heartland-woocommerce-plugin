@@ -1,7 +1,7 @@
-(function(window, document, Heartland, wc_securesubmit_params) {
+(function (window, document, Heartland, wc_securesubmit_params) {
   var addHandler = window.Heartland
     ? Heartland.Events.addHandler
-    : function() {};
+    : function () { };
 
   function addClass(element, klass) {
     if (element.className.indexOf(klass) === -1) {
@@ -39,7 +39,7 @@
       document.querySelectorAll(
         '.woocommerce_error, .woocommerce-error, .woocommerce-message, .woocommerce_message'
       ),
-      function(element) {
+      function (element) {
         element.remove();
       }
     );
@@ -54,7 +54,7 @@
       Cardinal.setup('init', {
         jwt: wc_securesubmit_params.cca.jwt,
       });
-      Cardinal.on('payments.validated', function(data, jwt) {
+      Cardinal.on('payments.validated', function (data, jwt) {
         var token = document.getElementById('securesubmit_cardinal_token');
         var form = document.querySelector('form.checkout, form#order_review');
         var cca = document.createElement('input');
@@ -128,7 +128,7 @@
     var storedCards = document.querySelectorAll(
       'input[name=secure_submit_card]'
     );
-    var storedCardsChecked = filter(storedCards, function(el) {
+    var storedCardsChecked = filter(storedCards, function (el) {
       return el.checked;
     });
     var token = document.getElementById('securesubmit_token');
@@ -191,7 +191,7 @@
     var storedCards = document.querySelectorAll(
       'input[name=secure_submit_card]'
     );
-    var storedCardsChecked = filter(storedCards, function(el) {
+    var storedCardsChecked = filter(storedCards, function (el) {
       return el.checked;
     });
     var token = document.getElementById('securesubmit_token');
@@ -301,36 +301,36 @@
       jQuery(form).submit();
     }
 
-    setTimeout(function() {
+    setTimeout(function () {
       document.getElementById('securesubmit_token').value = '';
     }, 500);
   }
 
   // Load function to attach event handlers when WC refreshes payment fields
-  window.securesubmitLoadEvents = function() {
+  window.securesubmitLoadEvents = function () {
     if (!Heartland) {
       return;
     }
 
     toAll(
       document.querySelectorAll('.card-number, .card-cvc, .expiry-date'),
-      function(element) {
+      function (element) {
         addHandler(element, 'change', clearFields);
       }
     );
 
-    toAll(document.querySelectorAll('.saved-selector'), function(element) {
-      addHandler(element, 'click', function(e) {
+    toAll(document.querySelectorAll('.saved-selector'), function (element) {
+      addHandler(element, 'click', function (e) {
         var display = 'none';
         if (document.getElementById('secure_submit_card_new').checked) {
           display = 'block';
         }
-        toAll(document.querySelectorAll('.new-card-content'), function(el) {
+        toAll(document.querySelectorAll('.new-card-content'), function (el) {
           el.style.display = display;
         });
 
         // Set active flag
-        toAll(document.querySelectorAll('.saved-card'), function(el) {
+        toAll(document.querySelectorAll('.saved-card'), function (el) {
           removeClass(el, 'active');
         });
         addClass(element.parentNode.parentNode, 'active');
@@ -348,7 +348,7 @@
   window.securesubmitLoadEvents();
 
   // Load function to build iframes when WC refreshes payment fields
-  window.securesubmitLoadIframes = function() {
+  window.securesubmitLoadIframes = function () {
     if (!wc_securesubmit_params || !wc_securesubmit_params.use_iframes) {
       return;
     }
@@ -417,7 +417,7 @@
         '#heartland-field[name="cardNumber"].invalid + .extra-div-1': {
           'background-size': '50px 80px',
           'top': '4',
-          'background-image':'none'
+          'background-image': 'none'
         },
         '#heartland-field[name="cardNumber"].card-type-visa + .extra-div-1': {
           'background-image':
@@ -492,8 +492,8 @@
 
     wc_securesubmit_params.hps = new Heartland.HPS(options);
     if (!wc_securesubmit_params.hpsReadyHandler) {
-      wc_securesubmit_params.hpsReadyHandler = function() {
-        setTimeout(function() {
+      wc_securesubmit_params.hpsReadyHandler = function () {
+        setTimeout(function () {
           document.getElementById('heartland-frame-cardNumber').style.height =
             '49px';
           document.getElementById(
@@ -501,7 +501,7 @@
           ).style.height =
             '49px';
           document.getElementById('heartland-frame-cardCvv').style.height =
-            '49px';     
+            '49px';
         }, 500);
       };
     }
@@ -519,102 +519,7 @@
   };
   window.securesubmitLoadIframes();
 
-  function paypalShowIncontext(isCredit) {
-    var data = {
-      action: 'wc_securesubmit_paypal_start_incontext',
-      paypalexpress_initiated: 'true',
-    };
-
-    paypal.checkout.initXO();
-    isCredit =
-      isCredit ||
-      (jQuery('[name="payment_method"][value^="heartland_paypal"]:checked')
-        .length !== 0 &&
-        jQuery('[name="payment_method"][value^="heartland_paypal"]:checked')
-          .attr('value')
-          .indexOf('credit') !== -1);
-
-    if (isCredit) {
-      data.paypalexpress_credit = 'true';
-    }
-
-    jQuery.ajax({
-      type: 'POST',
-      url: wc_securesubmit_paypal_params.ajaxUrl,
-      data: data,
-      dataType: 'json',
-      success: function(response) {
-        if (response.result == 'fail') {
-          paypal.checkout.closeFlow();
-          return;
-        }
-        paypal.checkout.startFlow(response.redirect);
-      },
-      error: function(response) {
-        alert('Error starting PayPal checkout');
-        paypal.checkout.closeFlow();
-      },
-    });
-  }
-
-  function paypalPreventCheckoutSubmit(e) {
-    if (
-      jQuery('[name="payment_method"][value^="heartland_paypal"]').length !==
-        0 &&
-      !jQuery('[name="payment_method"][value^="heartland_paypal"]').is(
-        ':checked'
-      )
-    ) {
-      return true;
-    }
-
-    e.preventDefault();
-    paypalShowIncontext();
-    return false;
-  }
-
-  function paypalIncontextReady() {
-    var buttons = [];
-    var checkoutSubmit = jQuery('#place_order');
-    if (checkoutSubmit && checkoutSubmit[0]) {
-      buttons.push(checkoutSubmit[0]);
-    } else {
-      paypal.checkout.closeFlow();
-      return;
-    }
-
-    paypal.checkout.setup('undefined', {
-      environment: wc_securesubmit_paypal_params.env,
-      button: buttons,
-      click: function(e) {
-        var isCredit =
-          jQuery('[name="payment_method"][value^="heartland_paypal_credit"]')
-            .length !== 0 &&
-          jQuery(
-            '[name="payment_method"][value^="heartland_paypal_credit"]'
-          ).is(':checked');
-        var checkoutPageNotUsed =
-          wc_securesubmit_paypal_params.isCheckout === 'true' &&
-          (jQuery('[name="payment_method"][value^="heartland_paypal"]')
-            .length === 0 ||
-            !jQuery('[name="payment_method"][value^="heartland_paypal"]').is(
-              ':checked'
-            ));
-
-        if (checkoutPageNotUsed) {
-          return true;
-        }
-
-        e.preventDefault();
-        paypalShowIncontext(isCredit);
-        return false;
-      },
-    });
-
-    return false;
-  }
-
-  addHandler(document, 'DOMContentLoaded', function() {
+  addHandler(document, 'DOMContentLoaded', function () {
     if (window.wc_securesubmit_params) {
       if (!wc_securesubmit_params.handler) {
         var handler = formHandler;
@@ -651,83 +556,6 @@
         );
     }
 
-    if (window.wc_securesubmit_paypal_params) {
-      if (!wc_securesubmit_paypal_params.handler) {
-        wc_securesubmit_paypal_params.handler = paypalPreventCheckoutSubmit;
-      }
-
-      jQuery('form.checkout')
-        .on(
-          'checkout_place_order_heartland_paypal',
-          wc_securesubmit_paypal_params.handler
-        )
-        .on(
-          'checkout_place_order_heartland_paypal_credit',
-          wc_securesubmit_paypal_params.handler
-        );
-
-      window.paypalCheckoutReady = paypalIncontextReady;
-
-      if (wc_securesubmit_paypal_params.isCheckout != 'true') {
-        var paypalData = {
-          action: 'wc_securesubmit_paypal_start_incontext',
-          paypalexpress_initiated: 'true',
-        };
-        paypal.Button.render(
-          {
-            env: wc_securesubmit_paypal_params.env,
-            payment: function() {
-              return paypal.request
-                .post(wc_securesubmit_paypal_params.ajaxUrl, paypalData)
-                .then(function(resp) {
-                  if (resp.result == 'fail') {
-                    paypal.checkout.closeFlow();
-                    return;
-                  }
-                  return resp.token;
-                });
-            },
-            onAuthorize: function(resp, actions) {
-              return actions.redirect();
-            },
-            onCancel: function(resp, actions) {
-              return actions.redirect();
-            },
-          },
-          '#hps_paypal_shortcut_express_button'
-        );
-
-        var paypalCreditData = {
-          action: 'wc_securesubmit_paypal_start_incontext',
-          paypalexpress_initiated: 'true',
-          paypalexpress_credit: 'true',
-        };
-        paypal.Button.render(
-          {
-            env: wc_securesubmit_paypal_params.env,
-            style: {label: 'credit'},
-            payment: function() {
-              return paypal.request
-                .post(wc_securesubmit_paypal_params.ajaxUrl, paypalCreditData)
-                .then(function(resp) {
-                  if (resp.result == 'fail') {
-                    paypal.checkout.closeFlow();
-                    return;
-                  }
-                  return resp.token;
-                });
-            },
-            onAuthorize: function(resp, actions) {
-              return actions.redirect();
-            },
-            onCancel: function(resp, actions) {
-              return actions.redirect();
-            },
-          },
-          '#hps_paypal_shortcut_express_button_credit'
-        );
-      }
-    }
   });
 
   function processGiftCardResponse(msg) {
@@ -747,7 +575,7 @@
     }
   }
 
-  window.removeGiftCards = function(clickedElement) {
+  window.removeGiftCards = function (clickedElement) {
     var removedCardID = jQuery(clickedElement).attr('id');
 
     jQuery
@@ -759,12 +587,12 @@
           securesubmit_card_id: removedCardID,
         },
       })
-      .done(function() {
+      .done(function () {
         jQuery('body').trigger('update_checkout');
       });
   };
 
-  window.applyGiftCard = function() {
+  window.applyGiftCard = function () {
     jQuery
       .ajax({
         url: ajaxurl,

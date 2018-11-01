@@ -49,22 +49,6 @@ class WC_Gateway_SecureSubmit_Tests_Unit_Plugin
         $this->assertTrue(true);
     }
 
-    public function testAddPayPalExpressOptionNotInitiated()
-    {
-        $this->markTestSkipped('TODO: find how to set settings manually');
-        $settings = get_option('woocommerce_heartland_paypal_settings', array());
-        $settings['enabled'] = 'yes';
-
-        $result = $this->instance->add_paypal_express_option();
-        $this->assertNotEquals('', $result);
-    }
-
-    public function testPayPalExpressButtonHtml()
-    {
-        $result = $this->instance->paypal_express_button_html();
-        $this->assertNotEquals('', $result);
-    }
-
     public function testSavedCards()
     {
         $user = $this->factory->user->create();
@@ -168,49 +152,4 @@ class WC_Gateway_SecureSubmit_Tests_Unit_Plugin
         $this->assertTrue(true);
     }
 
-    public function testSetPayPalInitStyles()
-    {
-        $this->markTestSkipped('TODO: find way to set current page');
-        $_GET['p'] = wc_get_page_id('review_order');
-        $this->instance->set_paypal_init_styles();
-        $this->assertTrue(true);
-    }
-
-    public function testSetPayPalInitStylesNotReviewOrderPage()
-    {
-        $this->instance->set_paypal_init_styles();
-        $this->assertTrue(true);
-    }
-
-    /**
-     * @group             external-http
-     * @expectedException HpsException
-     */
-    public function testCheckUrlForPayPalParams()
-    {
-        $_GET['pp_action'] = 'revieworder';
-        $_GET['token'] = 'badtoken';
-        $this->instance->check_url_for_paypal_parms();
-        $this->assertTrue(true);
-    }
-
-    public function testCheckUrlForPayPalParamsWithoutPPAction()
-    {
-        $this->instance->check_url_for_paypal_parms();
-        $this->assertTrue(true);
-    }
-
-    public function testSetPayPalReviewOrderShortcode()
-    {
-        $result = $this->instance->set_paypal_review_order_shortcode(array());
-        $this->assertNotEquals('', $result);
-    }
-
-    public function testGetPayPalReviewOrderPage()
-    {
-        $result = WC_Gateway_SecureSubmit_Tests_Utility_Helper::captureOutput(
-            array($this->instance, 'get_paypal_review_order_page')
-        );
-        $this->assertNotEquals('', $result);
-    }
 }

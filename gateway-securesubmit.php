@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce SecureSubmit Gateway
 Plugin URI: https://developer.heartlandpaymentsystems.com/SecureSubmit/
 Description: Heartland Payment Systems gateway for WooCommerce.
-Version: 1.11.25
+Version: 1.12.0
 WC tested up to: 3.3.1
 Author: SecureSubmit
 Author URI: https://developer.heartlandpaymentsystems.com/SecureSubmit/
@@ -47,19 +47,6 @@ class WooCommerceSecureSubmitGateway
         add_action('woocommerce_after_my_account', array($masterpass, 'myaccountConnect'));
         add_action('wp_loaded', array($masterpass->reviewOrder, 'processCheckout'));
 
-        // PayPal
-        $paypal = call_user_func(array(self::SECURESUBMIT_GATEWAY_CLASS . '_PayPal', 'instance'));
-        remove_action('init', 'woocommerce_paypal_express_review_order_page') ;
-        remove_shortcode('woocommerce_review_order');
-        add_action('wp_loaded', array($paypal, 'checkUrlForParams'));
-        add_action('woocommerce_after_cart', array($paypal, 'maybeAddExpressButtonToCartPage'));
-        add_shortcode('woocommerce_review_order', array($paypal->reviewOrder, 'addShortcode'));
-        add_action('wp_enqueue_scripts', array($paypal->reviewOrder, 'setScripts'), 12);
-        add_action('wp_ajax_wc_securesubmit_paypal_start_incontext', array($paypal, 'startIncontext'));
-        add_action('wp_ajax_nopriv_wc_securesubmit_paypal_start_incontext', array($paypal, 'startIncontext'));
-        $paypalCredit = call_user_func(array(self::SECURESUBMIT_GATEWAY_CLASS . '_PayPal_Credit', 'instance'));
-        add_action('woocommerce_after_cart', array($paypalCredit, 'maybeAddExpressButtonToCartPage'));
-
         $giftCards         = new WC_Gateway_SecureSubmit_GiftCards;
         $giftCardPlacement = new giftCardOrderPlacement;
 
@@ -100,16 +87,6 @@ class WooCommerceSecureSubmitGateway
         add_filter('woocommerce_payment_gateways', array($this, 'addGateway'));
         add_action('woocommerce_after_my_account', array($this, 'savedCards'));
 
-        // PayPal
-        $paypal = call_user_func(array(self::SECURESUBMIT_GATEWAY_CLASS . '_PayPal', 'instance'));
-        remove_action('init', 'woocommerce_paypal_express_review_order_page');
-        remove_shortcode('woocommerce_review_order');
-        add_action('wp_loaded', array($paypal, 'checkUrlForParams'));
-        add_action('woocommerce_after_cart', array($paypal, 'maybeAddExpressButtonToCartPage'));
-        add_shortcode('woocommerce_review_order', array($paypal->reviewOrder, 'addShortcode'));
-        add_action('wp_enqueue_scripts', array($paypal->reviewOrder, 'setScripts'), 12);
-        $paypalCredit = call_user_func(array(self::SECURESUBMIT_GATEWAY_CLASS . '_PayPal_Credit', 'instance'));
-        add_action('woocommerce_after_cart', array($paypalCredit, 'maybeAddExpressButtonToCartPage'));
     }
 
     /**
@@ -131,8 +108,7 @@ class WooCommerceSecureSubmitGateway
         } else {
             $methods[] = self::SECURESUBMIT_GATEWAY_CLASS;
         }
-        $methods[] = 'WC_Gateway_SecureSubmit_PayPal';
-        $methods[] = 'WC_Gateway_SecureSubmit_PayPal_Credit';
+
         return $methods;
     }
 
@@ -174,8 +150,6 @@ class WooCommerceSecureSubmitGateway
     {
         include_once('classes/class-util.php');
         include_once('classes/class-wc-gateway-securesubmit.php');
-        include_once('classes/class-wc-gateway-securesubmit-paypal.php');
-        include_once('classes/class-wc-gateway-securesubmit-paypal-credit.php');
         include_once('classes/class-wc-gateway-securesubmit-subscriptions.php');
         include_once('classes/class-wc-gateway-securesubmit-subscriptions-deprecated.php');
         include_once('classes/class-wc-gateway-securesubmit-masterpass.php');
