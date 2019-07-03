@@ -25,7 +25,11 @@ class WooCommerceSecureSubmitGateway
         if (!class_exists('WC_Payment_Gateway')) {
             return;
         }
-
+        
+	$path = dirname(plugin_dir_path(__FILE__));
+        include $path . '/'.basename(__DIR__).'/vendor/autoload.php';
+		
+		
         load_plugin_textdomain('wc_securesubmit', false, dirname(plugin_basename(__FILE__)) . '/languages');
 
         $this->loadClasses();

@@ -1,5 +1,21 @@
 <?php
 
+
+use GlobalPayments\Api\Entities\EncryptionData;
+use GlobalPayments\Api\PaymentMethods\CreditCardData;
+use GlobalPayments\Api\PaymentMethods\CreditTrackData;
+use GlobalPayments\Api\Services\CreditService;
+use GlobalPayments\Api\Services\ReportingService;
+use GlobalPayments\Api\ServicesConfig;
+use GlobalPayments\Api\ServicesContainer;
+use GlobalPayments\Api\Entities\Address;
+use GlobalPayments\Api\Entities\Customer;
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+ini_set('display_warnings',1);
+
 class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 {
     private static $_instance = null;
@@ -7,11 +23,15 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
     public $payment = null;
     public $refund  = null;
     public $reverse = null;
-
+	
+    protected $card;
+    protected $track;
+    private $enableCryptoUrl = true;
+    
     public function __construct()
     {
         // includes
-        require_once 'includes/Hps.php';
+       // require_once 'includes/Hps.php';
         require_once 'wc-gateway-securesubmit/class-capture.php';
         require_once 'wc-gateway-securesubmit/class-payment.php';
         require_once 'wc-gateway-securesubmit/class-refund.php';
@@ -225,12 +245,12 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
     }
 
     public function process_refund($orderId, $amount = null, $reason = '')
-    {
+    {  
         if ($amount !== null) {
             $amount = wc_format_decimal($amount, 2);
         }
         if ($this->isTransactionActiveOnGateway($orderId)) {
-            return $this->reverse->call($orderId, $amount, $reason);
+           return $this->reverse->call($orderId, $amount, $reason);
         } else {
             return $this->refund->call($orderId, $amount, $reason);
         }
@@ -282,31 +302,35 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 
     public function getCreditService()
     {
-        $config = new HpsServicesConfig();
+	$config = new ServicesConfig();
         $config->secretApiKey = $this->secret_key;
-        $config->versionNumber = '1510';
-        $config->developerId = '002914';
+        $config->serviceUrl = ($this->enableCryptoUrl) ?
+                'https://cert.api2-c.heartlandportico.com/' :
+                'https://cert.api2.heartlandportico.com';
+        $service = new CreditService(
+                $config
+        );
 
-        return new HpsFluentCreditService($config);
+        return $service;
     }
 
     public function getOrderAddress($order)
     {
-        $hpsaddress = new HpsAddress();
-        $hpsaddress->address = WC_SecureSubmit_Util::getData($order, 'get_billing_address_1', 'billing_address_1');
+        $hpsaddress = new Address();
+        $hpsaddress->streetAddress1 = WC_SecureSubmit_Util::getData($order, 'get_billing_address_1', 'billing_address_1');
         $hpsaddress->city = WC_SecureSubmit_Util::getData($order, 'get_billing_city', 'billing_city');
         $hpsaddress->state = WC_SecureSubmit_Util::getData($order, 'get_billing_state', 'billing_state');
-        $hpsaddress->zip = WC_SecureSubmit_Util::getData($order, 'get_billing_postcode', 'billing_postcode');
+        $hpsaddress->postalCode = WC_SecureSubmit_Util::getData($order, 'get_billing_postcode', 'billing_postcode');
         $hpsaddress->country = WC_SecureSubmit_Util::getData($order, 'get_billing_country', 'billing_country');
         return $hpsaddress;
     }
 
     public function getOrderCardHolder($order, $hpsaddress)
     {
-        $cardHolder = new HpsCardHolder();
+        $cardHolder = new Customer();
         $cardHolder->firstName = WC_SecureSubmit_Util::getData($order, 'get_billing_first_name', 'billing_first_name');
         $cardHolder->lastName = WC_SecureSubmit_Util::getData($order, 'get_billing_last_name', 'billing_last_name');
-        $cardHolder->phone = WC_SecureSubmit_Util::getData($order, 'get_billing_phone', 'billing_phone');
+        $cardHolder->mobilePhone = WC_SecureSubmit_Util::getData($order, 'get_billing_phone', 'billing_phone');
         $cardHolder->email = WC_SecureSubmit_Util::getData($order, 'get_billing_email', 'billing_email');
         $cardHolder->address = $hpsaddress;
         return $cardHolder;
@@ -316,7 +340,9 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
     {
         $order = wc_get_order($orderId);
         $transactionId = $this->getOrderTransactionId($order);
-        $transaction = $this->getCreditService()->get($transactionId)->execute();
+        $refundservice = $this->getCreditService();
+        $reportingService = new ReportingService();
+        $transaction = $reportingService->transactionDetail($transactionId)->execute();
         return $transaction->transactionStatus == 'A';
     }
 

@@ -4,6 +4,14 @@ if (!defined('ABSPATH')) {
     exit();
 }
 
+use GlobalPayments\Api\Entities\EncryptionData;
+use GlobalPayments\Api\PaymentMethods\CreditCardData;
+use GlobalPayments\Api\PaymentMethods\CreditTrackData;
+use GlobalPayments\Api\Services\CreditService;
+use GlobalPayments\Api\ServicesConfig;
+use GlobalPayments\Api\ServicesContainer;
+use GlobalPayments\Api\Entities\Transaction;
+
 class WC_Gateway_SecureSubmit_Refund
 {
     protected $parent = null;
@@ -11,6 +19,7 @@ class WC_Gateway_SecureSubmit_Refund
     public function __construct(&$parent = null)
     {
         $this->parent = $parent;
+        $serviceCreditResponse = $this->parent->getCreditService();
     }
 
     public function call($orderId, $amount, $reason)
@@ -28,12 +37,12 @@ class WC_Gateway_SecureSubmit_Refund
         }
 
         try {
-            $chargeService = $this->parent->getCreditService();
+            $this->parent->getCreditService();
+            $transaction = new Transaction();
+            $chargeService = $transaction->fromId($transactionId);
             try {
-                $response = $chargeService->refund()
-                    ->withAmount(wc_format_decimal($amount, 2))
+                $response = $chargeService->refund(wc_format_decimal($amount, 2))
                     ->withCurrency(strtolower(get_woocommerce_currency()))
-                    ->withTransactionId($transactionId)
                     ->execute();
                 $order->add_order_note(__('SecureSubmit payment refunded', 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
                 return true;

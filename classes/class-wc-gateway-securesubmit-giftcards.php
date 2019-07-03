@@ -3,6 +3,12 @@
 if (!defined('ABSPATH')) {
     die();
 }
+use GlobalPayments\Api\Entities\EncryptionData;
+use GlobalPayments\Api\Services\ReportingService;
+use GlobalPayments\Api\Services\CreditService;
+use GlobalPayments\Api\ServicesConfig;
+use GlobalPayments\Api\ServicesContainer;
+use GlobalPayments\Api\PaymentMethods\GiftCard;
 
 /*
  * Stuff to do:
@@ -17,6 +23,7 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
     protected $gift_card_submitted     = null;
     protected $gift_card_pin_submitted = null;
     protected $applied_gift_card       = null;
+    private $enableCryptoUrl = true;
 
     public function update_gateway_title_checkout($title, $id)
     {
@@ -280,11 +287,10 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
             );
         }
 
-        $this->gift_card = $this->giftCardObject($gift_card_number, $gift_card_pin);
-
+        $this->gift_card = $this->giftCardObject($gift_card_number,$gift_card_pin);
+        $this->reportingService = new ReportingService();
         try {
-            $response = $this->giftCardService()->balance()
-                ->withCard($this->gift_card)
+            $response = $this->gift_card->balanceInquiry()
                 ->execute();
         } catch (HpsException $e) {
             return array(
@@ -440,17 +446,29 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
 
     protected function giftCardService()
     {
-        $config                = new HpsServicesConfig();
+        /*$config                = new HpsServicesConfig();
         $config->secretApiKey  = $this->secret_key;
         $config->versionNumber = '1510';
         $config->developerId   = '002914';
 
-        return new HpsFluentGiftCardService($config);
+        return new HpsFluentGiftCardService($config);*/
+        
+        $config = new ServicesConfig();
+        $config->secretApiKey = $this->secret_key;
+        $config->serviceUrl = ($this->enableCryptoUrl) ?
+                'https://cert.api2-c.heartlandportico.com/' :
+                'https://cert.api2.heartlandportico.com';
+        $service = new GiftCard(
+                $config
+        );
+
+        return $service;
     }
 
-    protected function giftCardObject($gift_card_number, $gift_card_pin)
+    protected function giftCardObject($gift_card_number,$gift_card_pin)
     {
-        $gift_card         = new HpsGiftCard();
+        //$gift_card         = new HpsGiftCard();
+        $gift_card         = new GiftCard();
         $gift_card->number = $gift_card_number;
         $gift_card->pin    = $gift_card_pin;
 

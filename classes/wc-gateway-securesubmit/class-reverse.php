@@ -4,6 +4,14 @@ if (!defined('ABSPATH')) {
     exit();
 }
 
+use GlobalPayments\Api\Entities\EncryptionData;
+use GlobalPayments\Api\PaymentMethods\CreditCardData;
+use GlobalPayments\Api\PaymentMethods\CreditTrackData;
+use GlobalPayments\Api\Services\CreditService;
+use GlobalPayments\Api\ServicesConfig;
+use GlobalPayments\Api\ServicesContainer;
+use GlobalPayments\Api\Entities\Transaction;
+
 class WC_Gateway_SecureSubmit_Reverse
 {
     protected $parent = null;
@@ -36,17 +44,15 @@ class WC_Gateway_SecureSubmit_Reverse
             return false;
         }
 
-        $details = new HpsTransactionDetails();
-        $details->memo = $reason;
-
         try {
-            $chargeService = $this->parent->getCreditService();
+            $this->parent->getCreditService();
+            $transaction = new Transaction();
+            $chargeService = $transaction->fromId($transactionId);
             try {
                 $response = $chargeService->reverse()
-                    ->withTransactionId($transactionId)
                     ->withAmount($originalAmount)
                     ->withCurrency(strtolower(get_woocommerce_currency()))
-                    ->withDetails($details)
+                    ->withDescription($reason)
                     ->withAuthAmount($newAmount)
                     ->execute();
                 $order->add_order_note(
