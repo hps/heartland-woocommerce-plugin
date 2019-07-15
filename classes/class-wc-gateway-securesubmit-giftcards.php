@@ -9,6 +9,8 @@ use GlobalPayments\Api\Services\CreditService;
 use GlobalPayments\Api\ServicesConfig;
 use GlobalPayments\Api\ServicesContainer;
 use GlobalPayments\Api\PaymentMethods\GiftCard;
+use GlobalPayments\Api\Entities\Transaction;
+
 
 /*
  * Stuff to do:
@@ -24,6 +26,11 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
     protected $gift_card_pin_submitted = null;
     protected $applied_gift_card       = null;
     private $enableCryptoUrl = true;
+    public $cardHolderName = null;
+    public $temp_balance = null;
+    public $gift_card_name = null;
+    public $gift_card_id = null;
+    public $used_amount = null;
 
     public function update_gateway_title_checkout($title, $id)
     {
@@ -58,13 +65,13 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
 
     public function applyGiftCard()
     {
+        $card = $this->giftCardService();
         $this->gift_card_submitted     = $_POST['gift_card_number'];
         $this->gift_card_pin_submitted = $_POST['gift_card_pin'];
         $gift_card_balance = $this->gift_card_balance(
             $this->gift_card_submitted,
             $this->gift_card_pin_submitted
         );
-
         if ($gift_card_balance['error']) {
             echo json_encode(array(
                 'error' => 1,
@@ -286,12 +293,13 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
                 'message' => "PINs are required. Please enter a PIN and click apply again.",
             );
         }
-
+        
+        $card = $this->giftCardService();
         $this->gift_card = $this->giftCardObject($gift_card_number,$gift_card_pin);
-        $this->reportingService = new ReportingService();
+
+       
         try {
-            $response = $this->gift_card->balanceInquiry()
-                ->execute();
+            $response = $this->gift_card->balanceInquiry();
         } catch (HpsException $e) {
             return array(
                 'error'   => true,
@@ -300,10 +308,10 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
         }
 
         wc_clear_notices();
-
+         print_r($response); exit;
         return array(
             'error' => false,
-            'message' => $response->balanceAmount,
+            'message' => $response->authAmount,
         );
     }
 
@@ -470,7 +478,8 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
         //$gift_card         = new HpsGiftCard();
         $gift_card         = new GiftCard();
         $gift_card->number = $gift_card_number;
-        $gift_card->pin    = $gift_card_pin;
+        //$gift_card->pin    = $gift_card_pin;
+        //$gift_card->cardHolderName = $this->giftCardName($gift_card_number);
 
         return $gift_card;
     }

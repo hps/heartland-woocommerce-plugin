@@ -78,22 +78,7 @@ class WC_Gateway_SecureSubmit_Payment
 
             $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
 
-            //$details = new HpsTransactionDetails();
-            //$details->invoiceNumber = $orderId;
-
             try {
-                /*if ($this->parent->paymentaction == 'sale') {
-                    $builder = $chargeService->charge();
-                    
-                    $builder = $hpstoken->charge()
-                            ->withAllowDuplicates(true);
-                    
-                } elseif ($this->parent->paymentaction == 'verify') {
-                    $builder = $chargeService->verify();
-                } else {
-                    $builder = $chargeService->authorize();
-                }*/
-                
                 error_log('payment action: ' . $this->parent->paymentaction);
                 $metaId = update_post_meta($orderId, '_heartland_order_payment_action', $this->parent->paymentaction);
                 error_log('payment action meta: ' . print_r($metaId ?: 'false', true));
