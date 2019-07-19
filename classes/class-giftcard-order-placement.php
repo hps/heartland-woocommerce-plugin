@@ -77,10 +77,8 @@ class giftCardOrderPlacement {
                 throw new Exception( $balance_message );
 
             }
-
             $sale_response = $giftcard_gateway->processGiftCardSale( $gift_card_number, $gift_card_pin, $gift_card->used_amount );
-
-            if ( ! isset( $sale_response->responseCode ) || $sale_response->responseCode !== '0' ) {
+            if ( ! isset( $sale_response->responseCode ) || ($sale_response->responseCode !== '0' && $sale_response->responseCode !== '00') ) {
 
                 $sale_response_message = sprintf( __( 'The %s was not able to be processed.', 'wc_securesubmit' ), $gift_card->gift_card_name );
 
