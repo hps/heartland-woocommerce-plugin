@@ -22,7 +22,9 @@ class WC_Gateway_SecureSubmit_Refund
         }
 
         $transactionId = $this->parent->getOrderTransactionId($order);
-
+        $hpsaddress = $this->parent->getOrderAddress($order);
+        $cardHolder = $this->parent->getOrderCardHolder($order, $hpsaddress);
+        
         if (!$transactionId) {
             return false;
         }
@@ -34,6 +36,7 @@ class WC_Gateway_SecureSubmit_Refund
                     ->withAmount(wc_format_decimal($amount, 2))
                     ->withCurrency(strtolower(get_woocommerce_currency()))
                     ->withTransactionId($transactionId)
+                    ->withCardHolder($cardHolder)
                     ->execute();
                 $order->add_order_note(__('SecureSubmit payment refunded', 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
                 return true;
