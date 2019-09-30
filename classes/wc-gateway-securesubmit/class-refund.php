@@ -41,7 +41,8 @@ class WC_Gateway_SecureSubmit_Refund
             $transaction = new Transaction();
             $chargeService = $transaction->fromId($transactionId);
             try {
-                $response = $chargeService->refund(wc_format_decimal($amount, 2))
+                $response = $chargeService->refund()
+                    ->withAmount(wc_format_decimal($amount, 2))
                     ->withCurrency(strtolower(get_woocommerce_currency()))
                     ->execute();
                 $order->add_order_note(__('SecureSubmit payment refunded', 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');

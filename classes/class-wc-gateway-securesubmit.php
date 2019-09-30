@@ -11,11 +11,6 @@ use GlobalPayments\Api\ServicesContainer;
 use GlobalPayments\Api\Entities\Address;
 use GlobalPayments\Api\Entities\Customer;
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-ini_set('display_warnings',1);
-
 class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 {
     private static $_instance = null;
@@ -31,7 +26,6 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
     public function __construct()
     {
         // includes
-       // require_once 'includes/Hps.php';
         require_once 'wc-gateway-securesubmit/class-capture.php';
         require_once 'wc-gateway-securesubmit/class-payment.php';
         require_once 'wc-gateway-securesubmit/class-refund.php';
@@ -342,8 +336,8 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $transactionId = $this->getOrderTransactionId($order);
         $refundservice = $this->getCreditService();
         $reportingService = new ReportingService();
-        $transaction = $reportingService->transactionDetail($transactionId)->execute();
-        return $transaction->transactionStatus == 'A';
+        $transactions = $reportingService->transactionDetail($transactionId)->execute();
+        return $transactions->transactionStatus == 'A';
     }
 
     protected function getSetting($setting)

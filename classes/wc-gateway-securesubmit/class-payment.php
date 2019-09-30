@@ -116,7 +116,6 @@ class WC_Gateway_SecureSubmit_Payment
                         ? $data->Payment->ExtendedData->XID
                         : '';
 
-                    //$secureEcommerce = new HpsSecureEcommerce();
                     $secureEcommerce = new EcommerceInfo();
                     $secureEcommerce->paymentDataType       = '3DSecure';
                     $secureEcommerce->paymentDataSource = $dataSource;
@@ -139,7 +138,6 @@ class WC_Gateway_SecureSubmit_Payment
                             ->withCustomerData($cardHolder)
                             ->withRequestMultiUseToken($save_card_to_customer)
                             ->withInvoiceNumber($orderId)
-                            //->withEcommerceInfo($secureEcommerce)
                             ->withAllowDuplicates(true)
                             ->withDescription($this->parent->txndescriptor)
                             ->execute();
@@ -150,7 +148,6 @@ class WC_Gateway_SecureSubmit_Payment
                             ->withCustomerData($cardHolder)
                             ->withRequestMultiUseToken($save_card_to_customer)
                             ->withInvoiceNumber($orderId)
-                            //->withEcommerceInfo($secureEcommerce)
                             ->withAllowDuplicates(true)
                             ->withDescription($this->parent->txndescriptor)
                             ->execute();
@@ -158,10 +155,8 @@ class WC_Gateway_SecureSubmit_Payment
 
                 if ($save_card_to_customer) {
                     if (is_user_logged_in()) {
-                        //$tokenval = $response->tokenData->tokenValue;
                         $tokenval = $response->token;
 
-                        //if ($response->tokenData->responseCode == '0') {
                         if ($response->token == '0') {
                             try {
                                 $uteResponse = $chargeService->updateTokenExpiration()
@@ -200,7 +195,6 @@ class WC_Gateway_SecureSubmit_Payment
 
                 if ($this->parent->paymentaction == 'verify') {
                     if ($save_card_to_customer) {
-                       //$tokenval = $response->tokenData->tokenValue;
                         $tokenval = $response->token;                       
                     } else {
                         $tokenval = $hpstoken->tokenValue;
