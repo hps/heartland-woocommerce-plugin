@@ -9,7 +9,6 @@ This module installs as a standard WordPress module.
 ## Usage
 
 Download the contents and extract to your WordPress plugin folder. 
-Open the composer from the plugin directory and run the command "composer require globalpayments/php-sdk". Activate.
 
 ## Contributing
 
