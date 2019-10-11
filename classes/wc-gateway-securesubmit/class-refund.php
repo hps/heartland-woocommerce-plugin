@@ -38,8 +38,7 @@ class WC_Gateway_SecureSubmit_Refund
 
         try {
             $this->parent->getCreditService();
-            $transaction = new Transaction();
-            $chargeService = $transaction->fromId($transactionId);
+            $chargeService = Transaction::fromId($transactionId);
             try {
                 $response = $chargeService->refund()
                     ->withAmount(wc_format_decimal($amount, 2))

@@ -157,13 +157,9 @@ class WC_Gateway_SecureSubmit_Payment
                     if (is_user_logged_in()) {
                         $tokenval = $response->token;
 
-                        if ($response->token == '0') {
+                        if (isset($tokenval)) {
                             try {
-                                $uteResponse = $chargeService->updateTokenExpiration()
-                                    ->withToken($tokenval)
-                                    ->withExpMonth($exp_month)
-                                    ->withExpYear($exp_year)
-                                    ->execute();
+                                $uteResponse = $hpstoken->updateTokenExpiry();
                                 $cards = get_user_meta(get_current_user_id(), '_secure_submit_card', false);
                                 foreach ($cards as $card) {
                                     if ($card['token_value'] === (string)$tokenval) {

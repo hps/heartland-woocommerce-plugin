@@ -17,8 +17,7 @@ class WC_Gateway_SecureSubmit_MasterPass extends WC_Payment_Gateway
 
     public function __construct()
     {
-        // includes
-        //require_once 'includes/Hps.php';
+        require_once 'includes/autoload.php';
         require_once 'wc-gateway-securesubmit-masterpass/class-capture.php';
         require_once 'wc-gateway-securesubmit-masterpass/class-connect.php';
         require_once 'wc-gateway-securesubmit-masterpass/class-data.php';

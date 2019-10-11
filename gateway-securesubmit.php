@@ -27,7 +27,7 @@ class WooCommerceSecureSubmitGateway
         }
         
 	$path = dirname(plugin_dir_path(__FILE__));
-        include $path . '/'.basename(__DIR__).'/vendor/autoload.php';
+        include $path . '/'.basename(__DIR__).'/classes/includes/autoload.php';
 		
 		
         load_plugin_textdomain('wc_securesubmit', false, dirname(plugin_basename(__FILE__)) . '/languages');

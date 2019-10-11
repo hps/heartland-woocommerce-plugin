@@ -241,7 +241,7 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
 
     public function processGiftCardSale($card_number, $card_pin, $used_amount)
     {
-        ServicesContainer::configure($this->giftCardService());
+        ServicesContainer::configure($this->giftCardServiceConfig());
         $card            = $this->giftCardObject($card_number, $card_pin);
         $rounded_amount  = round($used_amount, 2);
         $positive_amount = abs($rounded_amount);
@@ -261,7 +261,7 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
         if (!empty($processed_cards)) {
             foreach ($processed_cards as $card_id => $card) {
                 try {
-                    $response = $this->giftCardService()->void($card->transaction_id)
+                    $response = $this->giftCardServiceConfig()->void($card->transaction_id)
                         ->execute();
                 } catch (Exception $e) {
                 }
@@ -439,19 +439,20 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
         return WC()->cart->get_cart_discount_total();
     }
 
-    protected function giftCardService()
+    protected function giftCardServiceConfig()
     {       
         $config = new ServicesConfig();
         $config->secretApiKey = $this->secret_key;
-        $config->serviceUrl = ($this->enableCryptoUrl) ?
-                'https://cert.api2-c.heartlandportico.com/' :
-                'https://cert.api2.heartlandportico.com';
+        $env = $config->environment;
+        $config->serviceUrl = ($env != "TEST")?
+                'https://api2.heartlandportico.com': 
+                'https://cert.api2.heartlandportico.com'; 
         return $config;
     }
 
     protected function giftCardObject($gift_card_number,$gift_card_pin)
     {
-        $gift_card         = $this->giftCardService();
+        $gift_card         = $this->giftCardServiceConfig();
         $gift_card         = new GiftCard();
         $gift_card->number = $gift_card_number;
         $gift_card->pin    = $gift_card_pin;
