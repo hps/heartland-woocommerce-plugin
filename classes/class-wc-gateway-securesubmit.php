@@ -298,10 +298,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
     {
 	$config = new ServicesConfig();
         $config->secretApiKey = $this->secret_key;
-        $env = $config->environment;
-        $config->serviceUrl = ($env != "TEST")?
-                'https://api2.heartlandportico.com': 
-                'https://cert.api2.heartlandportico.com'; 
+        $config->serviceUrl = "https://cert.api2.heartlandportico.com"; 
         $service = new CreditService(
                 $config
         );

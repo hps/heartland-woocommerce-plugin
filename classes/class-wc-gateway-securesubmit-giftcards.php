@@ -443,10 +443,7 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
     {       
         $config = new ServicesConfig();
         $config->secretApiKey = $this->secret_key;
-        $env = $config->environment;
-        $config->serviceUrl = ($env != "TEST")?
-                'https://api2.heartlandportico.com': 
-                'https://cert.api2.heartlandportico.com'; 
+        $config->serviceUrl = "https://cert.api2.heartlandportico.com"; 
         return $config;
     }
 
