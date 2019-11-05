@@ -20,6 +20,10 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 1.12.1
+
+* Ensure card holder data is included in refund requests
+
 #### 1.12.0
 
 * Remove PayPal

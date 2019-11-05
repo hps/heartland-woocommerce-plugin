@@ -35,6 +35,9 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section
 
 == Changelog ==
+= 1.12.1 =
+* Ensure card holder data is included in refund requests
+
 = 1.12.0 =
 * Remove PayPal
 * Prevent payment scripts from loading on order-received page
