@@ -1,4 +1,10 @@
 <?php
+use GlobalPayments\Api\Entities\EncryptionData;
+use GlobalPayments\Api\PaymentMethods\CreditCardData;
+use GlobalPayments\Api\PaymentMethods\CreditTrackData;
+use GlobalPayments\Api\Services\CreditService;
+use GlobalPayments\Api\ServicesConfig;
+use GlobalPayments\Api\ServicesContainer;
 
 if (!defined('ABSPATH')) {
     exit();

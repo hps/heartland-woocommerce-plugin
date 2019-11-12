@@ -1,8 +1,11 @@
 <?php
-
 if (!defined('ABSPATH')) {
     exit();
 }
+use GlobalPayments\Api\PaymentMethods\CreditCardData;
+use GlobalPayments\Api\Entities\EcommerceInfo;
+use GlobalPayments\Api\Entities\Enums\PaymentMethodType;
+use GlobalPayments\Api\PaymentMethods\CreditTrackData;
 
 class WC_Gateway_SecureSubmit_Payment
 {
@@ -31,7 +34,6 @@ class WC_Gateway_SecureSubmit_Payment
         } else {
             $save_card_to_customer = false;
         }
-
         try {
             $this->checkVelocity();
 
@@ -50,13 +52,14 @@ class WC_Gateway_SecureSubmit_Payment
             $chargeService = $this->parent->getCreditService();
             $hpsaddress = $this->parent->getOrderAddress($order);
             $cardHolder = $this->parent->getOrderCardHolder($order, $hpsaddress);
-
+           
             if ($this->parent->paymentaction === 'verify') {
                 $save_card_to_customer = true;
             }
 
-            $hpstoken = new HpsTokenData();
-
+            
+            $hpstoken = new CreditCardData();
+                        
             if (is_user_logged_in()
                 && isset($_POST['secure_submit_card'])
                 && $_POST['secure_submit_card'] !== 'new'
@@ -64,29 +67,18 @@ class WC_Gateway_SecureSubmit_Payment
                 $cards = get_user_meta(get_current_user_id(), '_secure_submit_card', false);
 
                 if (isset($cards[$_POST['secure_submit_card']]['token_value'])) {
-                    $hpstoken->tokenValue = $cards[$_POST['secure_submit_card']]['token_value'];
+                    $hpstoken->token = $cards[$_POST['secure_submit_card']]['token_value'];
                     $save_card_to_customer = false;
                 } else {
                     throw new Exception(__('Invalid saved card.', 'wc_securesubmit'));
                 }
             } else {
-                $hpstoken->tokenValue = $securesubmit_token;
+                $hpstoken->token = $securesubmit_token;
             }
 
             $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
 
-            $details = new HpsTransactionDetails();
-            $details->invoiceNumber = $orderId;
-
             try {
-                if ($this->parent->paymentaction == 'sale') {
-                    $builder = $chargeService->charge();
-                } elseif ($this->parent->paymentaction == 'verify') {
-                    $builder = $chargeService->verify();
-                } else {
-                    $builder = $chargeService->authorize();
-                }
-                
                 error_log('payment action: ' . $this->parent->paymentaction);
                 $metaId = update_post_meta($orderId, '_heartland_order_payment_action', $this->parent->paymentaction);
                 error_log('payment action meta: ' . print_r($metaId ?: 'false', true));
@@ -124,48 +116,50 @@ class WC_Gateway_SecureSubmit_Payment
                         ? $data->Payment->ExtendedData->XID
                         : '';
 
-                    $secureEcommerce = new HpsSecureEcommerce();
-                    $secureEcommerce->type       = '3DSecure';
-                    $secureEcommerce->dataSource = $dataSource;
-                    $secureEcommerce->data       = $cavv;
-                    $secureEcommerce->eciFlag    = $eciFlag;
+                    $secureEcommerce = new EcommerceInfo();
+                    $secureEcommerce->paymentDataType       = '3DSecure';
+                    $secureEcommerce->paymentDataSource = $dataSource;
+                    $secureEcommerce->cavv       = $cavv;
+                    $secureEcommerce->eci    = $eciFlag;
                     $secureEcommerce->xid        = $xid;
                     $authenticated = true;
                 }
-
                 $orderTotal = wc_format_decimal(WC_SecureSubmit_Util::getData($order, 'get_total', 'order_total'), 2);
-
+                
                 if ($this->parent->paymentaction == 'verify') {
-                    $response = $builder
-                        ->withToken($hpstoken)
-                        ->withCardHolder($cardHolder)
-                        ->withRequestMultiUseToken($save_card_to_customer)
-                        ->execute();
+                    $response = $hpstoken->verify()
+                            ->withCustomerData($cardHolder)
+                            ->withRequestMultiUseToken($save_card_to_customer)
+                            ->withAllowDuplicates(true)
+                            ->execute();
+                } elseif ($this->parent->paymentaction == 'sale') {
+                    $response = $hpstoken->charge($orderTotal)
+                            ->withCurrency(strtolower(get_woocommerce_currency()))
+                            ->withCustomerData($cardHolder)
+                            ->withRequestMultiUseToken($save_card_to_customer)
+                            ->withInvoiceNumber($orderId)
+                            ->withAllowDuplicates(true)
+                            ->withDescription($this->parent->txndescriptor)
+                            ->execute();
+                   
                 } else {
-                    $response = $builder
-                        ->withAmount($orderTotal)
-                        ->withCurrency(strtolower(get_woocommerce_currency()))
-                        ->withToken($hpstoken)
-                        ->withCardHolder($cardHolder)
-                        ->withRequestMultiUseToken($save_card_to_customer)
-                        ->withDetails($details)
-                        ->withSecureEcommerce($secureEcommerce)
-                        ->withAllowDuplicates(true)
-                        ->withTxnDescriptor($this->parent->txndescriptor)
-                        ->execute();
+                    $response = $hpstoken->authorize($orderTotal)
+                            ->withCurrency(strtolower(get_woocommerce_currency()))
+                            ->withCustomerData($cardHolder)
+                            ->withRequestMultiUseToken($save_card_to_customer)
+                            ->withInvoiceNumber($orderId)
+                            ->withAllowDuplicates(true)
+                            ->withDescription($this->parent->txndescriptor)
+                            ->execute();
                 }
 
                 if ($save_card_to_customer) {
                     if (is_user_logged_in()) {
-                        $tokenval = $response->tokenData->tokenValue;
+                        $tokenval = $response->token;
 
-                        if ($response->tokenData->responseCode == '0') {
+                        if (isset($tokenval)) {
                             try {
-                                $uteResponse = $chargeService->updateTokenExpiration()
-                                    ->withToken($tokenval)
-                                    ->withExpMonth($exp_month)
-                                    ->withExpYear($exp_year)
-                                    ->execute();
+                                $uteResponse = $hpstoken->updateTokenExpiry();
                                 $cards = get_user_meta(get_current_user_id(), '_secure_submit_card', false);
                                 foreach ($cards as $card) {
                                     if ($card['token_value'] === (string)$tokenval) {
@@ -197,7 +191,7 @@ class WC_Gateway_SecureSubmit_Payment
 
                 if ($this->parent->paymentaction == 'verify') {
                     if ($save_card_to_customer) {
-                        $tokenval = $response->tokenData->tokenValue;
+                        $tokenval = $response->token;                       
                     } else {
                         $tokenval = $hpstoken->tokenValue;
                     }
@@ -212,7 +206,7 @@ class WC_Gateway_SecureSubmit_Payment
 
                     update_post_meta($orderId, '_verify_amount', $orderTotal);
                     update_post_meta($orderId, '_verify_currency', strtolower(get_woocommerce_currency()));
-                    update_post_meta($orderId, '_verify_details', $details);
+                    update_post_meta($orderId, '_verify_details', $orderId);
                     update_post_meta($orderId, '_verify_descriptor', $this->parent->txndescriptor);
                     update_post_meta($orderId, '_verify_cardholder', $cardHolder);
                 }

@@ -3,6 +3,12 @@
 if (!defined('ABSPATH')) {
     die();
 }
+use GlobalPayments\Api\Entities\EncryptionData;
+use GlobalPayments\Api\Services\ReportingService;
+use GlobalPayments\Api\Services\CreditService;
+use GlobalPayments\Api\ServicesConfig;
+use GlobalPayments\Api\ServicesContainer;
+use GlobalPayments\Api\PaymentMethods\GiftCard;
 
 /*
  * Stuff to do:
@@ -17,7 +23,9 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
     protected $gift_card_submitted     = null;
     protected $gift_card_pin_submitted = null;
     protected $applied_gift_card       = null;
+    private $enableCryptoUrl = true;
 
+    
     public function update_gateway_title_checkout($title, $id)
     {
         if ($id === 'securesubmit' && $this->allow_gift_cards) {
@@ -57,16 +65,17 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
             $this->gift_card_submitted,
             $this->gift_card_pin_submitted
         );
-
         if ($gift_card_balance['error']) {
             echo json_encode(array(
                 'error' => 1,
                 'message' => $gift_card_balance['message'],
             ));
         } else {
-            $this->gift_card->temp_balance = $gift_card_balance['message'];
+            $gift_card_new_obj = new stdClass();
+            $gift_card_new_obj->temp_balance =  $gift_card_balance['message'];
+            $gift_card_new_obj->number = $this->gift_card_submitted;
 
-            $this->addGiftCardToCartSession();
+            $this->addGiftCardToCartSession($gift_card_new_obj);
             $this->updateGiftCardCartTotal();
             echo json_encode(array(
                 'error'   => 0,
@@ -232,14 +241,12 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
 
     public function processGiftCardSale($card_number, $card_pin, $used_amount)
     {
+        ServicesContainer::configure($this->giftCardServiceConfig());
         $card            = $this->giftCardObject($card_number, $card_pin);
         $rounded_amount  = round($used_amount, 2);
         $positive_amount = abs($rounded_amount);
-
         try {
-            $response = $this->giftCardService()->sale()
-                ->withCard($card)
-                ->withAmount($positive_amount)
+            $response = $card->charge($positive_amount)
                 ->withCurrency('usd')
                 ->execute();
         } catch (HpsException $e) {
@@ -254,8 +261,9 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
         if (!empty($processed_cards)) {
             foreach ($processed_cards as $card_id => $card) {
                 try {
-                    $response = $this->giftCardService()->void($card->transaction_id)
-                        ->execute();
+                    $response = Transaction::fromId($card->transaction_id)
+                                ->void()
+                                ->execute();
                 } catch (Exception $e) {
                 }
 
@@ -279,22 +287,17 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
                 'message' => "PINs are required. Please enter a PIN and click apply again.",
             );
         }
-
-        $this->gift_card = $this->giftCardObject($gift_card_number, $gift_card_pin);
-
+        $this->gift_card = $this->giftCardObject($gift_card_number,$gift_card_pin);
         try {
-            $response = $this->giftCardService()->balance()
-                ->withCard($this->gift_card)
-                ->execute();
+            $response = $this->gift_card->balanceInquiry()
+                    ->execute();
         } catch (HpsException $e) {
             return array(
                 'error'   => true,
                 'message' => "The gift card number you entered is either incorrect or not yet activated.",
             );
         }
-
         wc_clear_notices();
-
         return array(
             'error' => false,
             'message' => $response->balanceAmount,
@@ -424,13 +427,12 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
         return $amount;
     }
 
-    protected function addGiftCardToCartSession()
+    protected function addGiftCardToCartSession($gift_card_new_obj = null)
     {
-        $this->gift_card->gift_card_name = $this->giftCardName($this->gift_card->number);
-        $this->gift_card->gift_card_id   = sanitize_title($this->gift_card->gift_card_name);
-        $this->gift_card->pin            = $this->gift_card_pin_submitted;
-
-        WC()->session->set('securesubmit_gift_card_object', $this->gift_card);
+        $gift_card_new_obj->gift_card_name = $this->giftCardName($this->gift_card->number);
+        $gift_card_new_obj->gift_card_id   = sanitize_title($gift_card_new_obj->gift_card_name);
+        $gift_card_new_obj->pin            = $this->gift_card_pin_submitted;
+        WC()->session->set('securesubmit_gift_card_object', $gift_card_new_obj);
     }
 
     protected function getCartDiscountTotal()
@@ -438,22 +440,20 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
         return WC()->cart->get_cart_discount_total();
     }
 
-    protected function giftCardService()
-    {
-        $config                = new HpsServicesConfig();
-        $config->secretApiKey  = $this->secret_key;
-        $config->versionNumber = '1510';
-        $config->developerId   = '002914';
-
-        return new HpsFluentGiftCardService($config);
+    protected function giftCardServiceConfig()
+    {       
+        $config = new ServicesConfig();
+        $config->secretApiKey = $this->secret_key;
+        $config->serviceUrl = "https://cert.api2.heartlandportico.com"; 
+        return $config;
     }
 
-    protected function giftCardObject($gift_card_number, $gift_card_pin)
+    protected function giftCardObject($gift_card_number,$gift_card_pin)
     {
-        $gift_card         = new HpsGiftCard();
+        $gift_card         = $this->giftCardServiceConfig();
+        $gift_card         = new GiftCard();
         $gift_card->number = $gift_card_number;
         $gift_card->pin    = $gift_card_pin;
-
         return $gift_card;
     }
 
