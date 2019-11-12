@@ -261,8 +261,9 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
         if (!empty($processed_cards)) {
             foreach ($processed_cards as $card_id => $card) {
                 try {
-                    $response = $this->giftCardServiceConfig()->void($card->transaction_id)
-                        ->execute();
+                    $response = Transaction::fromId($card->transaction_id)
+                                ->void()
+                                ->execute();
                 } catch (Exception $e) {
                 }
 

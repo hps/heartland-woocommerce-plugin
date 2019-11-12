@@ -332,9 +332,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
     {
         $order = wc_get_order($orderId);
         $transactionId = $this->getOrderTransactionId($order);
-        $refundservice = $this->getCreditService();
-        $reportingService = new ReportingService();
-        $transactions = $reportingService->transactionDetail($transactionId)->execute();
+        $transactions = ReportingService::transactionDetail($transactionId)->execute();
         return $transactions->transactionStatus == 'A';
     }
 
