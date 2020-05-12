@@ -20,6 +20,10 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 1.12.2
+
+* Get invoice number from order number
+
 #### 1.12.1
 
 * Ensure card holder data is included in refund requests
