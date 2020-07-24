@@ -136,13 +136,12 @@ class WC_Gateway_SecureSubmit_Payment
                 $orderTotal = wc_format_decimal(WC_SecureSubmit_Util::getData($order, 'get_total', 'order_total'), 2);
 
                 if ($this->parent->paymentaction == 'verify') {
-                    $response = $builder
+                    $builder = $builder
                         ->withToken($hpstoken)
                         ->withCardHolder($cardHolder)
-                        ->withRequestMultiUseToken($save_card_to_customer)
-                        ->execute();
+                        ->withRequestMultiUseToken($save_card_to_customer);
                 } else {
-                    $response = $builder
+                    $builder = $builder
                         ->withAmount($orderTotal)
                         ->withCurrency(strtolower(get_woocommerce_currency()))
                         ->withToken($hpstoken)
@@ -151,8 +150,47 @@ class WC_Gateway_SecureSubmit_Payment
                         ->withDetails($details)
                         ->withSecureEcommerce($secureEcommerce)
                         ->withAllowDuplicates(true)
-                        ->withTxnDescriptor($this->parent->txndescriptor)
-                        ->execute();
+                        ->withTxnDescriptor($this->parent->txndescriptor);
+                }
+
+                $defaultFraudResult = array('allow' => true, 'message' => '');
+
+                /**
+                 * Allows for third-party fraud tools to prevent an authorization request from
+                 * hitting the Heartland payment gateway.
+                 * 
+                 * @param string $payment_action Checkout payment action configured by the merchant
+                 * @param HpsBuilderAbstract $builder Builder implementation for the current request
+                 */
+                $preFlightFraudCheck = apply_filters(
+                    'wc_securesubmit_pre_flight_fraud_check',
+                    $defaultFraudResult,
+                    $this->parent->paymentaction,
+                    $builder
+                );
+
+                if (false === $preFlightFraudCheck['allow']) {
+                    throw new Exception($preFlightFraudCheck['message']);
+                }
+
+                $response = $builder->execute();
+
+                /**
+                 * Allows for third-party fraud tools to take action on an authorization request that
+                 * has already been submitted to the gateway and been approved.
+                 * 
+                 * @param string $payment_action Checkout payment action configured by the merchant
+                 * @param HpsAuthorization $response Response implementation for the current response
+                 */
+                $postFlightFraudCheck = apply_filters(
+                    'wc_securesubmit_post_flight_fraud_check',
+                    $defaultFraudResult,
+                    $this->parent->paymentaction,
+                    $response
+                );
+
+                if (false === $postFlightFraudCheck['allow']) {
+                    throw new Exception($postFlightFraudCheck['message']);
                 }
 
                 if ($save_card_to_customer) {
