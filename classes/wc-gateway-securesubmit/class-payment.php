@@ -184,7 +184,7 @@ class WC_Gateway_SecureSubmit_Payment
                  */
                 $postFlightFraudCheck = apply_filters(
                     'wc_securesubmit_post_flight_fraud_check',
-                    $defaultFraudResult,
+                    $preFlightFraudCheck,
                     $this->parent->paymentaction,
                     $response
                 );
