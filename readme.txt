@@ -35,6 +35,9 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section
 
 == Changelog ==
+= 1.13.0 =
+* Add filters for third-party fraud solutions
+
 = 1.12.2 =
 * Get invoice number from order number
 
