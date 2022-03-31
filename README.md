@@ -20,6 +20,10 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 1.13.1
+
+* Security patch
+
 #### 1.13.0
 
 * Add filters for third-party fraud solutions
