@@ -175,4 +175,16 @@ return array(
         'type'        => 'text',
         'class'       => 'threedsecure',
     ),
+    'app_id' => array(
+        'title'       => __('App ID', 'wc_securesubmit'),
+        'type'        => 'text',
+        'description' => __('For use with Transaction Optimization', 'wc_securesubmit'),
+        'default'     => '',
+    ),
+    'app_key' => array(
+        'title'       => __('App Key', 'wc_securesubmit'),
+        'type'        => 'text',
+        'description' => __('For use with Transaction Optimization', 'wc_securesubmit'),
+        'default'     => '',
+    )
 );

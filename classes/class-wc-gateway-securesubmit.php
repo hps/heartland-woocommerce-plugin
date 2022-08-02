@@ -47,6 +47,8 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $this->threedsecure_api_identifier = $this->getSetting('threedsecure_api_identifier');
         $this->threedsecure_org_unit_id    = $this->getSetting('threedsecure_org_unit_id');
         $this->threedsecure_api_key    = $this->getSetting('threedsecure_api_key');
+        $this->app_id                  = $this->getSetting('app_id');
+        $this->app_key                 = $this->getSetting('app_key');
         $this->supports                = array(
                                             'products',
                                             'refunds'
@@ -154,12 +156,18 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         }
 
         $isCert = false !== strpos($this->public_key, '_cert_');
+        $gpUrl = 'https://js.globalpay.com/v1/globalpayments.js';
+
+        // SecureSubmit tokenization library
+        wp_enqueue_script('gp_library', $gpUrl, array(), 'false', true);
+
+        $isCert = false !== strpos($this->public_key, '_cert_');
         $url = $isCert
             ? 'https://hps.github.io/token/2.1/securesubmit.js'
             : 'https://api.heartlandportico.com/SecureSubmit.v1/token/2.1/securesubmit.js';
 
-        // SecureSubmit tokenization library
         wp_enqueue_script('hps_wc_securesubmit_library', $url, array(), '2.1', true);
+
         // SecureSubmit js controller for WooCommerce
         wp_enqueue_script('woocommerce_securesubmit', plugins_url('assets/js/securesubmit.js', dirname(__FILE__)), array('jquery'), '1.0', true);
         // SecureSubmit custom CSS
@@ -209,6 +217,8 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 
     public function process_payment($orderId)
     {
+        if (!empty($this->app_key) && !empty($this->app_id)) $this->tryTransOptimization($orderId);
+        
         return $this->payment->call($orderId);
     }
 
@@ -337,5 +347,105 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
             return woocommerce_clean($value);
         }
         return $value;
+    }
+
+    private function tryTransOptimization($orderId) {
+        try {
+            // generate bearer token
+            $nonce = (string) time();
+            $secret = hash("sha512", $nonce . $this->app_key);
+
+            if (strpos($this->public_key, '_cert_') !== false) {
+                $tokenUrl = "https://apis-cert.globalpay.com/accesstoken";
+                $eddUrl = "https://apis-cert.globalpay.com/edd-trans-optimization";
+            } else {
+                $tokenUrl = "https://apis.globalpay.com/accesstoken";
+                $eddUrl = "https://apis.globalpay.com/edd-trans-optimization";
+            }
+
+            $tokenBody = array(
+                "app_id" => $this->app_id,
+                "secret" => $secret,
+                "grant_type" => "client_credentials",
+                "nonce" => $nonce
+            );
+
+            $bearerTokenResponse = wp_remote_post(
+                $tokenUrl,
+                array(
+                    'headers' => array (
+                        'Content-Type' => 'application/json'
+                    ),
+                    'body' => json_encode($tokenBody)
+                )
+            );
+
+            $bearerTokenVal = json_decode($bearerTokenResponse['body'])->token;
+
+            if (empty($bearerTokenVal)) return;
+
+            // now handle edd-trans-optimization
+            $order = wc_get_order($orderId);
+            $currencyNumeric = get_woocommerce_currency() === "CAD" ? "124" : "840";
+            $giftCardsApplied = WC()->session->get('securesubmit_gift_card_applied') !== null;
+
+            $eddBody = array(
+                "additionalTransactionData" => array(
+                    "bankIdentificationNumber" => $_POST["bin"],
+                    "lastFourCardNumber" => $_POST["last_four"],
+                    "purchaseAmount" => $order->get_total(),
+                    "purchaseCurrency" => $currencyNumeric
+                ),
+                "deviceData" => array(
+                    "browserIP" => WC_Geolocation::get_ip_address(),
+                    // "deviceId" => "00:1B:44:11:3A:B7", // don't think there's
+                    // "deviceLongitude" => "-90.0715", // a good way to get
+                    // "deviceLatitude" => "29.9511" // these three values
+                ),
+                "customerData" => array(
+                    "customerFirstName" => $order->get_billing_first_name(),
+                    "customerLastName" => $order->get_billing_last_name(),
+                    "customerEmailAddress" => $order->get_billing_email(),
+                    "homePhone" => $order->get_billing_phone(),
+                    "mobilePhone" => $order->get_billing_phone(),
+                    "workPhone" => $order->get_billing_phone()
+                ),
+                "orderData" => array(
+                    "alternatePaymentIndicator" => $giftCardsApplied ? "03" : "01"
+                ),
+                "shippingData" => array(
+                    "shipAddrLine1" => $order->get_shipping_address_1(),
+                    "shipAddrLine2" => $order->get_shipping_address_2(),
+                    // "shipAddrLine3" => "Room 14", // WooComm only supports two lines
+                    "shipAddrCity" => $order->get_shipping_city(),
+                    "shipAddrState" => $order->get_shipping_state(),
+                    "shipAddrPostCode" => $order->get_shipping_postcode(),
+                    "shipAddrCountry" => $currencyNumeric,
+                    "shipAddrCountry" => $order->get_shipping_country(),
+                    "shipNameIndicator" => true
+                )
+            );
+
+            $eddResponse = wp_remote_post(
+                $eddUrl,
+                array(
+                    'headers' => array (
+                        'Content-Type' => 'application/json',
+                        'Authorization' => 'Bearer ' . $bearerTokenVal
+                    ),
+                    'body' => json_encode($eddBody)
+                )
+            );
+
+            $eddReferenceId = json_decode($eddResponse['body'])->additionalTransactionDataReferenceId;
+
+            if (!empty($eddReferenceId))
+                $order->add_order_note(__(
+                    'Transaction Optimized: ' . $eddReferenceId,
+                    'wc_securesubmit'
+                ));
+        } catch(Exception $e) {
+            // consumption
+        }        
     }
 }
