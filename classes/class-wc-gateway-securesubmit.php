@@ -183,7 +183,8 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $securesubmit_params = array(
             'key'         => $this->public_key,
             'use_iframes' => $this->use_iframes,
-            'images_dir'  => plugins_url('assets/images', dirname(__FILE__)),
+            'images_dir'  => $isCert ? 
+                'https://js-cert.globalpay.com/v1/images' : 'https://js.globalpay.com/v1/images'
         );
 
         if ($this->enable_threedsecure) {

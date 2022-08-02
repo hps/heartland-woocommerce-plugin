@@ -1,4 +1,4 @@
-(function (window, document, Heartland, wc_securesubmit_params) {
+(function (window, document, Heartland, wc_securesubmit_params, GlobalPayments) {
   var addHandler = window.Heartland
     ? Heartland.Events.addHandler
     : function () { };
@@ -183,54 +183,54 @@
     return true;
   }
 
-  // Handles form submission when using iframes
-  function iframeFormHandler(e) {
-    var securesubmitMethod = document.getElementById(
-      'payment_method_securesubmit'
-    );
-    var storedCards = document.querySelectorAll(
-      'input[name=secure_submit_card]'
-    );
-    var storedCardsChecked = filter(storedCards, function (el) {
-      return el.checked;
-    });
-    var token = document.getElementById('securesubmit_token');
-    var cardinalToken = document.getElementById('securesubmit_cardinal_token');
-    var cardinalCcaData = document.getElementById('securesubmit_cca_data');
+  // // Handles form submission when using iframes
+  // function iframeFormHandler(e) {
+  //   var securesubmitMethod = document.getElementById(
+  //     'payment_method_securesubmit'
+  //   );
+  //   var storedCards = document.querySelectorAll(
+  //     'input[name=secure_submit_card]'
+  //   );
+  //   var storedCardsChecked = filter(storedCards, function (el) {
+  //     return el.checked;
+  //   });
+  //   var token = document.getElementById('securesubmit_token');
+  //   var cardinalToken = document.getElementById('securesubmit_cardinal_token');
+  //   var cardinalCcaData = document.getElementById('securesubmit_cca_data');
 
-    var securesubmitEnabled = securesubmitMethod && securesubmitMethod.checked;
-    var newCardUsed =
-      storedCardsChecked.length === 0 ||
-      (storedCardsChecked[0] && storedCardsChecked[0].value === 'new');
-    var ccaEnabled = !!wc_securesubmit_params.cca;
-    var securesubmitTokenObtained = token.value !== '';
-    var cardinalTokenObtained = cardinalToken && cardinalToken.value !== '';
-    var cardinalCcaDataObtained =
-      cardinalCcaData && cardinalCcaData.value !== '';
+  //   var securesubmitEnabled = securesubmitMethod && securesubmitMethod.checked;
+  //   var newCardUsed =
+  //     storedCardsChecked.length === 0 ||
+  //     (storedCardsChecked[0] && storedCardsChecked[0].value === 'new');
+  //   var ccaEnabled = !!wc_securesubmit_params.cca;
+  //   var securesubmitTokenObtained = token.value !== '';
+  //   var cardinalTokenObtained = cardinalToken && cardinalToken.value !== '';
+  //   var cardinalCcaDataObtained =
+  //     cardinalCcaData && cardinalCcaData.value !== '';
 
-    if (!securesubmitEnabled) {
-      return true;
-    }
+  //   if (!securesubmitEnabled) {
+  //     return true;
+  //   }
 
-    if (newCardUsed && !securesubmitTokenObtained) {
-      wc_securesubmit_params.hps.Messages.post(
-        {
-          accumulateData: true,
-          action: 'tokenize',
-          data: wc_securesubmit_params.hps.options,
-        },
-        'cardNumber'
-      );
-      return false;
-    }
+  //   if (newCardUsed && !securesubmitTokenObtained) {
+  //     wc_securesubmit_params.hps.Messages.post(
+  //       {
+  //         accumulateData: true,
+  //         action: 'tokenize',
+  //         data: wc_securesubmit_params.hps.options,
+  //       },
+  //       'cardNumber'
+  //     );
+  //     return false;
+  //   }
 
-    if (ccaEnabled && cardinalTokenObtained && !cardinalCcaDataObtained) {
-      cca();
-      return false;
-    }
+  //   if (ccaEnabled && cardinalTokenObtained && !cardinalCcaDataObtained) {
+  //     cca();
+  //     return false;
+  //   }
 
-    return true;
-  }
+  //   return true;
+  // }
 
   // Handles tokenization response
   function responseHandler(response) {
@@ -257,40 +257,46 @@
           document.querySelector('.securesubmit_new_card_info')
         );
     } else {
-      var heartland = response.heartland || response;
       var cardinal = response.cardinal;
       var token = document.getElementById('securesubmit_token');
       var last4 = document.createElement('input');
       var cType = document.createElement('input');
       var expMo = document.createElement('input');
       var expYr = document.createElement('input');
+      var bin = document.createElement('input')
 
-      token.value = heartland.token_value;
+      token.value = response.paymentReference;
 
       last4.type = 'hidden';
       last4.id = 'last_four';
       last4.name = 'last_four';
-      last4.value = heartland.last_four;
+      last4.value = response.details.cardLast4;
 
       cType.type = 'hidden';
       cType.id = 'card_type';
       cType.name = 'card_type';
-      cType.value = heartland.card_type;
+      cType.value = response.details.cardType;
 
       expMo.type = 'hidden';
       expMo.id = 'exp_month';
       expMo.name = 'exp_month';
-      expMo.value = heartland.exp_month;
+      expMo.value = response.details.expiryMonth;
 
       expYr.type = 'hidden';
       expYr.id = 'exp_year';
       expYr.name = 'exp_year';
-      expYr.value = heartland.exp_year;
+      expYr.value = response.details.expiryYear;
+
+      expYr.type = 'hidden';
+      expYr.id = 'bin';
+      expYr.name = 'bin';
+      expYr.value = response.details.cardBin;
 
       form.appendChild(last4);
       form.appendChild(cType);
       form.appendChild(expMo);
       form.appendChild(expYr);
+      form.appendChild(bin);
 
       if (cardinal) {
         createCardinalTokenNode(form, cardinal.token_value);
@@ -352,136 +358,136 @@
     if (!wc_securesubmit_params || !wc_securesubmit_params.use_iframes) {
       return;
     }
-    var options = {
-      publicKey: wc_securesubmit_params.key,
-      type: 'iframe',
-      fields: {
-        cardNumber: {
-          target: 'securesubmit_card_number',
-          placeholder: '•••• •••• •••• ••••',
-        },
-        cardExpiration: {
-          target: 'securesubmit_card_expiration',
-          placeholder: 'MM / YYYY',
-        },
-        cardCvv: {
-          target: 'securesubmit_card_cvv',
-          placeholder: 'CVV',
-        },
-      },
-      style: {
-        input: {
-          background: '#fff',
-          border: '1px solid #666',
-          'border-color': '#bbb3b9 #c7c1c6 #c7c1c6',
-          'box-sizing': 'border-box',
-          'font-family': 'Arial, Helvetica Neue, Helvetica, sans-serif',
-          'font-size': '18px !important',
-          'line-height': '18px !important',
-          margin: '0 .5em 0 0',
-          'max-width': '100%',
-          outline: '0',
-          padding: '13px 13px 13px 13px',
-          'vertical-align': 'middle',
-          width: '100%',
-        },
-        'input:focus': {
-          border: '1px solid #3989e3 !important'
-        },
-        '#heartland-field-body': {
-          width: '100%',
-        },
-        '#heartland-field-wrapper': {
-          position: 'relative',
-        },
-        // Card Number
-        '#heartland-field[name="cardNumber"] + .extra-div-1': {
-          display: 'block',
-          width: '56px',
-          'height': '40px',
-          position: 'absolute',
-          top: '4px',
-          right: '10px',
-          'background-position': 'center',
-          'background-repeat': 'no-repeat',
-          'background-size': '59px 35px',
-        },
-        '#heartland-field[name="cardNumber"].valid + .extra-div-1': {
-          'background-size': '50px 80px',
-          'height': '40px',
-          'background-position': 'top',
-          'background-image':
-            'url("' +
-            wc_securesubmit_params.images_dir + '/ss-inputcard-blank@2x.png")'
-        },
-        '#heartland-field[name="cardNumber"].invalid + .extra-div-1': {
-          'background-size': '50px 80px',
-          'top': '4',
-          'background-image': 'none'
-        },
-        '#heartland-field[name="cardNumber"].card-type-visa + .extra-div-1': {
-          'background-image':
-            'url("' +
-            wc_securesubmit_params.images_dir +
-            '/ss-inputcard-visa@2x.png")'
-        },
-        '#heartland-field[name="cardNumber"].card-type-visa.invalid + .extra-div-1': {
-          'background-position': 'bottom',
-        },
-        '#heartland-field[name="cardNumber"].card-type-jcb + .extra-div-1': {
-          'top': '4px',
-          'background-image':
-            'url("' +
-            wc_securesubmit_params.images_dir +
-            '/ss-inputcard-jcb@2x.png")'
-        },
-        '#heartland-field[name="cardNumber"].card-type-jcb.invalid + .extra-div-1': {
-          'background-position': 'bottom',
-        },
-        '#heartland-field[name="cardNumber"].card-type-discover + .extra-div-1': {
-          'background-image':
-            'url("' +
-            wc_securesubmit_params.images_dir +
-            '/ss-inputcard-discover@2x.png")'
-        },
-        '#heartland-field[name="cardNumber"].card-type-discover.invalid + .extra-div-1': {
-          'background-position': 'bottom',
-        },
-        '#heartland-field[name="cardNumber"].card-type-amex + .extra-div-1': {
-          'background-image':
-            'url("' +
-            wc_securesubmit_params.images_dir +
-            '/ss-inputcard-amex@2x.png")'
-        },
-        '#heartland-field[name="cardNumber"].card-type-amex.invalid + .extra-div-1': {
-          'background-position': 'bottom',
-        },
-        '#heartland-field[name="cardNumber"].card-type-mastercard + .extra-div-1': {
-          'background-image':
-            'url("' +
-            wc_securesubmit_params.images_dir +
-            '/ss-inputcard-mastercard@2x.png")'
-        },
-        '#heartland-field[name="cardNumber"].card-type-mastercard.invalid + .extra-div-1': {
-          'background-position': 'bottom',
-        },
-        // Card CVV
-        '#heartland-field[name="cardCvv"] + .extra-div-1': {
-          display: 'block',
-          width: '59px',
-          height: '39px',
-          'background-image':
-            'url("' + wc_securesubmit_params.images_dir + '/ss-cvv@2x.png")',
-          'background-size': '59px auto',
-          'background-position': 'top',
-          position: 'absolute',
-          top: '6px',
-          right: '7px',
-        },
-      },
-      onTokenSuccess: responseHandler,
-      onTokenError: responseHandler,
-    };
+    // var options = {
+    //   publicKey: wc_securesubmit_params.key,
+    //   type: 'iframe',
+    //   fields: {
+    //     cardNumber: {
+    //       target: 'securesubmit_card_number',
+    //       placeholder: '•••• •••• •••• ••••',
+    //     },
+    //     cardExpiration: {
+    //       target: 'securesubmit_card_expiration',
+    //       placeholder: 'MM / YYYY',
+    //     },
+    //     cardCvv: {
+    //       target: 'securesubmit_card_cvv',
+    //       placeholder: 'CVV',
+    //     },
+    //   },
+    //   style: {
+    //     input: {
+    //       background: '#fff',
+    //       border: '1px solid #666',
+    //       'border-color': '#bbb3b9 #c7c1c6 #c7c1c6',
+    //       'box-sizing': 'border-box',
+    //       'font-family': 'Arial, Helvetica Neue, Helvetica, sans-serif',
+    //       'font-size': '18px !important',
+    //       'line-height': '18px !important',
+    //       margin: '0 .5em 0 0',
+    //       'max-width': '100%',
+    //       outline: '0',
+    //       padding: '13px 13px 13px 13px',
+    //       'vertical-align': 'middle',
+    //       width: '100%',
+    //     },
+    //     'input:focus': {
+    //       border: '1px solid #3989e3 !important'
+    //     },
+    //     '#heartland-field-body': {
+    //       width: '100%',
+    //     },
+    //     '#heartland-field-wrapper': {
+    //       position: 'relative',
+    //     },
+    //     // Card Number
+    //     '#heartland-field[name="cardNumber"] + .extra-div-1': {
+    //       display: 'block',
+    //       width: '56px',
+    //       'height': '40px',
+    //       position: 'absolute',
+    //       top: '4px',
+    //       right: '10px',
+    //       'background-position': 'center',
+    //       'background-repeat': 'no-repeat',
+    //       'background-size': '59px 35px',
+    //     },
+    //     '#heartland-field[name="cardNumber"].valid + .extra-div-1': {
+    //       'background-size': '50px 80px',
+    //       'height': '40px',
+    //       'background-position': 'top',
+    //       'background-image':
+    //         'url("' +
+    //         wc_securesubmit_params.images_dir + '/ss-inputcard-blank@2x.png")'
+    //     },
+    //     '#heartland-field[name="cardNumber"].invalid + .extra-div-1': {
+    //       'background-size': '50px 80px',
+    //       'top': '4',
+    //       'background-image': 'none'
+    //     },
+    //     '#heartland-field[name="cardNumber"].card-type-visa + .extra-div-1': {
+    //       'background-image':
+    //         'url("' +
+    //         wc_securesubmit_params.images_dir +
+    //         '/ss-inputcard-visa@2x.png")'
+    //     },
+    //     '#heartland-field[name="cardNumber"].card-type-visa.invalid + .extra-div-1': {
+    //       'background-position': 'bottom',
+    //     },
+    //     '#heartland-field[name="cardNumber"].card-type-jcb + .extra-div-1': {
+    //       'top': '4px',
+    //       'background-image':
+    //         'url("' +
+    //         wc_securesubmit_params.images_dir +
+    //         '/ss-inputcard-jcb@2x.png")'
+    //     },
+    //     '#heartland-field[name="cardNumber"].card-type-jcb.invalid + .extra-div-1': {
+    //       'background-position': 'bottom',
+    //     },
+    //     '#heartland-field[name="cardNumber"].card-type-discover + .extra-div-1': {
+    //       'background-image':
+    //         'url("' +
+    //         wc_securesubmit_params.images_dir +
+    //         '/ss-inputcard-discover@2x.png")'
+    //     },
+    //     '#heartland-field[name="cardNumber"].card-type-discover.invalid + .extra-div-1': {
+    //       'background-position': 'bottom',
+    //     },
+    //     '#heartland-field[name="cardNumber"].card-type-amex + .extra-div-1': {
+    //       'background-image':
+    //         'url("' +
+    //         wc_securesubmit_params.images_dir +
+    //         '/ss-inputcard-amex@2x.png")'
+    //     },
+    //     '#heartland-field[name="cardNumber"].card-type-amex.invalid + .extra-div-1': {
+    //       'background-position': 'bottom',
+    //     },
+    //     '#heartland-field[name="cardNumber"].card-type-mastercard + .extra-div-1': {
+    //       'background-image':
+    //         'url("' +
+    //         wc_securesubmit_params.images_dir +
+    //         '/ss-inputcard-mastercard@2x.png")'
+    //     },
+    //     '#heartland-field[name="cardNumber"].card-type-mastercard.invalid + .extra-div-1': {
+    //       'background-position': 'bottom',
+    //     },
+    //     // Card CVV
+    //     '#heartland-field[name="cardCvv"] + .extra-div-1': {
+    //       display: 'block',
+    //       width: '59px',
+    //       height: '39px',
+    //       'background-image':
+    //         'url("' + wc_securesubmit_params.images_dir + '/ss-cvv@2x.png")',
+    //       'background-size': '59px auto',
+    //       'background-position': 'top',
+    //       position: 'absolute',
+    //       top: '6px',
+    //       right: '7px',
+    //     },
+    //   },
+    //   onTokenSuccess: responseHandler,
+    //   onTokenError: responseHandler,
+    // };
 
     if (wc_securesubmit_params.cca) {
       options.cca = {
@@ -490,7 +496,226 @@
       };
     }
 
-    wc_securesubmit_params.hps = new Heartland.HPS(options);
+    let wooOrderButton = document.getElementById("place_order");
+    wooOrderButton.style = "display:none";
+
+    let buttonTarget = document.createElement("div");
+    buttonTarget.id = "submit_button";
+    buttonTarget.style = "width: 100%";
+
+    wooOrderButton.parentElement.insertBefore(buttonTarget, wooOrderButton);
+
+    GlobalPayments.configure({
+      publicApiKey: wc_securesubmit_params.key
+    });
+
+    wc_securesubmit_params.hps = GlobalPayments.ui.form({
+      fields: {
+        // "card-holder-name": {
+        //   placeholder: "Jane Smith",
+        //   target: "#credit-card-card-holder"
+        // },
+        "card-number": {
+          placeholder: "•••• •••• •••• ••••",
+          target: "#securesubmit_card_number"
+        },
+        "card-expiration": {
+          placeholder: "MM / YYYY",
+          target: "#securesubmit_card_expiration"
+        },
+        "card-cvv": {
+          placeholder: "•••",
+          target: "#securesubmit_card_cvv"
+        },
+        "submit": {
+          target: "#submit_button",
+          text: "PLACE ORDER",
+          style: "width: 100px"
+        }
+      },
+      styles: {
+        'html' : {
+          "-webkit-text-size-adjust": "100%"
+        },
+        'body' : {
+          'width' : '100%'
+        },
+        '#secure-payment-field-wrapper' : {
+          'position' : 'relative',
+          'width' : '100%'
+        },
+        '#secure-payment-field' : {
+          'background-color' : '#fff',
+          'border'           : '1px solid #ccc',
+          'border-radius'    : '4px',
+          'display'          : 'block',
+          'font-size'        : '14px',
+          'height'           : '35px',
+          'padding'          : '6px 12px',
+          'width'            : '100%',
+        },
+        '#secure-payment-field:focus' : {
+          "border": "1px solid lightblue",
+          "box-shadow": "0 1px 3px 0 #cecece",
+          "outline": "none"
+        },
+        'button#secure-payment-field.submit' : {
+          "border": "0",
+          "border-radius": "0",
+          "background": "none",
+          "background-color": "#333333",
+          "border-color": "#333333",
+          "color": "#fff",
+          "cursor": "pointer",
+          "padding": ".6180469716em 1.41575em",
+          "text-decoration": "none",
+          "font-weight": "600",
+          "text-shadow": "none",
+          "display": "inline-block",
+          "-webkit-appearance": "none",
+          "height": "initial",
+          "width": "100%",
+          "flex": "auto",
+          "position": "static",
+          "margin": "0",
+          "white-space": "pre-wrap",
+          "margin-bottom": "0",
+          "float": "none",
+          "font": "600 1.41575em/1.618 Source Sans Pro,HelveticaNeue-Light,Helvetica Neue Light,\r\n                Helvetica Neue,Helvetica,Arial,Lucida Grande,sans-serif !important"
+        },
+        '#secure-payment-field[type=button]' : {
+          "width": "100%"
+        },
+        '#secure-payment-field[type=button]:focus' : {
+          "color": "#fff",
+          "background": "#000000",
+          "width": "100%"
+        },
+        '#secure-payment-field[type=button]:hover' : {
+          "color": "#fff",
+          "background": "#000000"
+        },
+        '.card-cvv' : {
+          'background' : 'transparent url(' + wc_securesubmit_params.images_dir + '/cvv.png) no-repeat right',
+          'background-size' : '63px 40px'
+        },
+        '.card-cvv.card-type-amex' : {
+          'background' : 'transparent url(' + wc_securesubmit_params.images_dir + '/cvv-amex.png) no-repeat right',
+          'background-size' : '63px 40px'
+        },
+        '.card-number' : {
+          'background' : 'transparent url(' + wc_securesubmit_params.images_dir + '/logo-unknown@2x.png) no-repeat right',
+          'background-size' : '55px 35px'
+        },
+        '.card-number.invalid.card-type-amex' : {
+          'background' : 'transparent url(' + wc_securesubmit_params.images_dir + '/logo-amex@2x.png) no-repeat right',
+          'background-position-y' : '-41px',
+          'background-size' : '50px 90px'
+        },
+        '.card-number.invalid.card-type-discover' : {
+          'background' : 'transparent url(' + wc_securesubmit_params.images_dir + '/logo-discover@2x.png) no-repeat right',
+          'background-position-y' : '-44px',
+          'background-size' : '85px 90px'
+        },
+        '.card-number.invalid.card-type-jcb' : {
+          'background' : 'transparent url(' + wc_securesubmit_params.images_dir + '/logo-jcb@2x.png) no-repeat right',
+          'background-position-y' : '-44px',
+          'background-size' : '55px 94px'
+        },
+        '.card-number.invalid.card-type-mastercard' : {
+          'background' : 'transparent url(' + wc_securesubmit_params.images_dir + '/logo-mastercard@2x.png) no-repeat right',
+          'background-position-y' : '-41px',
+          'background-size' : '82px 86px'
+        },
+        '.card-number.invalid.card-type-visa' : {
+          'background' : 'transparent url(' + wc_securesubmit_params.images_dir + '/logo-visa@2x.png) no-repeat right',
+          'background-position-y' : '-44px',
+          'background-size' : '83px 88px',
+        },
+        '.card-number.valid.card-type-amex' : {
+          'background' : 'transparent url(' + wc_securesubmit_params.images_dir + '/logo-amex@2x.png) no-repeat right',
+          'background-position-y' : '3px',
+          'background-size' : '50px 90px',
+        },
+        '.card-number.valid.card-type-discover' : {
+          'background' : 'transparent url(' + wc_securesubmit_params.images_dir + '/logo-discover@2x.png) no-repeat right',
+          'background-position-y' : '1px',
+          'background-size' : '85px 90px'
+        },
+        '.card-number.valid.card-type-jcb' : {
+          'background' : 'transparent url(' + wc_securesubmit_params.images_dir + '/logo-jcb@2x.png) no-repeat right top',
+          'background-position-y' : '2px',
+          'background-size' : '55px 94px'
+        },
+        '.card-number.valid.card-type-mastercard' : {
+          'background' : 'transparent url(' + wc_securesubmit_params.images_dir + '/logo-mastercard@2x.png) no-repeat right',
+          'background-position-y' : '2px',
+          'background-size' : '82px 86px'
+        },
+        '.card-number.valid.card-type-visa' : {
+          'background' : 'transparent url(' + wc_securesubmit_params.images_dir + '/logo-visa@2x.png) no-repeat right top',
+          'background-size' : '82px 86px'
+        },
+        '.card-number::-ms-clear' : {
+          'display' : 'none'
+        },
+        'input[placeholder]' : {
+          'letter-spacing' : '.5px',
+        },
+      }
+    });
+
+    buttonTarget.children[0].style = "width: 100%";
+
+    wc_securesubmit_params.hps.on("token-success", (resp) => {
+      responseHandler(resp);
+
+      // // add payment token to form as a hidden input
+      // const token = document.createElement("input");
+      // token.type = "hidden";
+      // token.name = "payment-reference";
+      // token.value = resp.paymentReference;
+
+      // try {
+			// 	// var originalSubmit = $( this.getPlaceOrderButtonSelector() );
+			// 	if ( wooOrderButton ) {
+			// 		wooOrderButton.click();
+			// 		return;
+			// 	}
+			// } catch ( e ) {
+			// 	/* om nom nom */
+			// }
+
+			// wc_securesubmit_params.hps.getForm().submit();
+    
+      // // // submit data to the integration's backend for processing
+      // // const form = document.getElementById("payment-form");
+      // // form.appendChild(token);
+      // // form.submit();
+    });
+    wc_securesubmit_params.hps.on("token-error", (resp) => {
+      // show error to the consumer
+    });
+    
+    // field-level event handlers. example:
+    wc_securesubmit_params.hps.on("card-number", "register", () => {
+      console.log("Registration of Card Number occurred");
+    });
+
+    // var placeOrder = function () {
+		// 	try {
+		// 		// var originalSubmit = $( this.getPlaceOrderButtonSelector() );
+		// 		if ( wooOrderButton ) {
+		// 			wooOrderButton.click();
+		// 			return;
+		// 		}
+		// 	} catch ( e ) {
+		// 		/* om nom nom */
+		// 	}
+
+		// 	wc_securesubmit_params.hps.getForm().submit();
+		// }
+
     if (!wc_securesubmit_params.hpsReadyHandler) {
       wc_securesubmit_params.hpsReadyHandler = function () {
         setTimeout(function () {
@@ -505,6 +730,28 @@
         }, 500);
       };
     }
+
+    // public static removeHandler(target: string | EventTarget, event: string, callback: EventListener) {
+    //   let node: EventTarget;
+    //   if (typeof target === 'string') {
+    //     node = document.getElementById(<string>target);
+    //   } else {
+    //     node = target;
+    //   }
+  
+    //   if (document.removeEventListener) {
+    //     node.removeEventListener(event, callback, false);
+    //   } else {
+    //     Ev.ignore(event, callback);
+    //   }
+    // }
+
+    // node = document.getElementById(document);
+    // if (document.removeEventListener) {
+    //     node.removeEventListener('securesubmitIframeReady', wc_securesubmit_params.hpsReadyHandler, false)
+    // } else {
+    //   Ev.ignore(event, callback)
+    // };
 
     Heartland.Events.removeHandler(
       document,
@@ -555,7 +802,6 @@
           wc_securesubmit_params.handler
         );
     }
-
   });
 
   function processGiftCardResponse(msg) {
@@ -605,4 +851,4 @@
       })
       .success(processGiftCardResponse);
   };
-})(window, document, window.Heartland, window.wc_securesubmit_params);
+})(window, document, window.Heartland, window.wc_securesubmit_params, window.GlobalPayments);
