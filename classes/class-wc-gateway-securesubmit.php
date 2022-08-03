@@ -42,10 +42,6 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $this->allow_card_saving       = ($this->getSetting('allow_card_saving') == 'yes' ? true : false);
         $this->allow_gift_cards        = ($this->getSetting('gift_cards') == 'yes' ? true : false);
         $this->gift_card_title         = $this->getSetting('gift_cards_gateway_title');
-        $this->enable_threedsecure     = ($this->getSetting('enable_threedsecure') == 'yes' ? true : false);
-        $this->threedsecure_api_identifier = $this->getSetting('threedsecure_api_identifier');
-        $this->threedsecure_org_unit_id    = $this->getSetting('threedsecure_org_unit_id');
-        $this->threedsecure_api_key    = $this->getSetting('threedsecure_api_key');
         $this->app_id                  = $this->getSetting('app_id');
         $this->app_key                 = $this->getSetting('app_key');
         $this->supports                = array(
@@ -172,32 +168,6 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
             'images_dir'  => $isCert ? 
                 'https://js-cert.globalpay.com/v1/images' : 'https://js.globalpay.com/v1/images'
         );
-
-        if ($this->enable_threedsecure) {
-            WC()->cart->calculate_totals();
-            $orderNumber = str_shuffle('abcdefghijklmnopqrstuvwxyz');
-            $data = array(
-                'jti' => str_shuffle('abcdefghijklmnopqrstuvwxyz'),
-                'iat' => time(),
-                'iss' => $this->threedsecure_api_identifier,
-                'OrgUnitId' => $this->threedsecure_org_unit_id,
-                'Payload' => array(
-                    'OrderDetails' => array(
-                        'OrderNumber' => $orderNumber,
-                        // Centinel requires amounts in pennies
-                        'Amount' => 100 * wc_format_decimal(WC()->cart->total, 2),
-                        'CurrencyCode' => '840',
-                    ),
-                ),
-            );
-            include_once 'class-heartland-jwt.php';
-            $jwt = HeartlandJWT::encode($this->threedsecure_api_key, $data);
-
-            $securesubmit_params['cca'] = array(
-                'jwt' => $jwt,
-                'orderNumber' => $orderNumber,
-            );
-        }
 
         wp_localize_script('woocommerce_securesubmit', 'wc_securesubmit_params', $securesubmit_params);
     }
