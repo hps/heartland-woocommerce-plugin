@@ -89,14 +89,7 @@
                         <?php _e("Credit Card number", 'wc_securesubmit') ?>
                         <span class="required">*</span>
                     </label>
-                    <?php if ($this->use_iframes): ?>
-                        <div id="securesubmit_card_number"></div>
-                    <?php else: ?>
-                    <div class="cc-number">
-                      <input id="securesubmit_card_number" type="tel" autocomplete="off" class="input-text card-number" placeholder="•••• •••• •••• ••••" />
-                      <div class="card-type-logo"></div>
-                   </div>
-                    <?php endif; ?>
+                    <div id="securesubmit_card_number"></div>
                 </div>
                 <div class="clear"></div>
                 <div class="form-row hideable no-bottom-margin">
@@ -105,25 +98,14 @@
                             <?php _e("Expiration date", 'wc_securesubmit') ?>
                             <span class="required">*</span>
                         </label>
-                        <?php if ($this->use_iframes): ?>
-                            <div id="securesubmit_card_expiration"></div>
-                        <?php else: ?>
-                            <input id="securesubmit_card_expiration" type="tel" autocomplete="off" class="input-text expiry-date" placeholder="MM / YYYY" />
-                        <?php endif; ?>
+                        <div id="securesubmit_card_expiration"></div>
                     </div>
                     <div class="form-row-last half-row">
                         <label for="securesubmit_card_cvv">
                             <?php _e("Security code", 'wc_securesubmit') ?>
                             <span class="required">*</span>
                         </label>
-                        <?php if ($this->use_iframes): ?>
-                            <div id="securesubmit_card_cvv"></div>
-                        <?php else: ?>
-                           <div class="ss-cvv">
-                            <input type="tel" id="securesubmit_card_cvv" maxlength="4" autocomplete="off" class="input-text card-cvc" placeholder="CVV" />
-                             <div class="ss-cvv-icon"></div>
-                           </div>
-                        <?php endif; ?>
+                        <div id="securesubmit_card_cvv"></div>
                         <span class="help securesubmit_card_csc_description"></span>
                     </div>
                 </div>
@@ -174,12 +156,10 @@ if ($this->allow_gift_cards && $gift_cards_allowed) : // Allow customers to pay 
           <!-- End Gift Card -->
     </fieldset>
 <?php endif; ?>
-<?php if ($this->use_iframes): // Create the iframes when WC refreshes the payment fields ?>
-    <script data-cfasync="false">
-        window.securesubmitLoadIframes = window.securesubmitLoadIframes || function () {};
-        window.securesubmitLoadIframes();
-    </script>
-<?php endif; ?>
+<script data-cfasync="false">
+    window.securesubmitLoadIframes = window.securesubmitLoadIframes || function () {};
+    window.securesubmitLoadIframes();
+</script>
 <?php // Attach the field event handlers when WC refreshes the payment fields ?>
         
 <script data-cfasync="false">

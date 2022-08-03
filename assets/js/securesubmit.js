@@ -60,6 +60,8 @@
 
       token.value = response.paymentReference;
 
+      response.details = response.details || {};
+
       last4.type = 'hidden';
       last4.id = 'last_four';
       last4.name = 'last_four';
@@ -268,7 +270,12 @@
       }
     });
 
-    buttonTarget.children[0].style = "width: 100%";
+    wc_securesubmit_params.hps.ready(
+      function () {
+        if (buttonTarget.firstChild)
+          buttonTarget.firstChild.style = "width: 100%"
+      }
+    );
 
     wc_securesubmit_params.hps.on("token-success", function(resp) {
       responseHandler(resp);
@@ -276,11 +283,6 @@
 
     wc_securesubmit_params.hps.on("token-error", function(resp) {
       responseHandler(resp);
-    });
-    
-    // field-level event handlers. example:
-    wc_securesubmit_params.hps.on("card-number", "register", function() {
-      console.log("Registration of Card Number occurred");
     });
   };
   window.securesubmitLoadIframes();

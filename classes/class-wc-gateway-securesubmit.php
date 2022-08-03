@@ -40,7 +40,6 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $this->fraud_velocity_attempts = $this->getSetting('fraud_velocity_attempts');
         $this->fraud_velocity_timeout  = $this->getSetting('fraud_velocity_timeout');
         $this->allow_card_saving       = ($this->getSetting('allow_card_saving') == 'yes' ? true : false);
-        $this->use_iframes             = true;
         $this->allow_gift_cards        = ($this->getSetting('gift_cards') == 'yes' ? true : false);
         $this->gift_card_title         = $this->getSetting('gift_cards_gateway_title');
         $this->enable_threedsecure     = ($this->getSetting('enable_threedsecure') == 'yes' ? true : false);
@@ -162,27 +161,14 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         wp_enqueue_script('gp_library', $gpUrl, array(), 'false', true);
 
         $isCert = false !== strpos($this->public_key, '_cert_');
-        $url = $isCert
-            ? 'https://hps.github.io/token/2.1/securesubmit.js'
-            : 'https://api.heartlandportico.com/SecureSubmit.v1/token/2.1/securesubmit.js';
-
-        wp_enqueue_script('hps_wc_securesubmit_library', $url, array(), '2.1', true);
 
         // SecureSubmit js controller for WooCommerce
         wp_enqueue_script('woocommerce_securesubmit', plugins_url('assets/js/securesubmit.js', dirname(__FILE__)), array('jquery'), '1.0', true);
         // SecureSubmit custom CSS
         wp_enqueue_style('woocommerce_securesubmit', plugins_url('assets/css/securesubmit.css', dirname(__FILE__)), array(), '1.0');
 
-        if ($this->enable_threedsecure) {
-            $url = $isCert
-                ? 'https://includestest.ccdc02.com/cardinalcruise/v1/songbird.js'
-                : 'https://includes.ccdc02.com/cardinalcruise/v1/songbird.js';
-            wp_enqueue_script('hps_wc_securesubmit_cardinal_library', $url, array(), '2.1', true);
-        }
-
         $securesubmit_params = array(
             'key'         => $this->public_key,
-            'use_iframes' => $this->use_iframes,
             'images_dir'  => $isCert ? 
                 'https://js-cert.globalpay.com/v1/images' : 'https://js.globalpay.com/v1/images'
         );
@@ -442,7 +428,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 
             if (!empty($eddReferenceId))
                 $order->add_order_note(__(
-                    'Transaction Optimized: ' . $eddReferenceId,
+                    'Transaction sent for Enhanced Data Collection. Reference ID: ' . $eddReferenceId,
                     'wc_securesubmit'
                 ));
         } catch(Exception $e) {
