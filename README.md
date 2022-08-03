@@ -20,6 +20,12 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 2.0.0
+
+* Remove support for non-iframe payment fields
+* Add support for transaction optimization
+* Utilize latest Heartland tokenization library
+
 #### 1.13.1
 
 * Security patch

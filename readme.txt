@@ -1,7 +1,7 @@
 === WooCommerce SecureSubmit Gateway ===
-Contributors: markhagan
+Contributors: markhagan, marksmedal
 Tags: woocommerce, woo, commerce, heartland, payment, systems, gateway, token, tokenize, save cards
-Tested up to: 5.9.2
+Tested up to: 6.0.1
 Stable tag: trunk
 License: GPLv2
 License URI: https://github.com/hps/heartland-woocommerce-plugin/blob/master/LICENSE.md

@@ -121,13 +121,6 @@ return array(
             'maxlength' => 18,
         ),
     ),
-    'use_iframes' => array(
-        'title'       => __('Use iFrames', 'wc_securesubmit'),
-        'label'       => __('Host the payment fields on Heartland\'s servers', 'wc_securesubmit'),
-        'type'        => 'checkbox',
-        'description' => 'Note: The customer will remain on your site throughout the checkout process, and there will be no redirect. This option only helps reduce your PCI scope.',
-        'default'     => 'yes',
-    ),
     'gift_cards' => array(
         'title'       => __('Enable Gift Cards', 'wc_securesubmit'),
         'label'       => __('Allow customers to use gift cards to pay for purchases in full or in part.', 'wc_securesubmit'),
@@ -151,29 +144,6 @@ return array(
         'description' => 'This is the description that will display in the payment area of checkout if gift cards are enabled.',
         'default'     => 'Pay with your credit or gift card via SecureSubmit.',
         'class'       => 'gift',
-    ),
-    'enable_threedsecure' => array(
-        'title'       => __('Enable Cardholder Authentication (3DSecure)', 'wc_securesubmit'),
-        'label'       => __('Use 3DSecure', 'wc_securesubmit'),
-        'type'        => 'checkbox',
-        'description' => 'Note: This feature requires additional account setup. Please contact your Heartland representative to enable this feature.',
-        'default'     => 'no',
-        'class'       => 'enable-threedsecure',
-    ),
-    'threedsecure_api_identifier' => array(
-        'title'       => __('Cardholder Authentication API Identifier', 'wc_securesubmit'),
-        'type'        => 'text',
-        'class'       => 'threedsecure',
-    ),
-    'threedsecure_org_unit_id' => array(
-        'title'       => __('Cardholder Authentication Org Unit ID', 'wc_securesubmit'),
-        'type'        => 'text',
-        'class'       => 'threedsecure',
-    ),
-    'threedsecure_api_key' => array(
-        'title'       => __('Cardholder Authentication API Key', 'wc_securesubmit'),
-        'type'        => 'text',
-        'class'       => 'threedsecure',
     ),
     'app_id' => array(
         'title'       => __('App ID', 'wc_securesubmit'),

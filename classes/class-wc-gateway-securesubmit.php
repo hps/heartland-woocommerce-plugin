@@ -40,7 +40,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $this->fraud_velocity_attempts = $this->getSetting('fraud_velocity_attempts');
         $this->fraud_velocity_timeout  = $this->getSetting('fraud_velocity_timeout');
         $this->allow_card_saving       = ($this->getSetting('allow_card_saving') == 'yes' ? true : false);
-        $this->use_iframes             = ($this->getSetting('use_iframes') == 'yes' ? true : false);
+        $this->use_iframes             = true;
         $this->allow_gift_cards        = ($this->getSetting('gift_cards') == 'yes' ? true : false);
         $this->gift_card_title         = $this->getSetting('gift_cards_gateway_title');
         $this->enable_threedsecure     = ($this->getSetting('enable_threedsecure') == 'yes' ? true : false);
