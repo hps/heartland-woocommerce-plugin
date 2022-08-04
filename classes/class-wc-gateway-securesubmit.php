@@ -40,13 +40,10 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $this->fraud_velocity_attempts = $this->getSetting('fraud_velocity_attempts');
         $this->fraud_velocity_timeout  = $this->getSetting('fraud_velocity_timeout');
         $this->allow_card_saving       = ($this->getSetting('allow_card_saving') == 'yes' ? true : false);
-        $this->use_iframes             = ($this->getSetting('use_iframes') == 'yes' ? true : false);
         $this->allow_gift_cards        = ($this->getSetting('gift_cards') == 'yes' ? true : false);
         $this->gift_card_title         = $this->getSetting('gift_cards_gateway_title');
-        $this->enable_threedsecure     = ($this->getSetting('enable_threedsecure') == 'yes' ? true : false);
-        $this->threedsecure_api_identifier = $this->getSetting('threedsecure_api_identifier');
-        $this->threedsecure_org_unit_id    = $this->getSetting('threedsecure_org_unit_id');
-        $this->threedsecure_api_key    = $this->getSetting('threedsecure_api_key');
+        $this->app_id                  = $this->getSetting('app_id');
+        $this->app_key                 = $this->getSetting('app_key');
         $this->supports                = array(
                                             'products',
                                             'refunds'
@@ -154,61 +151,31 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         }
 
         $isCert = false !== strpos($this->public_key, '_cert_');
-        $url = $isCert
-            ? 'https://hps.github.io/token/2.1/securesubmit.js'
-            : 'https://api.heartlandportico.com/SecureSubmit.v1/token/2.1/securesubmit.js';
+        $gpUrl = 'https://js.globalpay.com/v1/globalpayments.js';
 
         // SecureSubmit tokenization library
-        wp_enqueue_script('hps_wc_securesubmit_library', $url, array(), '2.1', true);
+        wp_enqueue_script('gp_library', $gpUrl, array(), 'false', true);
+
+        $isCert = false !== strpos($this->public_key, '_cert_');
+
         // SecureSubmit js controller for WooCommerce
         wp_enqueue_script('woocommerce_securesubmit', plugins_url('assets/js/securesubmit.js', dirname(__FILE__)), array('jquery'), '1.0', true);
         // SecureSubmit custom CSS
         wp_enqueue_style('woocommerce_securesubmit', plugins_url('assets/css/securesubmit.css', dirname(__FILE__)), array(), '1.0');
 
-        if ($this->enable_threedsecure) {
-            $url = $isCert
-                ? 'https://includestest.ccdc02.com/cardinalcruise/v1/songbird.js'
-                : 'https://includes.ccdc02.com/cardinalcruise/v1/songbird.js';
-            wp_enqueue_script('hps_wc_securesubmit_cardinal_library', $url, array(), '2.1', true);
-        }
-
         $securesubmit_params = array(
             'key'         => $this->public_key,
-            'use_iframes' => $this->use_iframes,
-            'images_dir'  => plugins_url('assets/images', dirname(__FILE__)),
+            'images_dir'  => $isCert ? 
+                'https://js-cert.globalpay.com/v1/images' : 'https://js.globalpay.com/v1/images'
         );
-
-        if ($this->enable_threedsecure) {
-            WC()->cart->calculate_totals();
-            $orderNumber = str_shuffle('abcdefghijklmnopqrstuvwxyz');
-            $data = array(
-                'jti' => str_shuffle('abcdefghijklmnopqrstuvwxyz'),
-                'iat' => time(),
-                'iss' => $this->threedsecure_api_identifier,
-                'OrgUnitId' => $this->threedsecure_org_unit_id,
-                'Payload' => array(
-                    'OrderDetails' => array(
-                        'OrderNumber' => $orderNumber,
-                        // Centinel requires amounts in pennies
-                        'Amount' => 100 * wc_format_decimal(WC()->cart->total, 2),
-                        'CurrencyCode' => '840',
-                    ),
-                ),
-            );
-            include_once 'class-heartland-jwt.php';
-            $jwt = HeartlandJWT::encode($this->threedsecure_api_key, $data);
-
-            $securesubmit_params['cca'] = array(
-                'jwt' => $jwt,
-                'orderNumber' => $orderNumber,
-            );
-        }
 
         wp_localize_script('woocommerce_securesubmit', 'wc_securesubmit_params', $securesubmit_params);
     }
 
     public function process_payment($orderId)
     {
+        if (!empty($this->app_key) && !empty($this->app_id)) $this->tryTransOptimization($orderId);
+        
         return $this->payment->call($orderId);
     }
 
@@ -337,5 +304,105 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
             return woocommerce_clean($value);
         }
         return $value;
+    }
+
+    private function tryTransOptimization($orderId) {
+        try {
+            // generate bearer token
+            $nonce = (string) time();
+            $secret = hash("sha512", $nonce . $this->app_key);
+
+            if (strpos($this->public_key, '_cert_') !== false) {
+                $tokenUrl = "https://apis-cert.globalpay.com/accesstoken";
+                $eddUrl = "https://apis-cert.globalpay.com/edd-trans-optimization";
+            } else {
+                $tokenUrl = "https://apis.globalpay.com/accesstoken";
+                $eddUrl = "https://apis.globalpay.com/edd-trans-optimization";
+            }
+
+            $tokenBody = array(
+                "app_id" => $this->app_id,
+                "secret" => $secret,
+                "grant_type" => "client_credentials",
+                "nonce" => $nonce
+            );
+
+            $bearerTokenResponse = wp_remote_post(
+                $tokenUrl,
+                array(
+                    'headers' => array (
+                        'Content-Type' => 'application/json'
+                    ),
+                    'body' => json_encode($tokenBody)
+                )
+            );
+
+            $bearerTokenVal = json_decode($bearerTokenResponse['body'])->token;
+
+            if (empty($bearerTokenVal)) return;
+
+            // now handle edd-trans-optimization
+            $order = wc_get_order($orderId);
+            $currencyNumeric = get_woocommerce_currency() === "CAD" ? "124" : "840";
+            $giftCardsApplied = WC()->session->get('securesubmit_gift_card_applied') !== null;
+
+            $eddBody = array(
+                "additionalTransactionData" => array(
+                    "bankIdentificationNumber" => $_POST["bin"],
+                    "lastFourCardNumber" => $_POST["last_four"],
+                    "purchaseAmount" => $order->get_total(),
+                    "purchaseCurrency" => $currencyNumeric
+                ),
+                "deviceData" => array(
+                    "browserIP" => WC_Geolocation::get_ip_address(),
+                    // "deviceId" => "00:1B:44:11:3A:B7", // don't think there's
+                    // "deviceLongitude" => "-90.0715", // a good way to get
+                    // "deviceLatitude" => "29.9511" // these three values
+                ),
+                "customerData" => array(
+                    "customerFirstName" => $order->get_billing_first_name(),
+                    "customerLastName" => $order->get_billing_last_name(),
+                    "customerEmailAddress" => $order->get_billing_email(),
+                    "homePhone" => $order->get_billing_phone(),
+                    "mobilePhone" => $order->get_billing_phone(),
+                    "workPhone" => $order->get_billing_phone()
+                ),
+                "orderData" => array(
+                    "alternatePaymentIndicator" => $giftCardsApplied ? "03" : "01"
+                ),
+                "shippingData" => array(
+                    "shipAddrLine1" => $order->get_shipping_address_1(),
+                    "shipAddrLine2" => $order->get_shipping_address_2(),
+                    // "shipAddrLine3" => "Room 14", // WooComm only supports two lines
+                    "shipAddrCity" => $order->get_shipping_city(),
+                    "shipAddrState" => $order->get_shipping_state(),
+                    "shipAddrPostCode" => $order->get_shipping_postcode(),
+                    "shipAddrCountry" => $currencyNumeric,
+                    "shipAddrCountry" => $order->get_shipping_country(),
+                    "shipNameIndicator" => true
+                )
+            );
+
+            $eddResponse = wp_remote_post(
+                $eddUrl,
+                array(
+                    'headers' => array (
+                        'Content-Type' => 'application/json',
+                        'Authorization' => 'Bearer ' . $bearerTokenVal
+                    ),
+                    'body' => json_encode($eddBody)
+                )
+            );
+
+            $eddReferenceId = json_decode($eddResponse['body'])->additionalTransactionDataReferenceId;
+
+            if (!empty($eddReferenceId))
+                $order->add_order_note(__(
+                    'Transaction sent for Enhanced Data Collection. Reference ID: ' . $eddReferenceId,
+                    'wc_securesubmit'
+                ));
+        } catch(Exception $e) {
+            // consumption
+        }        
     }
 }

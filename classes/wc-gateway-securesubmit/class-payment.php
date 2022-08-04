@@ -91,48 +91,6 @@ class WC_Gateway_SecureSubmit_Payment
                 $metaId = update_post_meta($orderId, '_heartland_order_payment_action', $this->parent->paymentaction);
                 error_log('payment action meta: ' . print_r($metaId ?: 'false', true));
 
-                $secureEcommerce = null;
-                $authenticated = false;
-                if ($this->parent->enable_threedsecure
-                    && false !== ($data = json_decode(stripslashes($_POST['securesubmit_cca_data'])))
-                    && isset($data) && isset($data->ActionCode)
-                    && in_array($data->ActionCode, array('SUCCESS', 'NOACTION'))
-                ) {
-                    $dataSource = '';
-                    switch ($card_type) {
-                        case 'visa':
-                            $dataSource = 'Visa 3DSecure';
-                            break;
-                        case 'mastercard':
-                            $dataSource = 'MasterCard 3DSecure';
-                            break;
-                        case 'discover':
-                            $dataSource = 'Discover 3DSecure';
-                            break;
-                        case 'amex':
-                            $dataSource = 'AMEX 3DSecure';
-                            break;
-                    }
-
-                    $cavv = isset($data->Payment->ExtendedData->CAVV)
-                        ? $data->Payment->ExtendedData->CAVV
-                        : '';
-                    $eciFlag = isset($data->Payment->ExtendedData->ECIFlag)
-                        ? substr($data->Payment->ExtendedData->ECIFlag, 1)
-                        : '';
-                    $xid = isset($data->Payment->ExtendedData->XID)
-                        ? $data->Payment->ExtendedData->XID
-                        : '';
-
-                    $secureEcommerce = new HpsSecureEcommerce();
-                    $secureEcommerce->type       = '3DSecure';
-                    $secureEcommerce->dataSource = $dataSource;
-                    $secureEcommerce->data       = $cavv;
-                    $secureEcommerce->eciFlag    = $eciFlag;
-                    $secureEcommerce->xid        = $xid;
-                    $authenticated = true;
-                }
-
                 $orderTotal = wc_format_decimal(WC_SecureSubmit_Util::getData($order, 'get_total', 'order_total'), 2);
 
                 if ($this->parent->paymentaction == 'verify') {
