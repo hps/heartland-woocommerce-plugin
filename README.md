@@ -20,6 +20,10 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 2.0.1
+
+* Fix incompatability with some themes/plugins
+
 #### 2.0.0
 
 * Remove support for non-iframe payment fields
