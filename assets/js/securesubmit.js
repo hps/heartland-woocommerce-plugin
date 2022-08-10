@@ -336,21 +336,36 @@
   };
 
   window.reloadIframes = function () {
-    if (document.getElementById("securesubmit_card_number"))
+    if (
+      document.getElementById("securesubmit_card_number") 
+      && document.getElementById("securesubmit_card_number").firstChild
+    )
       document.getElementById("securesubmit_card_number").firstChild.remove();
 
-    if (document.getElementById("securesubmit_card_expiration"))
+    if (
+      document.getElementById("securesubmit_card_expiration") 
+      && document.getElementById("securesubmit_card_expiration").firstChild
+    )
       document.getElementById("securesubmit_card_expiration").firstChild.remove();
 
-    if (document.getElementById("securesubmit_card_cvv"))
+    if (
+      document.getElementById("securesubmit_card_cvv") 
+      && document.getElementById("securesubmit_card_cvv").firstChild
+    )
       document.getElementById("securesubmit_card_cvv").firstChild.remove();
 
-    if (document.getElementById("submit_button"))
+    if (
+      document.getElementById("submit_button") 
+      && document.getElementById("submit_button").firstChild
+    )
       document.getElementById("submit_button").firstChild.remove();
 
     window.securesubmitLoadIframes();
 
-    if (document.getElementById("submit_button"))
+    if (
+      document.getElementById("submit_button") 
+      && document.getElementById("submit_button").firstChild
+    )
       document.getElementById("submit_button").firstChild.style = "width: 100%"
   };
 
