@@ -1,8 +1,17 @@
 (function (window, document, GlobalPayments, wc_securesubmit_params) {
+  var addHandler = window.GlobalPayments
+    ? GlobalPayments.events.addHandler
+    : function () { };
+
   function addClass(element, klass) {
     if (element.className.indexOf(klass) === -1) {
       element.className = element.className + ' ' + klass;
     }
+  }
+
+  function removeClass(element, klass) {
+    if (element.className.indexOf(klass) === -1) return;
+    element.className = element.className.replace(klass, '');
   }
 
   function toAll(elements, fun) {
@@ -100,6 +109,40 @@
       document.getElementById('securesubmit_token').value = '';
     }, 500);
   }
+
+  // Load function to attach event handlers when WC refreshes payment fields
+  window.securesubmitLoadEvents = function () {
+    if (!GlobalPayments) {
+      return;
+    }
+
+    toAll(
+      document.querySelectorAll('.card-number, .card-cvc, .expiry-date'),
+      function (element) {
+        addHandler(element, 'change', clearFields);
+      }
+    );
+
+    toAll(document.querySelectorAll('.saved-selector'), function (element) {
+      addHandler(element, 'click', function (e) {
+        var display = 'none';
+        if (document.getElementById('secure_submit_card_new').checked) {
+          display = 'block';
+        }
+        toAll(document.querySelectorAll('.new-card-content'), function (el) {
+          el.style.display = display;
+        });
+
+        // Set active flag
+        toAll(document.querySelectorAll('.saved-card'), function (el) {
+          removeClass(el, 'active');
+        });
+        addClass(element.parentNode.parentNode, 'active');
+      });
+    });
+  };
+
+  window.securesubmitLoadEvents();
 
   // Load function to build iframes when WC refreshes payment fields
   window.securesubmitLoadIframes = function () {
@@ -273,9 +316,33 @@
     wc_securesubmit_params.hps.ready(
       function () {
         if (buttonTarget.firstChild)
-          buttonTarget.firstChild.style = "width: 100%"
+          buttonTarget.firstChild.style = "width: 100%";
+        if (
+          document.getElementById("securesubmit_card_number") 
+          && document.getElementById("securesubmit_card_number").firstChild
+        )
+          document.getElementById("securesubmit_card_number").firstChild.style.minHeight = "50px";
+    
+        if (
+          document.getElementById("securesubmit_card_expiration") 
+          && document.getElementById("securesubmit_card_expiration").firstChild
+        )
+          document.getElementById("securesubmit_card_expiration").firstChild.style.minHeight = "50px";
+    
+        if (
+          document.getElementById("securesubmit_card_cvv") 
+          && document.getElementById("securesubmit_card_cvv").firstChild
+        )
+          document.getElementById("securesubmit_card_cvv").firstChild.style.minHeight = "50px";
       }
     );
+
+    // use WooCommerce order button when Single-Use Token isn't needed
+    wc_securesubmit_params.hps.on("submit", "click", function () {
+      if (!document.getElementById("secure_submit_card_new")) return;
+      if (!document.getElementById("secure_submit_card_new").checked)
+        document.getElementById("place_order").click();
+    });
 
     wc_securesubmit_params.hps.on("token-success", function(resp) {
       responseHandler(resp);
