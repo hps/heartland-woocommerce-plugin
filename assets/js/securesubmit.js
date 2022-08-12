@@ -91,10 +91,10 @@
       expYr.name = 'exp_year';
       expYr.value = response.details.expiryYear;
 
-      expYr.type = 'hidden';
-      expYr.id = 'bin';
-      expYr.name = 'bin';
-      expYr.value = response.details.cardBin;
+      bin.type = 'hidden';
+      bin.id = 'bin';
+      bin.name = 'bin';
+      bin.value = response.details.cardBin;
 
       form.appendChild(last4);
       form.appendChild(cType);
