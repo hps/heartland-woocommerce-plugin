@@ -60,6 +60,21 @@
           document.querySelector('.securesubmit_new_card_info')
         );
     } else {
+      if (document.getElementById("last_four"))
+        document.getElementById("last_four").remove();
+
+      if (document.getElementById("card_type"))
+        document.getElementById("card_type").remove();
+
+      if (document.getElementById("exp_month"))
+        document.getElementById("exp_month").remove();
+
+      if (document.getElementById("exp_year"))
+        document.getElementById("exp_year").remove();
+
+      if (document.getElementById("bin"))
+        document.getElementById("bin").remove();
+
       var token = document.getElementById('securesubmit_token');
       var last4 = document.createElement('input');
       var cType = document.createElement('input');
