@@ -35,6 +35,20 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section
 
 == Changelog ==
+= 2.0.2 =
+* Fix saved-card functionality
+
+= 2.0.1 =
+* Fix incompatability with some themes/plugins
+
+= 2.0.0 =
+* Remove support for non-iframe payment fields
+* Add support for transaction optimization
+* Utilize latest Heartland tokenization library
+
+= 1.13.1 =
+* Security patch
+
 = 1.13.0 =
 * Add filters for third-party fraud solutions
 
