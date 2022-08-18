@@ -7,6 +7,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
     public $payment = null;
     public $refund  = null;
     public $reverse = null;
+    private $pluginVersion = '2.0.3';
 
     public function __construct()
     {
@@ -159,9 +160,9 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $isCert = false !== strpos($this->public_key, '_cert_');
 
         // SecureSubmit js controller for WooCommerce
-        wp_enqueue_script('woocommerce_securesubmit', plugins_url('assets/js/securesubmit.js', dirname(__FILE__)), array('jquery'), '1.0', true);
+        wp_enqueue_script('woocommerce_securesubmit', plugins_url('assets/js/securesubmit.js', dirname(__FILE__)), array('jquery'), $this->pluginVersion, true);
         // SecureSubmit custom CSS
-        wp_enqueue_style('woocommerce_securesubmit', plugins_url('assets/css/securesubmit.css', dirname(__FILE__)), array(), '1.0');
+        wp_enqueue_style('woocommerce_securesubmit', plugins_url('assets/css/securesubmit.css', dirname(__FILE__)), array(), $this->pluginVersion);
 
         $securesubmit_params = array(
             'key'         => $this->public_key,
