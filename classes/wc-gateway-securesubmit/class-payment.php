@@ -106,7 +106,6 @@ class WC_Gateway_SecureSubmit_Payment
                         ->withCardHolder($cardHolder)
                         ->withRequestMultiUseToken($save_card_to_customer)
                         ->withDetails($details)
-                        ->withSecureEcommerce($secureEcommerce)
                         ->withAllowDuplicates(true)
                         ->withTxnDescriptor($this->parent->txndescriptor);
                 }
@@ -232,9 +231,7 @@ class WC_Gateway_SecureSubmit_Payment
                 }
 
                 $order->add_order_note(__(
-                    'SecureSubmit payment ' . $verb
-                    . ($authenticated ? ' and authenticated' : ''),
-                    'wc_securesubmit'
+                    'SecureSubmit payment ' . $verb, 'wc_securesubmit'
                 ) . ' (Transaction ID: ' . $response->transactionId . ')');
                 do_action('wc_securesubmit_order_credit_card_details', $orderId, $card_type, $last_four);
                 if ($this->parent->paymentaction !== 'verify') {
