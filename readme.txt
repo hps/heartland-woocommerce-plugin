@@ -35,6 +35,9 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section
 
 == Changelog ==
+= 2.0.3 =
+* Fix invalid cache after plugin update
+
 = 2.0.2 =
 * Fix saved-card functionality
 
