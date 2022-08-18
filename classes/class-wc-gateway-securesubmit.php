@@ -284,6 +284,12 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
     {
         $order = wc_get_order($orderId);
         $transactionId = $this->getOrderTransactionId($order);
+
+        if (empty($transactionId)) {
+            $this->displayUserError('Unable to capture payment');
+            return;
+        }
+
         $transaction = $this->getCreditService()->get($transactionId)->execute();
         return $transaction->transactionStatus == 'A';
     }
