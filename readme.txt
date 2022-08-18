@@ -37,6 +37,7 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 == Changelog ==
 = 2.0.3 =
 * Fix invalid cache after plugin update
+* Improvements to 'capture' payment action
 
 = 2.0.2 =
 * Fix saved-card functionality

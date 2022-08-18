@@ -23,6 +23,7 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 #### 2.0.3
 
 * Fix invalid cache after plugin update
+* Improvements to 'capture' payment action
 
 #### 2.0.2
 
