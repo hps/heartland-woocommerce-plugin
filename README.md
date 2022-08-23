@@ -20,6 +20,15 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 2.0.3
+
+* Fix invalid cache after plugin update
+* Improvements to 'capture' payment action
+
+#### 2.0.2
+
+* Fix saved-card functionality
+
 #### 2.0.1
 
 * Fix incompatability with some themes/plugins
