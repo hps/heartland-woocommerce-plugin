@@ -20,6 +20,10 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 2.1.0
+
+* 
+
 #### 2.0.3
 
 * Fix invalid cache after plugin update
