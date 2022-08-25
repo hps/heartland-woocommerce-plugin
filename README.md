@@ -22,7 +22,7 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 #### 2.1.0
 
-* 
+* Switch from iframe order button to default WooCommerce order button
 
 #### 2.0.3
 
