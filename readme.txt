@@ -36,7 +36,7 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 
 == Changelog ==
 = 2.1.0 =
-*
+* Switch from iframe order button to default WooCommerce order button
 
 = 2.0.3 =
 * Fix invalid cache after plugin update
