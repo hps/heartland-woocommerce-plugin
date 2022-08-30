@@ -165,13 +165,15 @@
       return;
     }
 
-    let wooOrderButton = document.getElementById("place_order");
-    wooOrderButton.style = "display:none";
-
     let buttonTarget = document.createElement("div");
     buttonTarget.id = "submit_button";
+    buttonTarget.style = "display:none";
+
+    let wooOrderButton = document.getElementById("place_order");
 
     wooOrderButton.parentElement.insertBefore(buttonTarget, wooOrderButton);
+
+    wooOrderButton.addEventListener("click", handleSubmitButton, true);    
 
     GlobalPayments.configure({
       publicApiKey: wc_securesubmit_params.key
@@ -330,8 +332,6 @@
 
     wc_securesubmit_params.hps.ready(
       function () {
-        if (buttonTarget.firstChild)
-          buttonTarget.firstChild.style = "width: 100%";
         if (
           document.getElementById("securesubmit_card_number") 
           && document.getElementById("securesubmit_card_number").firstChild
@@ -443,13 +443,57 @@
       document.getElementById("submit_button").firstChild.remove();
 
     window.securesubmitLoadIframes();
-
-    if (
-      document.getElementById("submit_button") 
-      && document.getElementById("submit_button").firstChild
-    )
-      document.getElementById("submit_button").firstChild.style = "width: 100%"
   };
+
+  var triggerSubmit = function () {
+    // manually include iframe submit button
+    const fields = ['submit'];
+    const target = wc_securesubmit_params.hps.frames['card-number'];
+
+    for (const type in wc_securesubmit_params.hps.frames) {
+      if (wc_securesubmit_params.hps.frames.hasOwnProperty(type)) {
+        fields.push(type);
+      }
+    }
+
+    for (const type in wc_securesubmit_params.hps.frames) {
+      if (!wc_securesubmit_params.hps.frames.hasOwnProperty(type)) {
+        continue;
+      }
+
+      const frame = wc_securesubmit_params.hps.frames[type];
+
+      if (!frame) {
+        continue;
+      }
+
+      GlobalPayments.internal.postMessage.post({
+        data: {
+          fields: fields,
+          target: target.id
+        },
+        id: frame.id,
+        type: 'ui:iframe-field:request-data'
+      }, frame.id);
+    }
+  }
+
+  function handleSubmitButton (event) {
+    if (
+      document.getElementById("payment_method_securesubmit")
+      && document.getElementById("payment_method_securesubmit").checked
+    ) {
+      if (document.getElementById("secure_submit_card_new")) {
+        if (document.getElementById("secure_submit_card_new").checked) {
+          event.preventDefault();
+          triggerSubmit();
+        }
+      } else {
+        event.preventDefault();
+        triggerSubmit();
+      }
+    }
+  }
 
   jQuery('body').on('update_checkout', function() {
     window.reloadIframes();
