@@ -20,6 +20,10 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 2.1.1
+
+* Adds order notes for failed transaction attempts
+
 #### 2.1.0
 
 * Switch from iframe order button to default WooCommerce order button
