@@ -244,6 +244,16 @@ class WC_Gateway_SecureSubmit_Payment
                     'redirect' => $this->parent->get_return_url($order)
                 );
             } catch (HpsException $e) {
+                try {
+                    $order->add_order_note(__(
+                        'SecureSubmit payment failed. Gateway response message: "' .
+                        $e->getMessage() . '"',
+                        'wc_securesubmit'
+                    ) . ' (Transaction ID: ' . $e->transactionId . ')');
+                } catch (Exception $f) {
+                    // eat it
+                }
+
                 $this->updateVelocity($e);
 
                 if ($e->getCode()== HpsExceptionCodes::POSSIBLE_FRAUD_DETECTED
