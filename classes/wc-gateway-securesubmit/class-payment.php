@@ -249,7 +249,7 @@ class WC_Gateway_SecureSubmit_Payment
                         'SecureSubmit payment failed. Gateway response message: "' .
                         $e->getMessage() . '"',
                         'wc_securesubmit'
-                    ) . ' (Transaction ID: ' . $e->transactionId . ')');
+                    ));
                 } catch (Exception $f) {
                     // eat it
                 }

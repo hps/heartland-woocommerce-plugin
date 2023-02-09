@@ -20,6 +20,10 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 2.1.2
+
+* Bugfix for some orders that include failed transaction attempts
+
 #### 2.1.1
 
 * Adds order notes for failed transaction attempts
