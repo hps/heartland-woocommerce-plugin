@@ -312,7 +312,7 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
                     return false;
                 }
             } else {
-                return ($this->cartHasSubscriptionProducts()) ? false : true;
+                return (WC_Subscriptions_Cart::cart_contains_subscription()) ? false : true;
             }
         }
 
@@ -323,22 +323,6 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
     {
         if (class_exists('WC_Subscriptions')) {
             return true;
-        }
-
-        return false;
-    }
-
-    protected function cartHasSubscriptionProducts()
-    {
-        $cart = WC()->cart->get_cart();
-
-        foreach ($cart as $cart_item) {
-            $productType = WC_SecureSubmit_Util::getData($cart_item['data'], 'get_type', 'product_type');
-            $subscription_position = strpos($productType, 'subscription');
-
-            if ($subscription_position !== false) {
-                return true;
-            }
         }
 
         return false;

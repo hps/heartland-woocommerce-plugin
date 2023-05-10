@@ -20,6 +20,10 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 2.1.3
+
+* Bugfix to disallow gift card payments on orders containing subscriptions
+
 #### 2.1.2
 
 * Bugfix for some orders that include failed transaction attempts
