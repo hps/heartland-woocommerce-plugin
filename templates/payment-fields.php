@@ -20,7 +20,7 @@
         <div class="securesubmit-content">
             <!-- Start LOGGED IN SAVED CARDS -->
             <?php $cards = get_user_meta(get_current_user_id(), '_secure_submit_card', false); ?>
-            <?php if (is_user_logged_in() && isset($cards)): ?>
+            <?php if (is_user_logged_in() && isset($cards) && !empty($cards)): ?>
                 <div class="saved-creditcards-list-header saved-creditcards-list form-row form-row-wide no-bottom-margin">
                     <div class="ss-section-header clearfix">
                         <h6>Select Payment Method</h6>
