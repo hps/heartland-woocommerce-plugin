@@ -135,7 +135,7 @@ $gift_cards = new WC_Gateway_SecureSubmit_GiftCards();
     <fieldset>
         <!-- Start Gift Card -->
         <div class="securesubmit-content gift-card-content">
-            <div class="form-row form-row-wide" id="gift-card-row">
+            <div class="clear" id="gift-card-row">
                 <label id="gift-card-label" for="gift-card-number"><?php _e('Use a gift card', 'wc_securesubmit'); ?></label>
             </div>
             <div id="gift-card-input" class="form-row form-row-wide">
