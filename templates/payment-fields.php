@@ -143,12 +143,25 @@ if ($this->allow_gift_cards && $gift_cards_allowed) : // Allow customers to pay 
                             <p id="gift-card-error"></p>
                             <p id="gift-card-success"></p>
                       </div>
-                      <button id="apply-gift-card" class="button"><?php _e('Apply', 'wc_securesubmit'); ?></button>
+                      <button id="apply-gift-card" class="button" style="visibility:hidden"><?php _e('Apply', 'wc_securesubmit'); ?></button>
                       <script data-cfasync="false">
                           jQuery("#apply-gift-card").on('click', function (event) {
                               event.preventDefault();
                               window.applyGiftCard();
                           });
+                          jQuery("#gift-card-number").on('keyup', function (event) {
+                            checkEnableGiftCardApplyButton();
+                          });
+                          jQuery("#gift-card-pin").on('keyup', function (event) {
+                            checkEnableGiftCardApplyButton();
+                          });
+                          function checkEnableGiftCardApplyButton() {
+                            if (jQuery("#gift-card-number").val().length === 19 && jQuery("#gift-card-pin").val().length === 4) {
+                                jQuery("#apply-gift-card").css("visibility", "visible");
+                            } else {
+                                jQuery("#apply-gift-card").css("visibility", "hidden");
+                            }
+                          }
                       </script>
                 </div>
                 <div class="clear"></div>
