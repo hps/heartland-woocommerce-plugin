@@ -46,9 +46,12 @@
 
       addClass(ul, 'woocommerce_error');
       addClass(ul, 'woocommerce-error');
+      
+      var error_message = response?.error?.message ?? response?.reasons[0]?.message;
+      
       li.appendChild(
         document.createTextNode(
-          response.error.message.replace('undefined', 'missing')
+          error_message.replace('undefined', 'missing')
         )
       );
       ul.appendChild(li);
