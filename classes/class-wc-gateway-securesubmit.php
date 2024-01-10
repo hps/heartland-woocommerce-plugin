@@ -1,13 +1,33 @@
 <?php
 
+use GlobalPayments\Api\Entities\Transaction;
+
 class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 {
+    private static $_alreadyRanChecks = false;
     private static $_instance = null;
     public $capture = null;
     public $payment = null;
     public $refund  = null;
     public $reverse = null;
     private $pluginVersion = '2.2.1';
+    public $secret_key;
+    public $public_key;
+    public $custom_error;
+    public $paymentaction;
+    public $txndescriptor;
+    public $enable_anti_fraud;
+    public $fraud_address;
+    public $allow_fraud;
+    public $email_fraud;
+    public $fraud_text;
+    public $fraud_velocity_attempts;
+    public $fraud_velocity_timeout;
+    public $allow_card_saving;
+    public $gift_card_title;
+    public $allow_gift_cards;
+    public $app_id;
+    public $app_key;
 
     public function __construct()
     {
@@ -80,21 +100,19 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         return str_replace(' src', ' data-cfasync="false" charset="utf-8" src', $tag);
     }
 
-    public function checks()
+    public function checks() : void
     {
-        global $woocommerce;
-
-        if ($this->enabled == 'no') {
+        if (WC_Gateway_SecureSubmit::$_alreadyRanChecks || $this->getSetting('enabled') == 'no') 
             return;
+
+        if (!$this->getSetting('secret_key')) {
+            echo '<div class="error"><p>WooCommerce SecureSubmit Gateway error: Please enter your secret key</p></div>';
+        } elseif (!$this->getSetting('public_key')) {
+            echo '<div class="error"><p>WooCommerce SecureSubmit Gateway error: Please enter your public key</p></div>';
         }
 
-        if (!$this->secret_key) {
-            echo '<div class="error"><p>' . sprintf(__('SecureSubmit error: Please enter your secret key <a href="%s">here</a>', 'wc_securesubmit'), admin_url('admin.php?page=woocommerce&tab=payment_gateways&subtab=gateway-securesubmit')) . '</p></div>';
-            return;
-        } elseif (!$this->public_key) {
-            echo '<div class="error"><p>' . sprintf(__('SecureSubmit error: Please enter your public key <a href="%s">here</a>', 'wc_securesubmit'), admin_url('admin.php?page=woocommerce&tab=payment_gateways&subtab=gateway-securesubmit')) . '</p></div>';
-            return;
-        }
+        WC_Gateway_SecureSubmit::$_alreadyRanChecks = true;
+        return;
     }
 
     public function is_available()
