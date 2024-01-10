@@ -1,7 +1,5 @@
 <?php
 
-use GlobalPayments\Api\Entities\Transaction;
-
 class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 {
     private static $_alreadyRanChecks = false;
