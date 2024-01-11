@@ -20,6 +20,10 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 2.2.2
+
+* Fix configuration error handlings
+
 #### 2.2.1
 
 * Various UI improvements
