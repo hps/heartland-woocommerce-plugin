@@ -25,6 +25,8 @@ After you have installed and configured the main WooCommerce plugin use the foll
 2. Click Install, once installed click Activate
 3. Configure and Enable the gateway in WooCommerce by adding your public and secret Api Keys
 
+Note: Recent changes to WooCommerce's default configuration options have added a step or two to the initial setup process. Please see the following instructions for help reverting WooCommerce to shortcodes: https://woo.com/document/cart-checkout-blocks-status/#section-6
+
 == How do I get started? ==
 Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://developer.heartlandpaymentsystems.com/SecureSubmit/
 
