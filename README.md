@@ -20,6 +20,10 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 2.2.3
+
+* Allow 8-digit pin HMS gift cards
+
 #### 2.2.2
 
 * Fix configuration error handlings

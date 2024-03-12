@@ -156,7 +156,7 @@ if ($this->allow_gift_cards && $gift_cards_allowed) : // Allow customers to pay 
                             checkEnableGiftCardApplyButton();
                           });
                           function checkEnableGiftCardApplyButton() {
-                            if (jQuery("#gift-card-number").val().length === 19 && jQuery("#gift-card-pin").val().length === 4) {
+                            if (jQuery("#gift-card-number").val().length === 19 && [4,8].indexOf(jQuery("#gift-card-pin").val().length) !== -1) {
                                 jQuery("#apply-gift-card").css("visibility", "visible");
                             } else {
                                 jQuery("#apply-gift-card").css("visibility", "hidden");
