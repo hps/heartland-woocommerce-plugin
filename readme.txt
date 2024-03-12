@@ -37,6 +37,9 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section
 
 == Changelog ==
+= 2.2.3 =
+* Allow 8-digit pin HMS gift cards
+
 = 2.2.2 =
 * Fix configuration error handlings
 
