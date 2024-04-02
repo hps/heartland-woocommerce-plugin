@@ -22,6 +22,12 @@ class WooCommerceSecureSubmitGateway
 
     public function init()
     {
+        add_action('before_woocommerce_init', function () {
+            if (class_exists(\Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
+                \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
+            }
+        });
+
         if (!class_exists('WC_Payment_Gateway')) {
             return;
         }
@@ -64,11 +70,11 @@ class WooCommerceSecureSubmitGateway
             add_action('wp_enqueue_scripts',                          array($giftCards, 'removeGiftCardCode'));
 
             // Process checkout with gift cards
-            add_filter('woocommerce_get_order_item_totals',    array( $giftCardPlacement, 'addItemsToOrderDisplay'),PHP_INT_MAX, 2);
-            add_action('woocommerce_checkout_order_processed', array( $giftCardPlacement, 'processGiftCardsZeroTotal'), PHP_INT_MAX, 2);
+            add_filter('woocommerce_get_order_item_totals',    array($giftCardPlacement, 'addItemsToOrderDisplay'), PHP_INT_MAX, 2);
+            add_action('woocommerce_checkout_order_processed', array($giftCardPlacement, 'processGiftCardsZeroTotal'), PHP_INT_MAX, 2);
 
             // Display gift cards used after checkout and on email
-            add_filter('woocommerce_get_order_item_totals', array( $giftCardPlacement, 'addItemsToPostOrderDisplay'), PHP_INT_MAX, 2);
+            add_filter('woocommerce_get_order_item_totals', array($giftCardPlacement, 'addItemsToPostOrderDisplay'), PHP_INT_MAX, 2);
         }
     }
 
@@ -86,7 +92,6 @@ class WooCommerceSecureSubmitGateway
 
         add_filter('woocommerce_payment_gateways', array($this, 'addGateway'));
         add_action('woocommerce_after_my_account', array($this, 'savedCards'));
-
     }
 
     /**
