@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Test products
  *
@@ -10,6 +11,8 @@
  * @license  Custom <https://github.com/hps/heartland-woocommerce-plugin/blob/master/LICENSE.md>
  * @link     https://github.com/hps/heartland-woocommerce-plugin
  */
+
+use Automattic\WooCommerce\Utilities\OrderUtil;
 
 /**
  * Test products
@@ -38,17 +41,31 @@ class WC_Gateway_SecureSubmit_Tests_Utility_Product
             )
         );
 
-        update_post_meta($product, '_price', '10');
-        update_post_meta($product, '_regular_price', '10');
-        update_post_meta($product, '_sale_price', '');
-        update_post_meta($product, '_sku', 'DUMMY SKU');
-        update_post_meta($product, '_manage_stock', 'no');
-        update_post_meta($product, '_tax_status', 'taxable');
-        update_post_meta($product, '_downloadable', 'no');
-        update_post_meta($product, '_virtual', 'taxable');
-        update_post_meta($product, '_visibility', 'visible');
-        update_post_meta($product, '_stock_status', 'instock');
-
+        if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+            $order = wc_get_order($product);
+            $order->update_meta_data('_price', '10');
+            $order->update_meta_data('_regular_price', '10');
+            $order->update_meta_data('_sale_price', '');
+            $order->update_meta_data('_sku', 'DUMMY SKU');
+            $order->update_meta_data('_manage_stock', 'no');
+            $order->update_meta_data('_tax_status', 'taxable');
+            $order->update_meta_data('_downloadable', 'no');
+            $order->update_meta_data('_virtual', 'taxable');
+            $order->update_meta_data('_visibility', 'visible');
+            $order->update_meta_data('_stock_status', 'instock');
+        } else {
+            update_post_meta($product, '_price', '10');
+            update_post_meta($product, '_regular_price', '10');
+            update_post_meta($product, '_sale_price', '');
+            update_post_meta($product, '_sku', 'DUMMY SKU');
+            update_post_meta($product, '_manage_stock', 'no');
+            update_post_meta($product, '_tax_status', 'taxable');
+            update_post_meta($product, '_downloadable', 'no');
+            update_post_meta($product, '_virtual', 'taxable');
+            update_post_meta($product, '_visibility', 'visible');
+            update_post_meta($product, '_stock_status', 'instock');
+        }
+        
         return new WC_Product_Simple($product);
     }
 }

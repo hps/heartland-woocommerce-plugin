@@ -1,5 +1,7 @@
 <?php
 
+use Automattic\WooCommerce\Utilities\OrderUtil;
+
 if (!defined('ABSPATH')) {
     exit();
 }
@@ -64,9 +66,22 @@ class WC_Gateway_SecureSubmit_MasterPass_Payment
 
             $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
 
-            update_post_meta($orderId, '_transaction_id', $transactionId);
-            update_post_meta($orderId, '_masterpass_order_id', $authenticate->orderId);
-            update_post_meta($orderId, '_masterpass_payment_status', 'sale' === $this->masterpass->paymentAction ? 'captured' : 'authorized');
+            if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                wc_get_order($orderId)->update_meta_data('_transaction_id', $transactionId);
+                wc_get_order($orderId)->update_meta_data('_masterpass_order_id', $authenticate->orderId);
+                wc_get_order($orderId)->update_meta_data(
+                    '_masterpass_payment_status',
+                    'sale' === $this->masterpass->paymentAction ? 'captured' : 'authorized'
+                );
+            } else {
+                update_post_meta($orderId, '_transaction_id', $transactionId);
+                update_post_meta($orderId, '_masterpass_order_id', $authenticate->orderId);
+                update_post_meta(
+                    $orderId,
+                    '_masterpass_payment_status',
+                    'sale' === $this->masterpass->paymentAction ? 'captured' : 'authorized'
+                );
+            }
 
             return array(
                 'result'   => 'success',

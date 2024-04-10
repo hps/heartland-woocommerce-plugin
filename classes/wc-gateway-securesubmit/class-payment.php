@@ -1,5 +1,7 @@
 <?php
 
+use Automattic\WooCommerce\Utilities\OrderUtil;
+
 if (!defined('ABSPATH')) {
     exit();
 }
@@ -41,7 +43,7 @@ class WC_Gateway_SecureSubmit_Payment
                 if (isset($_POST['secure_submit_card']) && $_POST['secure_submit_card'] === 'new') {
                     throw new Exception(__(
                         'Please make sure your card details have been entered correctly '
-                        . 'and that your browser supports JavaScript.',
+                            . 'and that your browser supports JavaScript.',
                         'wc_securesubmit'
                     ));
                 }
@@ -57,7 +59,8 @@ class WC_Gateway_SecureSubmit_Payment
 
             $hpstoken = new HpsTokenData();
 
-            if (is_user_logged_in()
+            if (
+                is_user_logged_in()
                 && isset($_POST['secure_submit_card'])
                 && $_POST['secure_submit_card'] !== 'new'
             ) {
@@ -88,7 +91,16 @@ class WC_Gateway_SecureSubmit_Payment
                 }
 
                 error_log('payment action: ' . $this->parent->paymentaction);
-                $metaId = update_post_meta($orderId, '_heartland_order_payment_action', $this->parent->paymentaction);
+
+                if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                    $metaId = wc_get_order($orderId)->update_meta_data(
+                        '_heartland_order_payment_action',
+                        $this->parent->paymentaction
+                    );
+                } else {
+                    $metaId = update_post_meta($orderId, '_heartland_order_payment_action', $this->parent->paymentaction);
+                }
+
                 error_log('payment action meta: ' . print_r($metaId ?: 'false', true));
 
                 $orderTotal = wc_format_decimal(WC_SecureSubmit_Util::getData($order, 'get_total', 'order_total'), 2);
@@ -197,19 +209,35 @@ class WC_Gateway_SecureSubmit_Payment
                         $tokenval = $hpstoken->tokenValue;
                     }
 
-                    update_post_meta($orderId, '_verify_secure_submit_card', array(
-                        'last_four' => $last_four,
-                        'exp_month' => $exp_month,
-                        'exp_year' => $exp_year,
-                        'token_value' => (string) $tokenval,
-                        'card_type' => $card_type,
-                    ));
+                    if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                        $order = wc_get_order($orderId);
 
-                    update_post_meta($orderId, '_verify_amount', $orderTotal);
-                    update_post_meta($orderId, '_verify_currency', strtolower(get_woocommerce_currency()));
-                    update_post_meta($orderId, '_verify_details', $details);
-                    update_post_meta($orderId, '_verify_descriptor', $this->parent->txndescriptor);
-                    update_post_meta($orderId, '_verify_cardholder', $cardHolder);
+                        $order->update_meta_data('_verify_secure_submit_card', array(
+                            'last_four' => $last_four,
+                            'exp_month' => $exp_month,
+                            'exp_year' => $exp_year,
+                            'token_value' => (string) $tokenval,
+                            'card_type' => $card_type,
+                        ));
+                        $order->update_meta_data('_verify_amount', $orderTotal);
+                        $order->update_meta_data($orderId, '_verify_currency', strtolower(get_woocommerce_currency()));
+                        $order->update_meta_data('_verify_details', $details);
+                        $order->update_meta_data('_verify_descriptor', $this->parent->txndescriptor);
+                        $order->update_meta_data('_verify_cardholder', $cardHolder);
+                    } else {
+                        update_post_meta($orderId, '_verify_secure_submit_card', array(
+                            'last_four' => $last_four,
+                            'exp_month' => $exp_month,
+                            'exp_year' => $exp_year,
+                            'token_value' => (string) $tokenval,
+                            'card_type' => $card_type,
+                        ));
+                        update_post_meta($orderId, '_verify_amount', $orderTotal);
+                        update_post_meta($orderId, '_verify_currency', strtolower(get_woocommerce_currency()));
+                        update_post_meta($orderId, '_verify_details', $details);
+                        update_post_meta($orderId, '_verify_descriptor', $this->parent->txndescriptor);
+                        update_post_meta($orderId, '_verify_cardholder', $cardHolder);
+                    }
                 }
 
                 if ($this->parent->allow_gift_cards) {
@@ -231,7 +259,8 @@ class WC_Gateway_SecureSubmit_Payment
                 }
 
                 $order->add_order_note(__(
-                    'SecureSubmit payment ' . $verb, 'wc_securesubmit'
+                    'SecureSubmit payment ' . $verb,
+                    'wc_securesubmit'
                 ) . ' (Transaction ID: ' . $response->transactionId . ')');
                 do_action('wc_securesubmit_order_credit_card_details', $orderId, $card_type, $last_four);
                 if ($this->parent->paymentaction !== 'verify') {
@@ -247,7 +276,7 @@ class WC_Gateway_SecureSubmit_Payment
                 try {
                     $order->add_order_note(__(
                         'SecureSubmit payment failed. Gateway response message: "' .
-                        $e->getMessage() . '"',
+                            $e->getMessage() . '"',
                         'wc_securesubmit'
                     ));
                 } catch (Exception $f) {
@@ -256,19 +285,21 @@ class WC_Gateway_SecureSubmit_Payment
 
                 $this->updateVelocity($e);
 
-                if ($e->getCode()== HpsExceptionCodes::POSSIBLE_FRAUD_DETECTED
+                if (
+                    $e->getCode() == HpsExceptionCodes::POSSIBLE_FRAUD_DETECTED
                     && $this->parent->email_fraud == 'yes'
                     && $this->parent->fraud_address != ''
                 ) {
                     wc_mail(
                         $this->parent->fraud_address,
                         'Suspicious order ' . ($this->parent->allow_fraud == 'yes' ? 'allowed' : 'declined') . ' (' . $orderId . ')',
-                        'Hello,<br><br>Heartland has determined that you should review order ' . $orderId . ' for the amount of ' . $orderTotal . '.<p><br></p>'.
-                        '<p>You have received this email because you have configured the \'Email store owner on suspicious orders\' settings in the [WooCommerce | Checkout | SecureSubmit] options page.</p>'
+                        'Hello,<br><br>Heartland has determined that you should review order ' . $orderId . ' for the amount of ' . $orderTotal . '.<p><br></p>' .
+                            '<p>You have received this email because you have configured the \'Email store owner on suspicious orders\' settings in the [WooCommerce | Checkout | SecureSubmit] options page.</p>'
                     );
                 }
 
-                if ($this->parent->allow_fraud == 'yes'
+                if (
+                    $this->parent->allow_fraud == 'yes'
                     && $e->getCode() == HpsExceptionCodes::POSSIBLE_FRAUD_DETECTED
                 ) {
                     // we can skip the card saving: if it fails for possible fraud there will be no token.
@@ -313,7 +344,8 @@ class WC_Gateway_SecureSubmit_Payment
         $count = (int)$this->getVelocityVar('Count');
         $issuerResponse = (string)$this->getVelocityVar('IssuerResponse');
 
-        if ($count
+        if (
+            $count
             && $issuerResponse
             && $count >= $this->parent->fraud_velocity_attempts
         ) {
@@ -366,7 +398,8 @@ class WC_Gateway_SecureSubmit_Payment
         }
 
         $remoteIP = $_SERVER['REMOTE_ADDR'];
-        if (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER)
+        if (
+            array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER)
             && $_SERVER['HTTP_X_FORWARDED_FOR'] != ''
         ) {
             $remoteIPArray = array_values(
