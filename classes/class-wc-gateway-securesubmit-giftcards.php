@@ -1,5 +1,7 @@
 <?php
 
+use Automattic\WooCommerce\Utilities\OrderUtil;
+
 if (!defined('ABSPATH')) {
     die();
 }
@@ -265,7 +267,11 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
             }
         } else {
             $response = false;
-            delete_post_meta($order_id, '_securesubmit_used_card_data');
+            if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                wc_get_order($order_id)->delete_meta_data('_securesubmit_used_card_data');
+            } else {
+                delete_post_meta($order_id, '_securesubmit_used_card_data');
+            }
         }
 
         return $response;
