@@ -1,7 +1,7 @@
 === WooCommerce SecureSubmit Gateway ===
 Contributors: markhagan, marksmedal
 Tags: woocommerce, woo, commerce, heartland, payment, systems, gateway, token, tokenize, save cards
-Tested up to: 6.4.2
+Tested up to: 6.5.2
 Stable tag: trunk
 License: GPLv2
 License URI: https://github.com/hps/heartland-woocommerce-plugin/blob/master/LICENSE.md
@@ -37,6 +37,9 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section
 
 == Changelog ==
+= 2.3.0 =
+* Add support for WooCommerce HPOS
+
 = 2.2.3 =
 * Allow 8-digit pin HMS gift cards
 

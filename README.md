@@ -20,6 +20,10 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 2.3.0
+
+* Add support for WooCommerce HPOS
+
 #### 2.2.3
 
 * Allow 8-digit pin HMS gift cards
