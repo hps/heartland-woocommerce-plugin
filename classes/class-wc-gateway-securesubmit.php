@@ -202,7 +202,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
     {
         $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
 
-        if ( OrderUtil::custom_orders_table_usage_is_enabled() ) {
+        if (OrderUtil::custom_orders_table_usage_is_enabled()) {
             $payment_action = wc_get_order($orderId)->get_meta('_heartland_order_payment_action');
         } else {
             $payment_action = get_post_meta($orderId, '_heartland_order_payment_action', true);

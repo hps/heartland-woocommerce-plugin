@@ -14,6 +14,12 @@ class WC_Gateway_SecureSubmit_MasterPass extends WC_Payment_Gateway
     public $payment     = null;
     public $refund      = null;
     public $reviewOrder = null;
+    public $merchantId = null;
+    public $transactionPwd= null;
+    public $merchantCheckoutId = null;
+    public $environment = null;
+    public $customError = null;
+    public $paymentAction = null;
 
     public function __construct()
     {
