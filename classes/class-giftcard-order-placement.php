@@ -1,5 +1,7 @@
 <?php
 
+use Automattic\WooCommerce\Utilities\OrderUtil;
+
 if ( ! defined( 'ABSPATH' ) ) {
     die();
 }
@@ -18,8 +20,14 @@ class giftCardOrderPlacement {
 
         $order_id = WC_SecureSubmit_Util::getData($order_object, 'get_id', 'id');
 
-        $applied_gift_cards = unserialize( get_post_meta( $order_id, '_securesubmit_used_card_data', TRUE ) );
-        $original_balance   = get_post_meta( $order_id, '_securesubmit_original_reported_total', TRUE );
+        if ( OrderUtil::custom_orders_table_usage_is_enabled() ) {
+            $order = wc_get_order($order_id);
+            $applied_gift_cards = unserialize( $order->get_meta('_securesubmit_used_card_data') );
+            $original_balance   = $order->get_meta('_securesubmit_original_reported_total');
+        } else {
+            $applied_gift_cards = unserialize( get_post_meta( $order_id, '_securesubmit_used_card_data', TRUE ) );
+            $original_balance   = get_post_meta( $order_id, '_securesubmit_original_reported_total', TRUE );
+        }
 
         if ( ! empty ( $applied_gift_cards ) ) {
 
@@ -107,8 +115,23 @@ class giftCardOrderPlacement {
 
         }
 
-        update_post_meta( $order_awaiting_payment, '_securesubmit_used_card_data', serialize( $gift_card_sales ) );
-        update_post_meta( $order_awaiting_payment, '_securesubmit_original_reported_total', $securesubmit_data->original_total );
+        if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+            wc_get_order($order_awaiting_payment)->update_meta_data(
+                '_securesubmit_used_card_data',
+                serialize($gift_card_sales)
+            );
+            wc_get_order($order_awaiting_payment)->update_meta_data(
+                '_securesubmit_original_reported_total',
+                $securesubmit_data->original_total
+            );
+        } else {
+            update_post_meta($order_awaiting_payment, '_securesubmit_used_card_data', serialize($gift_card_sales));
+            update_post_meta(
+                $order_awaiting_payment,
+                '_securesubmit_original_reported_total',
+                $securesubmit_data->original_total
+            );
+        }
 
         foreach ( $gift_card_sales as $gift_card_sale ) {
 

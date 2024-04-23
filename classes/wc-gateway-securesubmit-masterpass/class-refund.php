@@ -1,5 +1,7 @@
 <?php
 
+use Automattic\WooCommerce\Utilities\OrderUtil;
+
 if (!defined('ABSPATH')) {
     exit();
 }
@@ -24,12 +26,22 @@ class WC_Gateway_SecureSubmit_MasterPass_Refund
 
             $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
 
-            $masterpassOrderId = get_post_meta($orderId, '_masterpass_order_id', true);
+            if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                $masterpassOrderId = wc_get_order($orderId)->get_meta('_masterpass_order_id');
+            } else {
+                $masterpassOrderId = get_post_meta($orderId, '_masterpass_order_id', true);
+            }
+
             if (!$masterpassOrderId) {
                 throw new Exception(__('MasterPass order id cannot be found', 'wc_securesubmit'));
             }
 
-            $masterpassPaymentStatus = get_post_meta($orderId, '_masterpass_payment_status', true);
+            if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                $masterpassPaymentStatus = wc_get_order($orderId)->get_meta('_masterpass_payment_status');
+            } else {
+                $masterpassPaymentStatus = get_post_meta($orderId, '_masterpass_payment_status', true);
+            }
+
             if ($masterpassPaymentStatus === 'authorized') {
                 throw new Exception(__(sprintf('Transaction has not been captured'), 'wc_securesubmit'));
             }
@@ -48,7 +60,12 @@ class WC_Gateway_SecureSubmit_MasterPass_Refund
                 $orderData
             );
 
-            update_post_meta($orderId, '_masterpass_payment_status', 'refunded', 'captured');
+            if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                wc_get_order($orderId)->update_meta_data('_masterpass_payment_status', 'refunded');
+            } else {
+                update_post_meta($orderId, '_masterpass_payment_status', 'refunded', 'captured');
+            }
+
             $order->add_order_note(__('MasterPass payment refunded', 'wc_securesubmit') . ' (Transaction ID: ' . $response->transactionId . ')');
             return true;
         } catch (Exception $e) {

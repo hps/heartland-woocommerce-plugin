@@ -1,5 +1,7 @@
 <?php
 
+use Automattic\WooCommerce\Utilities\OrderUtil;
+
 class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 {
     private static $_alreadyRanChecks = false;
@@ -199,7 +201,12 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
     public function process_capture($order)
     {
         $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
-        $payment_action = get_post_meta($orderId, '_heartland_order_payment_action', true);
+
+        if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+            $payment_action = wc_get_order($orderId)->get_meta('_heartland_order_payment_action');
+        } else {
+            $payment_action = get_post_meta($orderId, '_heartland_order_payment_action', true);
+        }
 
         if ($payment_action != 'verify' && !$this->isTransactionActiveOnGateway($orderId)) {
             $this->displayUserError('Payment already captured');

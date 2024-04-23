@@ -1,5 +1,7 @@
 <?php
 
+use Automattic\WooCommerce\Utilities\OrderUtil;
+
 class WC_Gateway_SecureSubmit_Subscriptions_Deprecated extends WC_Gateway_SecureSubmit_Subscriptions
 {
     public function init()
@@ -42,7 +44,13 @@ class WC_Gateway_SecureSubmit_Subscriptions_Deprecated extends WC_Gateway_Secure
 
     public function updateFailingPaymentMethod($old, $new, $subscriptionKey = null)
     {
-        update_post_meta($old->id, '_securesubmit_card_token', get_post_meta($new->id, '_securesubmit_card_token', true));
+        if ( OrderUtil::custom_orders_table_usage_is_enabled() ) {
+            $postMeta = wc_get_order( $new->id )->get_meta('_securesubmit_card_token');
+            wc_get_order($old->id)->update_meta_data('_securesubmit_card_token', $postMeta);
+        } else {
+            $postMeta =  get_post_meta($new->id, '_securesubmit_card_token', true);
+            update_post_meta($old->id, '_securesubmit_card_token', $postMeta);
+        }
     }
 
     public function removeRenewalOrderMeta($orderMetaQuery, $originalOrderId, $renewalOrderId, $newOrderRole)
@@ -65,7 +73,13 @@ class WC_Gateway_SecureSubmit_Subscriptions_Deprecated extends WC_Gateway_Secure
         $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
 
         $userId = $orderCustomerUser;
-        $token  = get_post_meta($orderId, '_securesubmit_card_token', true);
+
+        if ( OrderUtil::custom_orders_table_usage_is_enabled() ) {
+            $token = wc_get_order($orderId)->get_meta('_securesubmit_card_token');
+        } else {
+            $token  = get_post_meta($orderId, '_securesubmit_card_token', true);
+        }
+
         $cards  = get_user_meta($userId, '_secure_submit_card', false);
 
         if ($cards) {
@@ -88,7 +102,12 @@ class WC_Gateway_SecureSubmit_Subscriptions_Deprecated extends WC_Gateway_Secure
     protected function saveTokenMeta($order, $token)
     {
         $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
-        add_post_meta($orderId, '_securesubmit_card_token', $token, true);
+
+        if ( OrderUtil::custom_orders_table_usage_is_enabled() ) {
+            wc_get_order($orderId)->add_meta_data ('_securesubmit_card_token', $token, true);
+        } else {
+            add_post_meta($orderId, '_securesubmit_card_token', $token, true);
+        }
     }
 }
 new WC_Gateway_SecureSubmit_Subscriptions();

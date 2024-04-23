@@ -1,5 +1,7 @@
 <?php
 
+use Automattic\WooCommerce\Utilities\OrderUtil;
+
 if (!defined('ABSPATH')) {
     exit();
 }
@@ -23,7 +25,12 @@ class WC_Gateway_SecureSubmit_Capture
 
         $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
         error_log('order id: ' . $orderId);
-        $payment_action = get_post_meta($orderId, '_heartland_order_payment_action', true);
+
+        if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+            $payment_action = wc_get_order($orderId)->get_meta('_heartland_order_payment_action');
+        } else {
+            $payment_action = get_post_meta($orderId, '_heartland_order_payment_action', true);
+        }
 
         error_log('payment action: ' . print_r($payment_action, true));
 
@@ -39,12 +46,21 @@ class WC_Gateway_SecureSubmit_Capture
             $chargeService = $this->parent->getCreditService();
             try {
                 if ($payment_action == 'verify') {
-                    $verify_card = get_post_meta($orderId, '_verify_secure_submit_card', true);
-                    $verify_amount = get_post_meta($orderId, '_verify_amount', true);
-                    $verify_currency = get_post_meta($orderId, '_verify_currency', true);
-                    $verify_details = get_post_meta($orderId, '_verify_details', true);
-                    $verify_descriptor = get_post_meta($orderId, '_verify_descriptor', true);
-                    $verify_cardholder = get_post_meta($orderId, '_verify_cardholder', true);
+                    if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                        $verify_card = wc_get_order($orderId)->get_meta('_verify_secure_submit_card');
+                        $verify_card = wc_get_order($orderId)->get_meta('_verify_amount');
+                        $verify_card = wc_get_order($orderId)->get_meta('_verify_currency');
+                        $verify_card = wc_get_order($orderId)->get_meta('_verify_details');
+                        $verify_card = wc_get_order($orderId)->get_meta('_verify_descriptor');
+                        $verify_card = wc_get_order($orderId)->get_meta('_verify_cardholder');
+                    } else {
+                        $verify_card = get_post_meta($orderId, '_verify_secure_submit_card', true);
+                        $verify_amount = get_post_meta($orderId, '_verify_amount', true);
+                        $verify_currency = get_post_meta($orderId, '_verify_currency', true);
+                        $verify_details = get_post_meta($orderId, '_verify_details', true);
+                        $verify_descriptor = get_post_meta($orderId, '_verify_descriptor', true);
+                        $verify_cardholder = get_post_meta($orderId, '_verify_cardholder', true);
+                    }
 
                     error_log(print_r($verify_card, true));
                     error_log(print_r($verify_amount, true));

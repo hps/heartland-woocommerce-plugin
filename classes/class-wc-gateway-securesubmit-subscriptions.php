@@ -1,5 +1,7 @@
 <?php
 
+use Automattic\WooCommerce\Utilities\OrderUtil;
+
 class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
 {
     public function __construct()
@@ -178,7 +180,12 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
     {
         $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
         $order = wc_get_order($orderId);
-        update_post_meta($orderId, '_securesubmit_card_token', $token);
+
+        if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+            $order->update_meta_data('_securesubmit_card_token', $token);
+        } else {
+            update_post_meta($orderId, '_securesubmit_card_token', $token);
+        }
 
         if (method_exists($order, 'set_payment_method')) {
             $order->set_payment_method($this->id, array(
@@ -191,7 +198,12 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
         // save to subscriptions in order
         foreach (wcs_get_subscriptions_for_order($orderId) as $subscription) {
             $subscriptionId = WC_SecureSubmit_Util::getData($subscription, 'get_id', 'id');
-            update_post_meta($subscriptionId, '_securesubmit_card_token', $token);
+            
+            if ( OrderUtil::custom_orders_table_usage_is_enabled() ) {
+                wc_get_order($subscriptionId)->update_meta_data('_securesubmit_card_token', $token);
+            } else {
+                update_post_meta($subscriptionId, '_securesubmit_card_token', $token);
+            }
 
             if (method_exists($order, 'set_payment_method')) {
                 $order->set_payment_method($this->id, array(
@@ -207,7 +219,11 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
     {
         $orderPostStatus = WC_SecureSubmit_Util::getData($order, 'get_post_status', 'post_status');
         if (empty($orderPostStatus)) {
-            $orderPostStatus = get_post_status(WC_SecureSubmit_Util::getData($order, 'get_id', 'id'));
+            if ( OrderUtil::custom_orders_table_usage_is_enabled() ) {
+                $orderPostStatus = wc_get_order_status_name(WC_SecureSubmit_Util::getData($order, 'get_id', 'id'));
+            } else {
+                $orderPostStatus = get_post_status(WC_SecureSubmit_Util::getData($order, 'get_id', 'id'));
+            }
         }
 
         // TODO: why is this necessary to prevent double authorization?
@@ -224,14 +240,17 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
 
     public function processSubscriptionPayment($order, $initialPayment, $tokenData = null, $requestMulti = false)
     {
-        global $woocommerce;
-
         $order = wc_get_order($order);
         $amount = wc_format_decimal($order->get_total(), 2);
 
         $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
 
-        $tokenValue = get_post_meta($orderId, '_securesubmit_card_token', true);
+        if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+            $tokenValue = wc_get_order($orderId)->get_meta('_securesubmit_card_token');
+        } else {
+            $tokenValue = get_post_meta($orderId, '_securesubmit_card_token', true);
+        }
+
         $token = new HpsTokenData();
         $token->tokenValue = $tokenValue;
 
@@ -277,7 +296,12 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
                 $requestType,
                 $response->transactionId
             ));
-            add_post_meta($orderId, '_transaction_id', $response->transactionId, true);
+
+            if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                wc_get_order($orderId)->add_meta_data('_transaction_id', $response->transactionId, true);
+            } else {
+                add_post_meta($orderId, '_transaction_id', $response->transactionId, true);
+            }
 
             return $response;
         } catch (Exception $e) {
@@ -290,17 +314,34 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
         $oldOrderId = WC_SecureSubmit_Util::getData($old, 'get_id', 'id');
         $newOrderId = WC_SecureSubmit_Util::getData($new, 'get_id', 'id');
 
-        update_post_meta($oldOrderId, '_securesubmit_card_token', get_post_meta($newOrderId, '_securesubmit_card_token', true));
+        if ( OrderUtil::custom_orders_table_usage_is_enabled() ) {
+            wc_get_order($oldOrderId)->update_meta_data(
+                '_securesubmit_card_token',
+                wc_get_order($newOrderId)->get_meta('_securesubmit_card_token')
+            );
+        } else {
+            update_post_meta(
+                $oldOrderId,
+                '_securesubmit_card_token',
+                get_post_meta($newOrderId, '_securesubmit_card_token', true)
+            );
+        }        
     }
 
     public function addSubscriptionPaymentMeta($meta, $subscription)
     {
         $subscriptionId = WC_SecureSubmit_Util::getData($subscription, 'get_id', 'id');
 
+        if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+            $postMeta = wc_get_order($subscriptionId)->get_meta('_securesubmit_card_token');
+        } else {
+            $postMeta = get_post_meta($subscriptionId, '_securesubmit_card_token', true);
+        }
+
         $meta[$this->id] = array(
             'post_meta' => array(
                 '_securesubmit_card_token' => array(
-                    'value' => get_post_meta($subscriptionId, '_securesubmit_card_token', true),
+                    'value' => $postMeta,
                     'label' => 'SecureSubmit payment token',
                 ),
             ),
