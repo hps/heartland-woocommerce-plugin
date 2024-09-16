@@ -20,6 +20,10 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 2.3.1
+
+* Declare current incompatability with WooCommerce "Cart and Checkout Blocks"
+
 #### 2.3.0
 
 * Add support for WooCommerce HPOS
