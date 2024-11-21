@@ -93,7 +93,7 @@ return array(
         'class'       => 'anti-fraud',
     ),
     'fraud_velocity_timeout' => array(
-        'title'       => __('Notification Email Address', 'wc_securesubmit'),
+        'title'       => __('Velocity Timespan', 'wc_securesubmit'),
         'type'        => 'text',
         'description' => __('The amount of time (in minutes) before recent failures are ignored.', 'wc_securesubmit'),
         'default'     => __('10', 'wc_securesubmit'),
