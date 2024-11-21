@@ -88,7 +88,7 @@ return array(
     'fraud_velocity_attempts' => array(
         'title'       => __('Max Velocity Attempts', 'wc_securesubmit'),
         'type'        => 'text',
-        'description' => __('The maximum number of attempts allowed before additional attempts from a single user are blocked.', 'wc_securesubmit'),
+        'description' => __('The maximum number of attempts allowed per unique IP address before additional attempts from user are blocked.', 'wc_securesubmit'),
         'default'     => __('3', 'wc_securesubmit'),
         'class'       => 'anti-fraud',
     ),
