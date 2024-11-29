@@ -305,6 +305,9 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
 
             return $response;
         } catch (Exception $e) {
+            // adds a private note to make it easier for an admin user to see why the payment failed.
+            $order->add_order_note(sprintf(__('SecureSubmit payment error: %s', 'wc_securesubmit'), (string)$e->getMessage()));
+
             return new WP_Error('securesubmit_error', sprintf(__('SecureSubmit payment error: %s', 'wc_securesubmit'), (string)$e->getMessage()));
         }
     }
