@@ -234,6 +234,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
         $result = $this->processSubscriptionPayment($order, wc_format_decimal($amount, 2));
 
         if (is_wp_error($result)) {
+            /* translators: %s: Transaction failed mesage*/
             $order->update_status('failed', sprintf(__('SecureSubmit transaction failed: %s', 'wc_securesubmit'), $result->get_error_message()));
         }
     }
@@ -291,8 +292,10 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
             }
 
             $order->payment_complete($response->transactionId);
+            
             $order->add_order_note(sprintf(
-                __('SecureSubmit %s completed (Transaction ID: %s)', 'wc_securesubmit'),
+                /* translators: %s: SecureSubmit  transaction Completed */
+                __('SecureSubmit %1$s completed (Transaction ID: %2$s)', 'wc_securesubmit'),
                 $requestType,
                 $response->transactionId
             ));
@@ -305,6 +308,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
 
             return $response;
         } catch (Exception $e) {
+            /* translators: %s: Payment error message*/
             return new WP_Error('securesubmit_error', sprintf(__('SecureSubmit payment error: %s', 'wc_securesubmit'), (string)$e->getMessage()));
         }
     }
@@ -354,7 +358,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
         if ($this->id === $methodId) {
             $token = $meta['post_meta']['_securesubmit_card_token'];
             if (!isset($token) || empty($token)) {
-                throw new Exception(__('A SecureSubmit payment token is required.', 'wc_securesubmit'));
+                throw new Exception(esc_html('A SecureSubmit payment token is required.', 'wc_securesubmit'));
             }
         }
     }

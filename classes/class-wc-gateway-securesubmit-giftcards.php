@@ -47,21 +47,21 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
             $html .= '}';
             $html .= '</script>';
 
-            echo $html;
+            echo esc_html($html);
         }
     }
 
     public function applyGiftCard()
     {
-        $this->gift_card_submitted     = $_POST['gift_card_number'];
-        $this->gift_card_pin_submitted = $_POST['gift_card_pin'];
+        $this->gift_card_submitted     = isset($_POST['gift_card_number'])?$_POST['gift_card_number']:'';
+        $this->gift_card_pin_submitted = isset($_POST['gift_card_pin'])?$_POST['gift_card_pin']:'';
         $gift_card_balance = $this->gift_card_balance(
             $this->gift_card_submitted,
             $this->gift_card_pin_submitted
         );
 
         if ($gift_card_balance['error']) {
-            echo json_encode(array(
+            echo wp_json_encode(array(
                 'error' => 1,
                 'message' => $gift_card_balance['message'],
             ));
@@ -70,7 +70,7 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
 
             $this->addGiftCardToCartSession();
             $this->updateGiftCardCartTotal();
-            echo json_encode(array(
+            echo wp_json_encode(array(
                 'error'   => 0,
                 'balance' => html_entity_decode(get_woocommerce_currency_symbol()) . $gift_card_balance['message'],
             ));
@@ -106,10 +106,12 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
         if (is_object($gift_card_object_entered) && count(get_object_vars($gift_card_object_entered)) > 0) {
             if ($gift_card_object_entered->temp_balance === '0.00') {
                 WC()->session->__unset('securesubmit_gift_card_object');
-
+                
+                
                 $zero_balance_message = apply_filters(
                     'securesubmit_zero_balance_message',
                     sprintf(
+                        /* translators: %s: giftcard with 0 balance*/
                         __('%s has a balance of zero and could not be applied to this order.', 'wc_securesubmit'),
                         $gift_card_object_entered->gift_card_name
                     )
@@ -154,7 +156,7 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
                 $order_total_html .= '<td data-title="' . esc_attr($message) . '">' . wc_price($original_total) . '</td>';
                 $order_total_html .= '</tr>';
 
-                echo apply_filters('securesubmit_before_gift_cards_order_total', $order_total_html, $original_total, $message);
+                echo esc_html(apply_filters('securesubmit_before_gift_cards_order_total', $order_total_html, $original_total, $message));
 
                 foreach ($gift_card_object_applied as $applied_gift_card) {
                     $remove_link = '<a href="#" id="' . $applied_gift_card->gift_card_id . '" class="securesubmit-remove-gift-card">(Remove)</a>';
@@ -164,7 +166,7 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
                     $gift_card_html .= '<td data-title="' . esc_attr($applied_gift_card->gift_card_name) . '">' . wc_price($applied_gift_card->used_amount) . '</td>';
                     $gift_card_html .= '</tr>';
 
-                    echo apply_filters('securesubmit_gift_card_used_total', $gift_card_html, $applied_gift_card->gift_card_name, $remove_link, $applied_gift_card->used_amount);
+                    echo esc_html(apply_filters('securesubmit_gift_card_used_total', $gift_card_html, $applied_gift_card->gift_card_name, $remove_link, $applied_gift_card->used_amount));
                 }
             }
         } else {

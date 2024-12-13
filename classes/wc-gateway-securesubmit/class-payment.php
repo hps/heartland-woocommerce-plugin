@@ -350,7 +350,7 @@ class WC_Gateway_SecureSubmit_Payment
             && $count >= $this->parent->fraud_velocity_attempts
         ) {
             sleep(5);
-            throw new HpsException(sprintf($this->parent->fraud_text, $issuerResponse));
+            throw new HpsException(sprintf(esc_html($this->parent->fraud_text), esc_html($issuerResponse)));
         }
     }
 

@@ -257,7 +257,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
             $error = sprintf($customMessage, $error);
         }
 
-        throw new Exception(__($error, 'wc_securesubmit'));
+        throw new Exception(esc_html($error, 'wc_securesubmit'));
     }
 
     public function displayUserError($message)
@@ -363,7 +363,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                     'headers' => array (
                         'Content-Type' => 'application/json'
                     ),
-                    'body' => json_encode($tokenBody)
+                    'body' => wp_json_encode($tokenBody)
                 )
             );
 
@@ -420,7 +420,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                         'Content-Type' => 'application/json',
                         'Authorization' => 'Bearer ' . $bearerTokenVal
                     ),
-                    'body' => json_encode($eddBody)
+                    'body' => wp_json_encode($eddBody)
                 )
             );
 
