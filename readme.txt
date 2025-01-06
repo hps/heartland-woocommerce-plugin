@@ -37,6 +37,9 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section
 
 == Changelog ==
+= 2.3.2 =
+* Minor update to configuration-screen descriptions
+
 = 2.3.1 =
 * Declare current incompatability with WooCommerce "Cart and Checkout Blocks"
 

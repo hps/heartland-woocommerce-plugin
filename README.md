@@ -20,6 +20,10 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 2.3.2
+
+* Minor update to configuration-screen descriptions
+
 #### 2.3.1
 
 * Declare current incompatability with WooCommerce "Cart and Checkout Blocks"
