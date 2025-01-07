@@ -88,12 +88,12 @@ return array(
     'fraud_velocity_attempts' => array(
         'title'       => __('Max Velocity Attempts', 'wc_securesubmit'),
         'type'        => 'text',
-        'description' => __('The maximum number of attempts allowed before additional attempts are blocked.', 'wc_securesubmit'),
+        'description' => __('The maximum number of attempts allowed per unique IP address before additional attempts from user are blocked.', 'wc_securesubmit'),
         'default'     => __('3', 'wc_securesubmit'),
         'class'       => 'anti-fraud',
     ),
     'fraud_velocity_timeout' => array(
-        'title'       => __('Notification Email Address', 'wc_securesubmit'),
+        'title'       => __('Velocity Timespan', 'wc_securesubmit'),
         'type'        => 'text',
         'description' => __('The amount of time (in minutes) before recent failures are ignored.', 'wc_securesubmit'),
         'default'     => __('10', 'wc_securesubmit'),
