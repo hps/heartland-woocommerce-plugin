@@ -163,7 +163,12 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
                     'redirect' => $this->get_return_url($order)
                 );
             } catch (HpsException $e) {
-                throw new Exception(__((string)$e->getMessage(), 'wc_securesubmit'));
+                throw new Exception(
+                    sprintf(
+                        /* translators: %s: error message */
+                        esc_html__('%s.','wc_securesubmit' ),
+                        $e->getMessage())
+                       );
             }
         } catch (Exception $e) {
             $error = __('Error:', 'wc_securesubmit') . ' "' . (string)$e->getMessage() . '"';
