@@ -257,13 +257,16 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
             $error = sprintf($customMessage, $error);
         }
 
-        throw new Exception(__($error, 'wc_securesubmit'));
+        throw new Exception(esc_html($error, 'wc_securesubmit'));
     }
 
     public function displayUserError($message)
     {
         global $woocommerce;
-        $message = __((string)$message, 'wc_securesubmit');
+        $message = sprintf(
+            /* translators:%s: message */
+            esc_html__('%s .' ,'wc_securesubmit' ),
+            (string)$message);
         if (function_exists('wc_add_notice')) {
             wc_add_notice($message, 'error');
         } else if (isset($woocommerce) && property_exists($woocommerce, 'add_error')) {
@@ -363,7 +366,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                     'headers' => array (
                         'Content-Type' => 'application/json'
                     ),
-                    'body' => json_encode($tokenBody)
+                    'body' => wp_json_encode($tokenBody)
                 )
             );
 
@@ -420,17 +423,19 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
                         'Content-Type' => 'application/json',
                         'Authorization' => 'Bearer ' . $bearerTokenVal
                     ),
-                    'body' => json_encode($eddBody)
+                    'body' => wp_json_encode($eddBody)
                 )
             );
 
             $eddReferenceId = json_decode($eddResponse['body'])->additionalTransactionDataReferenceId;
 
             if (!empty($eddReferenceId))
-                $order->add_order_note(__(
-                    'Transaction sent for Enhanced Data Collection. Reference ID: ' . $eddReferenceId,
-                    'wc_securesubmit'
-                ));
+                $order->add_order_note(
+                    sprintf(
+                        /* translators:%s: eddReferenceId */
+                        esc_html__('Transaction sent for Enhanced Data Collection. Reference ID: %s '  ,'wc_securesubmit' ),
+                        $eddReferenceId)
+               );
         } catch(Exception $e) {
             // consumption
         }        
