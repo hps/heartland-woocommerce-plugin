@@ -106,7 +106,6 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
         if (is_object($gift_card_object_entered) && count(get_object_vars($gift_card_object_entered)) > 0) {
             if ($gift_card_object_entered->temp_balance === '0.00') {
                 WC()->session->__unset('securesubmit_gift_card_object');
-                
                 $zero_balance_message = apply_filters(
                     'securesubmit_zero_balance_message',
                     sprintf(
