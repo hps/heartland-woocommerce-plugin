@@ -100,9 +100,9 @@ abstract class HpsGatewayServiceAbstract
                 error_log('remote response end');
             }
 
-            $curlResponse = $body; // curl_exec($request);
-            $curlInfo['http_code'] = wp_remote_retrieve_response_code($response); //curl_getinfo($request);
-            $curlError = wp_remote_retrieve_response_code($response); //curl_errno($request);
+            $curlResponse = $body;
+            $curlInfo['http_code'] = wp_remote_retrieve_response_code($response);
+            $curlError = wp_remote_retrieve_response_code($response);
 
             $logger->log('Response data: ', $curlResponse);
             $logger->log('Curl info', $curlInfo);
