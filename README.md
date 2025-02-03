@@ -20,6 +20,10 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 2.3.3
+
+* Various updates to bring code in line with current WP and WooCommerce standards
+
 #### 2.3.2
 
 * Minor update to configuration-screen descriptions
