@@ -6,14 +6,14 @@
     
     <?php foreach ($cards as $i => $card): ?>
 
-        <div class="clearfix saved-card saved-card-<?php esc_html_e( strtolower($card['card_type']) ); ?>">
+        <div class="clearfix saved-card saved-card-<?php esc_html( strtolower($card['card_type']) ); ?>">
             <div class="account-saved-card-logo">
                 <div class="card-type-logo"></div>
             </div>
             <div class="saved-card-info">
                 <label for="secure_submit_card_0">
-                    <p><?php esc_html_e($card['card_type']); ?> ending in <?php esc_html_e($card['last_four']); ?></p>
-                    <p><span>Expires on <?php esc_html_e($card['exp_month']); ?>/<?php esc_html_e($card['exp_year']); ?></span></p>
+                    <p><?php esc_html($card['card_type']); ?> ending in <?php esc_html($card['last_four']); ?></p>
+                    <p><span>Expires on <?php esc_html($card['exp_month']); ?>/<?php esc_html($card['exp_year']); ?></span></p>
                 </label>
             </div>
             
