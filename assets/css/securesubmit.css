@@ -218,7 +218,7 @@ html body .woocommerce .payment_method_securesubmit iframe{
    float: left;
    width: 50px;
    height: 50px;
-   background-image: url(../images/ss-shield@2x.png);
+   background-image: url(../images/ss-shield2x.png);
    background-size: 50px 50px;
    margin-left: -8px;
 }
@@ -354,23 +354,23 @@ html body .woocommerce .payment_method_securesubmit iframe{
 }
 
 .saved-card-visa .card-type-logo {
-   background-image: url(../images/ss-saved-visa@2x.png);
+   background-image: url(../images/ss-saved-visa2x.png);
 }
 
 .saved-card-mastercard .card-type-logo {
-   background-image: url(../images/ss-saved-mastercard@2x.png);
+   background-image: url(../images/ss-saved-mastercard2x.png);
 }
 
 .saved-card-amex .card-type-logo {
-   background-image: url(../images/ss-saved-amex@2x.png);
+   background-image: url(../images/ss-saved-amex2x.png);
 }
 
 .saved-card-discover .card-type-logo {
-   background-image: url(../images/ss-saved-discover@2x.png);
+   background-image: url(../images/ss-saved-discover2x.png);
 }
 
 .saved-card-jcb .card-type-logo {
-   background-image: url(../images/ss-saved-jcb@2x.png);
+   background-image: url(../images/ss-saved-jcb2x.png);
 }
 
 .saved-card-new {
@@ -467,7 +467,7 @@ html body .woocommerce .payment_method_securesubmit iframe{
    background-position: center;
    background-repeat: no-repeat;
    background-size: 56px auto;
-   background-image: url(../../assets/images/ss-inputcard-blank@2x.png); 
+   background-image: url(../../assets/images/ss-inputcard-blank2x.png);
 }
 
 .cc-number {
@@ -486,24 +486,24 @@ html body .woocommerce .payment_method_securesubmit iframe{
  }
 
 #securesubmit_card_number.card-type-visa + .card-type-logo {
-   background-image: url(../../assets/images/ss-inputcard-visa@2x.png);
+   background-image: url(../../assets/images/ss-inputcard-visa2x.png);
 }
 
 #securesubmit_card_number.card-type-jcb + .card-type-logo {
-   background-image: url(../../assets/images/ss-inputcard-jcb@2x.png);
+   background-image: url(../../assets/images/ss-inputcard-jcb2x.png);
 }
 
 #securesubmit_card_number.card-type-discover + .card-type-logo {
-   background-image: url(../../assets/images/ss-inputcard-discover@2x.png);
+   background-image: url(../../assets/images/ss-inputcard-discover2x.png);
 }
 
 #securesubmit_card_number.card-type-amex + .card-type-logo {
-   background-image: url(../../assets/images/ss-inputcard-amex@2x.png);
+   background-image: url(../../assets/images/ss-inputcard-amex2x.png);
    top:4px;
 }
 
 #securesubmit_card_number.card-type-mastercard + .card-type-logo {
-   background-image: url(../../assets/images/ss-inputcard-mastercard@2x.png);
+   background-image: url(../../assets/images/ss-inputcard-mastercard2x.png);
 }
 
 #securesubmit_card_number.card-type-visa.invalid + .card-type-logo,
@@ -527,7 +527,7 @@ html body .woocommerce .payment_method_securesubmit iframe{
    display: block;
    width: 59px;
    height: 39px;
-   background-image: url(../images/ss-cvv@2x.png);
+   background-image: url(../images/ss-cvv2x.png);
    background-size: 59px auto;
    background-position: top;
    position: absolute;
@@ -601,7 +601,7 @@ html body .woocommerce .payment_method_securesubmit iframe{
 .arrow {
    display: inline-block;
    float: left;
-   background-image: url(../images/arrow@2x.png);
+   background-image: url(../images/arrow2x.png);
    background-size: 12px 12px;
    width: 12px;
    height: 12px;

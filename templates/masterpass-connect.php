@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) {
 
 <?php $masterpass = WC_Gateway_SecureSubmit_MasterPass::instance(); ?>
 <div class="securesubmit-connect-with-masterpass">
-  <h2><?= __('MasterPass', 'wc_securesubmit'); ?></h2>
+  <h2><?php echo esc_html_e('MasterPass', 'wc_securesubmit'); ?></h2>
 
   <?php $longAccessToken = get_user_meta(get_current_user_id(), '_masterpass_long_access_token', true); ?>
   <?php if ($longAccessToken): ?>
@@ -24,12 +24,12 @@ if (!defined('ABSPATH')) {
              alt="Connect with MasterPass" />
     </button>
 
-    <script data-cfasync="false" type="text/javascript">var wc_securesubmit_masterpass_params = {ajaxUrl: '<?= admin_url('admin-ajax.php'); ?>'};</script>
+    <script data-cfasync="false" type="text/javascript">var wc_securesubmit_masterpass_params = {ajaxUrl: '<?php echo esc_html(admin_url('admin-ajax.php')); ?>'};</script>
     <?php if ('production' === $masterpass->environment): ?>
         <script data-cfasync="false" type="text/javascript" src="https://www.masterpass.com/lightbox/Switch/integration/MasterPass.client.js"></script>
     <?php else: ?>
         <script data-cfasync="false" type="text/javascript" src="https://sandbox.masterpass.com/lightbox/Switch/integration/MasterPass.client.js"></script>
     <?php endif;?>
-    <script data-cfasync="false" type="text/javascript" src="<?= plugins_url('assets/js/masterpass.js', dirname(__FILE__)); ?>"></script>
+    <script data-cfasync="false" type="text/javascript" src="<?php echo esc_html(plugins_url('assets/js/masterpass.js', dirname(__FILE__))); ?>"></script>
   <?php endif; ?>
 </div>
