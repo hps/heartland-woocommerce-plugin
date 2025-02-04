@@ -39,7 +39,8 @@ return array(
     'custom_error' => array(
         'title'       => __('Custom Error', 'wc_securesubmit'),
         'type'        => 'textarea',
-        'description' => __('To use the default Secure Submit error message use %s in the custom message text, ex. My message. %s -> will be displayed as: My message. Original Secure Submit message.', 'wc_securesubmit'),
+        /* translators: %s: Secure Submit Error example */
+        'description' => __('To use the default Secure Submit error message use %1$s in the custom message text, ex. My message. %2$s -> will be displayed as: My message. Original Secure Submit message.', 'wc_securesubmit'),
         'default'     => '%s',
     ),
     'allow_card_saving' => array(
@@ -75,7 +76,7 @@ return array(
         'title'       => __('Notification Email Address', 'wc_securesubmit'),
         'type'        => 'text',
         'description' => __('This email address will be notified of suspicious orders.', 'wc_securesubmit'),
-        'default'     => __('', 'wc_securesubmit'),
+        'default'     => esc_html('', 'wc_securesubmit'),
         'class'       => 'anti-fraud',
     ),
     'fraud_text' => array(
@@ -115,7 +116,7 @@ return array(
         'title'       => __('Order Transaction Descriptor', 'wc_securesubmit'),
         'type'        => 'text',
         'description' => __('During a Capture or Authorize payment action, this value will be passed along as the TxnDescriptor. Please contact <a href="mailto:securesubmitcert@e-hps.com?Subject=WooCommerce%20SecureSubmit%20TxnDescriptor Option">securesubmitcert@e-hps.com</a> with any question regarding this option.', 'wc_securesubmit'),
-        'default'     => __('', 'wc_securesubmit'),
+        'default'     => esc_html('', 'wc_securesubmit'),
         'class'       => 'txndescriptor',
         'custom_attributes' => array(
             'maxlength' => 18,

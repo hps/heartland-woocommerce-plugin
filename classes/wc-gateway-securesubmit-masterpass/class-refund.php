@@ -43,10 +43,15 @@ class WC_Gateway_SecureSubmit_MasterPass_Refund
             }
 
             if ($masterpassPaymentStatus === 'authorized') {
-                throw new Exception(__(sprintf('Transaction has not been captured'), 'wc_securesubmit'));
+                throw new Exceptionsprintf(
+                    esc_html__('Transaction has already been captured','wc_securesubmit' ));
             }
             if ($masterpassPaymentStatus !== 'captured') {
-                throw new Exception(__(sprintf('Transaction has already been %s', $masterpassPaymentStatus), 'wc_securesubmit'));
+                throw new Exception(sprintf(
+                    /* translators: %s: masterpassPaymentStatus */
+                    esc_html__('Transaction has already been %s','wc_securesubmit' ),
+                    $masterpassPaymentStatus)
+                    );
             }
 
             $orderData = new HpsOrderData();

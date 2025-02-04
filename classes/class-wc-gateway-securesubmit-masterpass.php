@@ -97,7 +97,7 @@ class WC_Gateway_SecureSubmit_MasterPass extends WC_Payment_Gateway
         }
 
         if ('' !== $messageFmt) {
-            echo '<div class="error"><p>' . sprintf(__($messageFmt, 'wc_securesubmit'), $settingsPage) . '</p></div>';
+            echo '<div class="error"><p>' . sprintf(esc_html($messageFmt, 'wc_securesubmit'), esc_html($settingsPage)) . '</p></div>';
         }
     }
 
@@ -351,7 +351,7 @@ class WC_Gateway_SecureSubmit_MasterPass extends WC_Payment_Gateway
     {
         return wc_create_page(
             // $slug
-            esc_sql(_x('masterpass-review-order','page_slug','woocommerce')),
+            esc_sql(_x('masterpass-review-order','page_slug','wc_securesubmit')),
             // $option
             'woocommerce_masterpass_review_order_page_id',
             // $title
@@ -392,7 +392,7 @@ class WC_Gateway_SecureSubmit_MasterPass extends WC_Payment_Gateway
             $error = sprintf($customMessage, $error);
         }
 
-        throw new Exception(__($error, 'wc_securesubmit'));
+        throw new Exception(esc_html($error, 'wc_securesubmit'));
     }
     
     public function utf8($tag, $handle)

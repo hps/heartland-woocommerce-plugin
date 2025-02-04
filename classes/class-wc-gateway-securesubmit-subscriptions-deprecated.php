@@ -87,12 +87,14 @@ class WC_Gateway_SecureSubmit_Subscriptions_Deprecated extends WC_Gateway_Secure
             foreach ($cards as $card) {
                 if ($card['token_value'] === $token) {
                     $foundCard              = true;
-                    $paymentMethodToDisplay = sprintf(__('Via %s card ending in %s', 'wc_securesubmit'), $card['card_type'], $card['last_four']);
+                    /* translators: %s: Card ending with */
+                    $paymentMethodToDisplay = sprintf(__('Via %1$s card ending in %2$s', 'wc_securesubmit'), $card['card_type'], $card['last_four']);
                     break;
                 }
             }
             if (!$foundCard) {
-                $paymentMethodToDisplay = sprintf(__('Via %s card ending in %s', 'wc_securesubmit'), $card[0]['card_type'], $card[0]['last_four']);
+                /* translators: %s: Card ending with */
+                $paymentMethodToDisplay = sprintf(__('Via %1$s card ending in %2$s', 'wc_securesubmit'), $card[0]['card_type'], $card[0]['last_four']);
             }
         }
 

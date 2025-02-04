@@ -41,9 +41,11 @@ class WC_Gateway_SecureSubmit_Payment
 
             if (empty($securesubmit_token)) {
                 if (isset($_POST['secure_submit_card']) && $_POST['secure_submit_card'] === 'new') {
-                    throw new Exception(__(
-                        'Please make sure your card details have been entered correctly '
-                            . 'and that your browser supports JavaScript.',
+                    throw new Exception(
+                        /* translators:  card detail error message */
+                        esc_html_e(
+                        'Please make sure your card details have been entered correctly
+                             and that your browser supports JavaScript.',
                         'wc_securesubmit'
                     ));
                 }
@@ -258,10 +260,10 @@ class WC_Gateway_SecureSubmit_Payment
                     $verb = 'authorized';
                 }
 
-                $order->add_order_note(__(
-                    'SecureSubmit payment ' . $verb,
-                    'wc_securesubmit'
-                ) . ' (Transaction ID: ' . $response->transactionId . ')');
+                $order->add_order_note(sprintf(
+                    /* translators: %s: paymentaction */
+                    esc_html_e( 'SecureSubmit payment %s','wc_securesubmit' ),
+                    $verb) . ' (Transaction ID: ' . $response->transactionId . ')');
                 do_action('wc_securesubmit_order_credit_card_details', $orderId, $card_type, $last_four);
                 if ($this->parent->paymentaction !== 'verify') {
                     $order->payment_complete($response->transactionId);
@@ -274,11 +276,12 @@ class WC_Gateway_SecureSubmit_Payment
                 );
             } catch (HpsException $e) {
                 try {
-                    $order->add_order_note(__(
-                        'SecureSubmit payment failed. Gateway response message: "' .
-                            $e->getMessage() . '"',
-                        'wc_securesubmit'
-                    ));
+                    $order->add_order_note(
+                        sprintf(
+                            /* translators: %s: Gateway error response */
+                            esc_html_e('SecureSubmit payment failed. Gateway response message: %s','wc_securesubmit' ),
+                            $e->getMessage())
+                           );
                 } catch (Exception $f) {
                     // eat it
                 }
@@ -350,7 +353,7 @@ class WC_Gateway_SecureSubmit_Payment
             && $count >= $this->parent->fraud_velocity_attempts
         ) {
             sleep(5);
-            throw new HpsException(sprintf($this->parent->fraud_text, $issuerResponse));
+            throw new HpsException(sprintf(esc_html($this->parent->fraud_text), esc_html($issuerResponse)));
         }
     }
 
@@ -387,7 +390,7 @@ class WC_Gateway_SecureSubmit_Payment
 
     private function getVelocityVarPrefix()
     {
-        return sprintf('HeartlandHPS_Velocity%s', md5($this->getRemoteIP()));
+        return sprintf('HeartlandHPS_Velocity%s', md5(WC_Geolocation::get_ip_address()));
     }
 
     private function getRemoteIP()

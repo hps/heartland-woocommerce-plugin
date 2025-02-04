@@ -7,7 +7,7 @@
     <?php if ($this->description): ?>
         <div class="securesubmit-content">
             <p class="securesubmit-description">
-                <?php echo $this->description; ?>
+                <?php echo esc_html($this->description); ?>
             </p>
         </div>
         <hr />
@@ -24,8 +24,8 @@
                 <div class="saved-creditcards-list-header saved-creditcards-list form-row form-row-wide no-bottom-margin">
                     <div class="ss-section-header clearfix">
                         <h6>Select Payment Method</h6>
-                        <a class="button" style="float:right;" href="<?php echo get_permalink(get_option('woocommerce_myaccount_page_id')); ?>#saved-cards">
-                            <?php _e('Manage Cards', 'wc_securesubmit'); ?>
+                        <a class="button" style="float:right;" href="<?php echo esc_html(get_permalink(get_option('woocommerce_myaccount_page_id'))); ?>#saved-cards">
+                            <?php esc_html_e('Manage Cards', 'wc_securesubmit'); ?>
                         </a>
                     </div>
                 </div>
@@ -37,17 +37,17 @@
                     $totalcards = 0;
                     ?>
                     <?php foreach ($cards as $i => $card): ?>
-                        <div class="clearfix saved-card saved-card-<?php echo strtolower($card['card_type']); ?><?php echo ($checked != '' ? ' active' : '');?>">
+                        <div class="clearfix saved-card saved-card-<?php echo esc_html(strtolower($card['card_type'])); ?><?php echo ($checked != '' ? ' active' : '');?>">
                             <div class="saved-card-selector">
-                                <input <?php echo $checked; ?> class="saved-selector" type="radio" id="secure_submit_card_<?php echo $i; ?>" name="secure_submit_card" style="width:auto;" value="<?php echo $i; ?>" />
+                                <input <?php echo esc_html($checked); ?> class="saved-selector" type="radio" id="secure_submit_card_<?php echo esc_html($i); ?>" name="secure_submit_card" style="width:auto;" value="<?php echo esc_html($i); ?>" />
                             </div>
                             <div class="saved-card-info">
-                                <label for="secure_submit_card_<?php echo $i; ?>">
+                                <label for="secure_submit_card_<?php echo esc_html($i); ?>">
                                     <p>
-                                        <?php echo $card['card_type']; ?> ending in
-                                        <?php echo $card['last_four']; ?>
+                                        <?php echo esc_html($card['card_type']); ?> ending in
+                                        <?php echo esc_html($card['last_four']); ?>
                                     </p>
-                                    <p><span>Expires on <?php echo $card['exp_month'] . '/' . $card['exp_year']; ?></span></p>
+                                    <p><span>Expires on <?php echo esc_html($card['exp_month']) . '/' . esc_html($card['exp_year']); ?></span></p>
                                 </label>
                             </div>
                            <div class="card-type-logo"></div>
@@ -58,7 +58,7 @@
                     <!-- START NEW CARD -->
                     <div class="clearfix saved-card saved-card-new<?php echo ($checked != '' ? ' active' : '');?>">
                         <div class="saved-card-selector">
-                            <input <?php echo $checked; ?> type="radio" class="saved-selector" id="secure_submit_card_new" name="secure_submit_card" style="width:auto;" value="new" />
+                            <input <?php echo esc_html($checked); ?> type="radio" class="saved-selector" id="secure_submit_card_new" name="secure_submit_card" style="width:auto;" value="new" />
                         </div>
                         <div class="saved-card-info-new">
                             <label for="secure_submit_card_new">
@@ -81,12 +81,12 @@
       <?php $newClass .= !is_user_logged_in() ? ' no-saved-cards' : ''; ?>
       <?php $newClass .= is_user_logged_in() ? ' logged-in-no-saved-cards' : ''; ?>
     <?php endif; ?>
-    <div class="securesubmit-content new-card-content" <?php echo $newClass;?>" style="<?php echo $styletag; ?>">
+    <div class="securesubmit-content new-card-content" <?php echo esc_html($newClass);?>" style="<?php echo esc_html($styletag); ?>">
         <div class="securesubmit_new_card">
             <div class="securesubmit_new_card_info">
                 <div class="form-row form-row-wide no-bottom-margin hideable">
                     <label for="securesubmit_card_number">
-                        <?php _e("Credit Card number", 'wc_securesubmit') ?>
+                        <?php esc_html_e("Credit Card number", 'wc_securesubmit') ?>
                         <span class="required">*</span>
                     </label>
                     <div id="securesubmit_card_number"></div>
@@ -95,14 +95,14 @@
                 <div class="form-row hideable no-bottom-margin">
                     <div class="form-row-first half-row">
                         <label for="securesubmit_card_expiration">
-                            <?php _e("Expiration date", 'wc_securesubmit') ?>
+                            <?php esc_html_e("Expiration date", 'wc_securesubmit') ?>
                             <span class="required">*</span>
                         </label>
                         <div id="securesubmit_card_expiration"></div>
                     </div>
                     <div class="form-row-last half-row">
                         <label for="securesubmit_card_cvv">
-                            <?php _e("Security code", 'wc_securesubmit') ?>
+                            <?php esc_html_e("Security code", 'wc_securesubmit') ?>
                             <span class="required">*</span>
                         </label>
                         <div id="securesubmit_card_cvv"></div>
@@ -115,7 +115,7 @@
                         <p class="form-row form-row-wide securesubmit-save-cards">
                             <input type="checkbox" autocomplete="off" id="save_card" name="save_card" value="true" style="display:inline" />
                             <label for="save_card" style="display: inline;">
-                                <?php _e("Save Credit Card for Future Use", 'wc_securesubmit') ?>
+                                <?php esc_html_e("Save Credit Card for Future Use", 'wc_securesubmit') ?>
                             </label>
                         </p>
                     </div>
@@ -136,14 +136,14 @@ if ($this->allow_gift_cards && $gift_cards_allowed) : // Allow customers to pay 
           <!-- Start Gift Card -->
           <div class="securesubmit-content gift-card-content">
                 <div class="form-row form-row-wide" id="gift-card-row">
-                      <label id="gift-card-label" for="gift-card-number"><?php _e('Use a gift card', 'wc_securesubmit'); ?></label>
+                      <label id="gift-card-label" for="gift-card-number"><?php esc_html_e('Use a gift card', 'wc_securesubmit'); ?></label>
                       <div id="gift-card-input">
                             <input type="tel" placeholder="Gift card" id="gift-card-number" value="" class="input-text">
                             <input type="tel" placeholder="PIN" id="gift-card-pin" value="" class="input-text">
                             <p id="gift-card-error"></p>
                             <p id="gift-card-success"></p>
                       </div>
-                      <button id="apply-gift-card" class="button" style="visibility:hidden"><?php _e('Apply', 'wc_securesubmit'); ?></button>
+                      <button id="apply-gift-card" class="button" style="visibility:hidden"><?php esc_html_e('Apply', 'wc_securesubmit'); ?></button>
                       <script data-cfasync="false">
                           jQuery("#apply-gift-card").on('click', function (event) {
                               event.preventDefault();

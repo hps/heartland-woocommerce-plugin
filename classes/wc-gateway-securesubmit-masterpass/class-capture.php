@@ -41,7 +41,11 @@ class WC_Gateway_SecureSubmit_MasterPass_Capture
             }
 
             if ($masterpassPaymentStatus !== 'authorized') {
-                throw new Exception(__(sprintf('Transaction has already been %s', $masterpassPaymentStatus), 'wc_securesubmit'));
+                throw new Exception(sprintf(
+                    /* translators: %s: masterpassPaymentStatus */
+                    esc_html__('Transaction has already been %s','wc_securesubmit' ),
+                    $masterpassPaymentStatus)
+                );
             }
 
             $service = $this->masterpass->getService();

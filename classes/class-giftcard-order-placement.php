@@ -77,12 +77,13 @@ class giftCardOrderPlacement {
 
                 $giftcard_gateway->removeGiftCard( $gift_card->gift_card_id );
 
+                 /* translators: %s: lower balance than when it was originally applied to the order */
                 $balance_message = sprintf( __( 'The %s now has a lower balance than when it was originally applied to the order. It has been removed from the order. Please add it to the order again.', 'wc_securesubmit' ), $gift_card->gift_card_name );
 
                 // Void the already done transactions if any
                 $giftcard_gateway->processGiftCardVoid( $gift_card_sales, $order_awaiting_payment );
 
-                throw new Exception( $balance_message );
+                throw new Exception( esc_html($balance_message) );
 
             }
 
@@ -90,6 +91,7 @@ class giftCardOrderPlacement {
 
             if ( ! isset( $sale_response->responseCode ) || $sale_response->responseCode !== '0' ) {
 
+                /* translators: %s: unable to  process giftcard */
                 $sale_response_message = sprintf( __( 'The %s was not able to be processed.', 'wc_securesubmit' ), $gift_card->gift_card_name );
 
                 // Void the already done transactions if any
@@ -99,7 +101,7 @@ class giftCardOrderPlacement {
 
                 }
 
-                throw new Exception( $sale_response_message );
+                throw new Exception( esc_html($sale_response_message) );
 
             }
 
@@ -136,8 +138,8 @@ class giftCardOrderPlacement {
         foreach ( $gift_card_sales as $gift_card_sale ) {
 
             $balance_used = wc_price( $gift_card_sale->used_amount );
-
-            $note_text = sprintf( __( '%s was used on this order with a total used amount of %s. Transaction ID: %s ', 'wc_securesubmit' ), $gift_card_sale->gift_card_name, $balance_used, $gift_card_sale->transaction_id );
+            /* translators: %s: giftcard info*/
+            $note_text = sprintf( __( '%1$s was used on this order with a total used amount of %2$s. Transaction ID: %3$s ', 'wc_securesubmit' ), $gift_card_sale->gift_card_name, $balance_used, $gift_card_sale->transaction_id );
 
             $order = new WC_Order( $order_awaiting_payment );
             $order->add_order_note( $note_text );
@@ -162,9 +164,10 @@ class giftCardOrderPlacement {
         } else if (!empty($appliedCards)) {
 
             $giftcard_gateway = new WC_Gateway_SecureSubmit_GiftCards();
+            /* translators: %s: specific payment method for giftcard*/
             $message          = sprintf( __( 'You must use the %s payment method in order to use gift cards.', 'wc_securesubmit' ), $giftcard_gateway->gift_card_title );
 
-            throw new Exception( $message );
+            throw new Exception( esc_html($message) );
 
         }
 

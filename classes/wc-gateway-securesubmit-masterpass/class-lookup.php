@@ -112,6 +112,6 @@ class WC_Gateway_SecureSubmit_MasterPass_Lookup
             );
         }
 
-        wp_die(json_encode($payload));
+        wp_die(wp_json_encode($payload));
     }
 }

@@ -15,11 +15,11 @@ if (!defined('ABSPATH')) {
       <label>
         <input type="radio"
                name="masterpass_card_id"
-               value="<?= $card->CardId; ?>"
+               value="<?php echo esc_html($card->CardId); ?>"
                <?php if ($card->SelectedAsDefault == 'true'): ?> checked="checked"<?php endif;?> />
-        <?= $card->BrandName; ?>
-        ending in <?= $card->LastFour; ?>
-        expiring <?= $card->ExpiryMonth; ?>/<?= $card->ExpiryYear; ?>
+        <?php echo esc_html($card->BrandName); ?>
+        ending in <?php echo esc_html($card->LastFour); ?>
+        expiring <?php echo esc_html($card->ExpiryMonth); ?>/<?php echo esc_html($card->ExpiryYear); ?>
         <?php if ($card->SelectedAsDefault == 'true'): ?>(default)<?php endif; ?>
       </label><br />
     <?php endforeach; ?>
@@ -28,16 +28,16 @@ if (!defined('ABSPATH')) {
   <button type="button" class="button" id="securesubmit-buy-with-masterpass">
     <span class="masterpass-logo">
       <img src="https://www.mastercard.com/mc_us/wallet/img/en/US/mcpp_wllt_btn_chk_147x034px.png"
-           alt="<?= __('Buy with MasterPass'); ?>" />
+           alt="<?php echo esc_html('Buy with MasterPass'); ?>" />
     </span>
-    <span class="sr-only"><?= __('Buy with MasterPass'); ?></span>
+    <span class="sr-only"><?php echo esc_html('Buy with MasterPass'); ?></span>
   </button>
 
   <a href="http://www.mastercard.com/mc_us/wallet/learnmore/en"
      class="masterpass-learn-more"
      target="_blank"
-     title="<?= __('Learn more about MasterPass', 'wc_securesubmit'); ?>">
-    <?= __('Learn more', 'wc_securesubmit'); ?>
+     title="<?php echo esc_html('Learn more about MasterPass', 'wc_securesubmit'); ?>">
+    <?php echo esc_html('Learn more', 'wc_securesubmit'); ?>
   </a>
 
   <script data-cfasync="false" type="text/javascript">
