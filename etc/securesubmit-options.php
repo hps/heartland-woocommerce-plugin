@@ -112,6 +112,18 @@ return array(
             'verify'        => __('Verify', 'wc_securesubmit'),
         ),
     ),
+    'default_order_status' => array(
+        'title'       => __('default_order_status', 'wc_securesubmit'),
+        'type'        => 'select',
+        'description' => __('Choose whether you wish to capture funds immediately, authorize payment only for a delayed capture or verify and capture when the order ships.', 'wc_securesubmit'),
+        'default'     => 'sale',
+        'desc_tip'    => true,
+        'options'     => array(
+            'sale'          => __('Capture', 'wc_securesubmit'),
+            'authorization' => __('Authorize', 'wc_securesubmit'),
+            'verify'        => __('Verify', 'wc_securesubmit'),
+        ),
+    ),
     'txndescriptor' => array(
         'title'       => __('Order Transaction Descriptor', 'wc_securesubmit'),
         'type'        => 'text',
