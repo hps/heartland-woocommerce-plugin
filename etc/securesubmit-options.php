@@ -113,15 +113,15 @@ return array(
         ),
     ),
     'default_order_status' => array(
-        'title'       => __('default_order_status', 'wc_securesubmit'),
+        'title'       => __('Order Status', 'wc_securesubmit'),
         'type'        => 'select',
-        'description' => __('Choose whether you wish to capture funds immediately, authorize payment only for a delayed capture or verify and capture when the order ships.', 'wc_securesubmit'),
-        'default'     => 'sale',
+        'description' => __('Allows you to essentially override WooCommerce’s default order status handling by automatically updating to a status of your choosing on successful orders.', 'wc_securesubmit'),
+        'default'     => 'default',
         'desc_tip'    => true,
         'options'     => array(
-            'sale'          => __('Capture', 'wc_securesubmit'),
-            'authorization' => __('Authorize', 'wc_securesubmit'),
-            'verify'        => __('Verify', 'wc_securesubmit'),
+            'default'    => __('default', 'wc_securesubmit'),
+            'processing' => __('Procesing', 'wc_securesubmit'),
+            'on-hold'    => __('On Hold', 'wc_securesubmit'),
         ),
     ),
     'txndescriptor' => array(
