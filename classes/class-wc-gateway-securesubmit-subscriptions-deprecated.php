@@ -31,7 +31,7 @@ class WC_Gateway_SecureSubmit_Subscriptions_Deprecated extends WC_Gateway_Secure
         return $result;
     }
 
-    public function scheduledSubscriptionPayment($amount, $order, $productId = null)
+    public function scheduledSubscriptionPayment($amount, $order, $productId = null) : void
     {
         $result = $this->processSubscriptionPayment($order, wc_format_decimal($amount, 2));
 
@@ -101,7 +101,7 @@ class WC_Gateway_SecureSubmit_Subscriptions_Deprecated extends WC_Gateway_Secure
         return $paymentMethodToDisplay;
     }
 
-    protected function saveTokenMeta($order, $token)
+    protected function saveTokenMeta($order, $token) : void
     {
         $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
 

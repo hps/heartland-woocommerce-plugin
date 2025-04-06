@@ -9,25 +9,20 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
         parent::__construct();
 
         $this->supports = array(
-                            'products',
-                            'refunds',
-                            'subscriptions',
-                            'subscription_cancellation',
-                            'subscription_reactivation',
-                            'subscription_suspension',
-                            'subscription_amount_changes',
-                            'subscription_payment_method_change',
-                            'subscription_payment_method_change_admin',
-                            'subscription_payment_method_change_customer',
-                            'subscription_date_changes',
-                            'multiple_subscriptions',
-                          );
+            'products',
+            'refunds',
+            'subscriptions',
+            'subscription_cancellation',
+            'subscription_reactivation',
+            'subscription_suspension',
+            'subscription_amount_changes',
+            'subscription_payment_method_change',
+            'subscription_payment_method_change_admin',
+            'subscription_payment_method_change_customer',
+            'subscription_date_changes',
+            'multiple_subscriptions',
+        );
 
-        add_action('plugins_loaded', array($this, 'init'));
-    }
-
-    public function init()
-    {
         if (class_exists('WC_Subscriptions_Order')) {
             add_action('woocommerce_scheduled_subscription_payment_' . $this->id, array($this, 'scheduledSubscriptionPayment'), 10, 2);
             add_action('woocommerce_subscription_failing_payment_method_updated_' . $this->id, array($this, 'updateFailingPaymentMethod'), 10, 2);
@@ -181,7 +176,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
         }
     }
 
-    protected function saveTokenMeta($order, $token)
+    protected function saveTokenMeta(WC_Order $order, string $token) : void
     {
         $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
         $order = wc_get_order($orderId);
@@ -205,24 +200,27 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
             $subscriptionId = WC_SecureSubmit_Util::getData($subscription, 'get_id', 'id');
             
             if ( OrderUtil::custom_orders_table_usage_is_enabled() ) {
-                wc_get_order($subscriptionId)->update_meta_data('_securesubmit_card_token', $token);
+                $subscription->update_meta_data('_securesubmit_card_token', $token);
             } else {
                 update_post_meta($subscriptionId, '_securesubmit_card_token', $token);
             }
 
-            if (method_exists($order, 'set_payment_method')) {
-                $order->set_payment_method($this->id, array(
+            if (method_exists($subscription, 'set_payment_method')) {
+                $subscription->set_payment_method($token, array(
                     'post_meta' => array(
                         '_securesubmit_card_token' => $token,
                     ),
                 ));
-            }
+            }            
+
+            $subscription->save();
         }
     }
 
-    public function scheduledSubscriptionPayment($amount, $order, $productId = null)
+    public function scheduledSubscriptionPayment(float|string $amount, WC_Order $order, $productId = null) : void
     {
-        $orderPostStatus = WC_SecureSubmit_Util::getData($order, 'get_post_status', 'post_status');
+        $orderPostStatus = $order->get_status();
+
         if (empty($orderPostStatus)) {
             if ( OrderUtil::custom_orders_table_usage_is_enabled() ) {
                 $orderPostStatus = wc_get_order_status_name(WC_SecureSubmit_Util::getData($order, 'get_id', 'id'));
@@ -336,12 +334,12 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
         }        
     }
 
-    public function addSubscriptionPaymentMeta($meta, $subscription)
+    public function addSubscriptionPaymentMeta(array $meta, WC_Subscription $subscription) : array
     {
         $subscriptionId = WC_SecureSubmit_Util::getData($subscription, 'get_id', 'id');
 
         if (OrderUtil::custom_orders_table_usage_is_enabled()) {
-            $postMeta = wc_get_order($subscriptionId)->get_meta('_securesubmit_card_token');
+            $postMeta = $subscription->get_meta('_securesubmit_card_token');
         } else {
             $postMeta = get_post_meta($subscriptionId, '_securesubmit_card_token', true);
         }
@@ -354,6 +352,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
                 ),
             ),
         );
+
         return $meta;
     }
 
@@ -373,4 +372,3 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
         delete_user_meta($orderId, '_securesubmit_card_token');
     }
 }
-new WC_Gateway_SecureSubmit_Subscriptions();
