@@ -303,7 +303,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
             ));
 
             if (OrderUtil::custom_orders_table_usage_is_enabled()) {
-                wc_get_order($orderId)->add_meta_data('_transaction_id', $response->transactionId, true);
+                wc_get_order($orderId)->set_transaction_id($response->transactionId);
             } else {
                 add_post_meta($orderId, '_transaction_id', $response->transactionId, true);
             }
