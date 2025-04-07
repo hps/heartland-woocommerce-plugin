@@ -20,6 +20,10 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 2.3.4
+
+* Bugfix: resolved issue with failing subscription payments
+
 #### 2.3.3
 
 * Various updates to bring code in line with current WP and WooCommerce standards
