@@ -37,6 +37,9 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section
 
 == Changelog ==
+= 2.3.4 =
+* Bugfix: resolved issue with failing subscription payments
+
 = 2.3.3 =
 * Various updates to bring code in line with current WP and WooCommerce standards
 
