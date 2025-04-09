@@ -20,6 +20,10 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 2.3.5
+
+* Bugfix: correction to header formation
+
 #### 2.3.4
 
 * Bugfix: resolved issue with failing subscription payments
