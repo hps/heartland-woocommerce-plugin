@@ -10,7 +10,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
     public $payment = null;
     public $refund  = null;
     public $reverse = null;
-    private $pluginVersion = '2.3.4';
+    private $pluginVersion = '2.3.5';
     public $secret_key;
     public $public_key;
     public $custom_error;
