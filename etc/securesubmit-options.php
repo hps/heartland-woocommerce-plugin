@@ -119,7 +119,7 @@ return array(
         'default'     => 'default',
         'desc_tip'    => true,
         'options'     => array(
-            'default'    => __('default', 'wc_securesubmit'),
+            'default'    => __('Default', 'wc_securesubmit'),
             'processing' => __('Procesing', 'wc_securesubmit'),
             'on-hold'    => __('On Hold', 'wc_securesubmit'),
         ),
