@@ -15,7 +15,11 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
     public $public_key;
     public $custom_error;
     public $paymentaction;
-    public string $default_order_status;
+    /**
+     * 
+     * @var null|string
+     */
+    public ?string $default_order_status;
     public $txndescriptor;
     public $enable_anti_fraud;
     public $fraud_address;
