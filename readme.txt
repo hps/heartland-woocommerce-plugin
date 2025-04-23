@@ -1,7 +1,7 @@
 === WooCommerce SecureSubmit Gateway ===
 Contributors: markhagan
 Tags: woocommerce, woo, heartland, payment, tokenize
-Tested up to: 6.7.1
+Tested up to: 6.8
 Stable tag: trunk
 License: GPLv2
 License URI: https://github.com/hps/heartland-woocommerce-plugin/blob/master/LICENSE.md
@@ -37,6 +37,11 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section
 
 == Changelog ==
+= 3.0.0 =
+
+* Added support for automatic order status update on initial order creation
+* Require PHP Group supported PHP version (>= v8.1); https://www.php.net/supported-versions
+
 = 2.3.5 =
 * Bugfix: correction to header formation
 
