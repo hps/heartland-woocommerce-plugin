@@ -112,6 +112,18 @@ return array(
             'verify'        => __('Verify', 'wc_securesubmit'),
         ),
     ),
+    'default_order_status' => array(
+        'title'       => __('Order Status', 'wc_securesubmit'),
+        'type'        => 'select',
+        'description' => __('Allows you to essentially override WooCommerce’s default order status handling by automatically updating to a status of your choosing on successful orders.', 'wc_securesubmit'),
+        'default'     => 'default',
+        'desc_tip'    => true,
+        'options'     => array(
+            'default'    => __('Default', 'wc_securesubmit'),
+            'processing' => __('Procesing', 'wc_securesubmit'),
+            'on-hold'    => __('On Hold', 'wc_securesubmit'),
+        ),
+    ),
     'txndescriptor' => array(
         'title'       => __('Order Transaction Descriptor', 'wc_securesubmit'),
         'type'        => 'text',

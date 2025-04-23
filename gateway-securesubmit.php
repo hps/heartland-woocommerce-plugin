@@ -84,6 +84,10 @@ class WooCommerceSecureSubmitGateway
      */
     public function activate()
     {
+        if ( version_compare( PHP_VERSION, '8.1', '<' ) ) {
+            return;
+        }
+
         if (!class_exists('WC_Payment_Gateway')) {
             return;
         }

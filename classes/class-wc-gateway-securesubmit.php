@@ -15,6 +15,11 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
     public $public_key;
     public $custom_error;
     public $paymentaction;
+    /**
+     * 
+     * @var null|string
+     */
+    public ?string $default_order_status;
     public $txndescriptor;
     public $enable_anti_fraud;
     public $fraud_address;
@@ -52,6 +57,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
         $this->public_key              = $this->getSetting('public_key');
         $this->custom_error            = $this->getSetting('custom_error');
         $this->paymentaction           = $this->getSetting('paymentaction');
+        $this->default_order_status    = $this->getSetting('default_order_status');
         $this->txndescriptor           = $this->getSetting('txndescriptor');
         $this->enable_anti_fraud       = ($this->getSetting('enable_anti_fraud') == 'yes' ? true : false);
         $this->allow_fraud             = $this->getSetting('allow_fraud');
