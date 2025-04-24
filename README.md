@@ -20,6 +20,11 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+#### 3.0.0
+
+* Added support for automatic order status update on initial order creation
+* Require PHP Group supported PHP version (>= v8.1); https://www.php.net/supported-versions
+
 #### 2.3.5
 
 * Bugfix: correction to header formation
