@@ -10,7 +10,7 @@ class HpsException extends Exception
      */
     public $code           = null;
     /**
-     * @var null
+     * @var Exception|null
      */
     public $innerException = null;
 

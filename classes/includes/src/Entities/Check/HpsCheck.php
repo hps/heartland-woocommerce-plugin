@@ -42,7 +42,7 @@ class HpsCheck
      *
      * <b>NOTE:</b> If processing with Colonnade, SECCode is required for CHeck Sale transactions.
      *
-     * @var null
+     * @var
      */
     public $secCode       = null;
 }
