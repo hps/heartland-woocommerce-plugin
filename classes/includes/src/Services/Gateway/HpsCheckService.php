@@ -71,8 +71,8 @@ class HpsCheckService extends HpsSoapGatewayService
      * can be identified by the GatewayTxnid of the original or by the ClientTxnId of the original if provided on the
      * original Sale Transaction.
      *
-     * @param null $transactionId
-     * @param null $clientTransactionId
+     * @param $transactionId
+     * @param $clientTransactionId
      *
      * @return mixed
      * @throws \HpsCheckException
