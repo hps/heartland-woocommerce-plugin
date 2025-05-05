@@ -274,11 +274,18 @@ class WC_Gateway_SecureSubmit_Payment
 
                 do_action('wc_securesubmit_order_credit_card_details', $orderId, $card_type, $last_four);
 
-                if ($this->parent->paymentaction !== 'verify') {
-                    $order->payment_complete($response->transactionId);
+                if ( $this->parent->paymentaction !== 'verify' ) {
+                    $order->payment_complete( $response->transactionId );
 
-                    if ($this->parent->default_order_status !== 'default') {
-                        $order->update_status($this->parent->default_order_status);
+                    if ( $this->parent->default_order_status !== 'default' ) {
+                        if ( in_array (
+                            'wc-' . $this->parent->default_order_status,
+                            array_keys( wc_get_order_statuses() ),
+                            true
+                            )
+                        ) {
+                            $order->update_status($this->parent->default_order_status);
+                        }
                     }
                 }
 
