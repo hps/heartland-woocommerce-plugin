@@ -278,8 +278,14 @@ class WC_Gateway_SecureSubmit_Payment
                     $order->payment_complete($response->transactionId);
 
                     if ($this->parent->default_order_status !== 'default') {
-                        sleep(1);
-                        $order->update_status($this->parent->default_order_status);
+                        if (in_array(
+                            'wc-' . $this->parent->default_order_status,
+                            array_keys( wc_get_order_statuses() ),
+                            true
+                            )
+                        ) {
+                            $order->update_status($this->parent->default_order_status);
+                        }
                     }
                 }
 
