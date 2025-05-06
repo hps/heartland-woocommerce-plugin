@@ -11,7 +11,7 @@ class HpsCPCData
     /**
      * HpsCPCData constructor.
      *
-     * @param null $poNbr
+     * @param null|string $poNbr
      * @param null $taxType
      * @param null $taxAmt
      *

@@ -112,7 +112,7 @@ class HpsAltPaymentService extends HpsSoapGatewayService
     /**
      * @param      $transactionId
      * @param bool $isPartial
-     * @param null $partialAmount
+     * @param $partialAmount
      *
      * @return null
      * @throws \HpsException

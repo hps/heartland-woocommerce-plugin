@@ -54,11 +54,12 @@ class HpsSoapGatewayService extends HpsGatewayServiceAbstract implements HpsGate
 
         $url = $this->_gatewayUrlForKey();
         $header = array(
-            'Content-type: text/xml;charset="utf-8"',
-            'Accept: text/xml',
-            'SOAPAction: ""',
-            'Content-length: '.strlen($xml->saveXML()),
+            'Content-Type' => 'text/xml; charset=utf-8',
+            'Accept' => 'text/xml',
+            'SOAPAction' => '""',
+            'Content-length' => strlen($xml->saveXML()),
         );
+        
         $data = $xml->saveXML();
         // print "\n" . $data;
 

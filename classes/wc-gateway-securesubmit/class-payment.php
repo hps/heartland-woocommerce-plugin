@@ -43,11 +43,11 @@ class WC_Gateway_SecureSubmit_Payment
                 if (isset($_POST['secure_submit_card']) && $_POST['secure_submit_card'] === 'new') {
                     throw new Exception(
                         /* translators:  card detail error message */
-                        esc_html_e(
-                        'Please make sure your card details have been entered correctly
-                             and that your browser supports JavaScript.',
-                        'wc_securesubmit'
-                    ));
+                        esc_html__(
+                            'Please make sure your card details have been entered correctly and that your browser supports JavaScript.',
+                            'wc_securesubmit'
+                        )
+                    );
                 }
             }
 
@@ -260,18 +260,35 @@ class WC_Gateway_SecureSubmit_Payment
                     $verb = 'authorized';
                 }
 
-                $order->add_order_note(sprintf(
+                $order->add_order_note(
                     /* translators: %s: paymentaction */
-                    esc_html_e( 'SecureSubmit payment %s','wc_securesubmit' ),
-                    $verb) . ' (Transaction ID: ' . $response->transactionId . ')');
+                    esc_html__(
+                        sprintf(
+                            'SecureSubmit payment %s (Transaction ID: %s)',
+                            $verb,
+                            $response->transactionId,
+                        ),
+                        'wc_securesubmit'
+                    )
+                );
+
                 do_action('wc_securesubmit_order_credit_card_details', $orderId, $card_type, $last_four);
-                if ($this->parent->paymentaction !== 'verify') {
-                    $order->payment_complete($response->transactionId);
-                    
-                    if ($this->parent->default_order_status !== 'default') {
-                        $order->update_status($this->parent->default_order_status);
+
+                if ( $this->parent->paymentaction !== 'verify' ) {
+                    $order->payment_complete( $response->transactionId );
+
+                    if ( $this->parent->default_order_status !== 'default' ) {
+                        if ( in_array (
+                            'wc-' . $this->parent->default_order_status,
+                            array_keys( wc_get_order_statuses() ),
+                            true
+                            )
+                        ) {
+                            $order->update_status($this->parent->default_order_status);
+                        }
                     }
                 }
+
                 WC()->cart->empty_cart();
 
                 return array(
@@ -283,10 +300,11 @@ class WC_Gateway_SecureSubmit_Payment
                     $order->add_order_note(
                         sprintf(
                             /* translators: %s: Gateway error response */
-                            esc_html_e('SecureSubmit payment failed. Gateway response message: %s','wc_securesubmit' ),
-                            $e->getMessage())
-                           );
-                } catch (Exception $f) {
+                            esc_html__('SecureSubmit payment failed. Gateway response message: %s', 'wc_securesubmit'),
+                            $e->getMessage()
+                        )
+                    );
+                } catch (Exception) {
                     // eat it
                 }
 
