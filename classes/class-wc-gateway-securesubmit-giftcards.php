@@ -47,7 +47,7 @@ class WC_Gateway_SecureSubmit_GiftCards extends WC_Gateway_SecureSubmit
             $html .= '}';
             $html .= '</script>';
 
-            echo esc_html($html);
+            echo $html;
         }
     }
 
