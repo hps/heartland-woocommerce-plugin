@@ -37,6 +37,10 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section
 
 == Changelog ==
+= 3.0.2 =
+
+* Bugfix: Gift Card visible on HTML issue fixed
+
 = 3.0.1 =
 
 * Bugfix: Corrected issue where some order status is incorrectly set for some users
