@@ -20,6 +20,10 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+### 3.0.2 =
+
+* Bugfix: Gift Card visible on HTML issue fixed
+
 #### 3.0.1
 
 * Bugfix: Corrected issue where some order status is incorrectly set for some users
