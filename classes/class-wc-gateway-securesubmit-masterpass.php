@@ -176,7 +176,7 @@ class WC_Gateway_SecureSubmit_MasterPass extends WC_Payment_Gateway
 
         // MasterPass client library
         wp_enqueue_script('securesubmit_masterpass', $masterpassClient, array('jquery'), '6.0', true);
-        // MasterPass js controller for WooCommerce
+        // MasterPass js controller for eCommerce
         wp_enqueue_script('woocommerce_securesubmit_masterpass', plugins_url('assets/js/masterpass.js', dirname(__FILE__)), array('jquery'), '1.0', true);
 
         $masterpassParams = array(

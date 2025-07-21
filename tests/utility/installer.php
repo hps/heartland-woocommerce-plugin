@@ -23,7 +23,7 @@
 class WC_Gateway_SecureSubmit_Tests_Utility_Installer
 {
     /**
-     * Installs Secure Submit as a payment gateway for WooCommerce
+     * Installs Secure Submit as a payment gateway for eCommerce
      *
      * @return false
      */

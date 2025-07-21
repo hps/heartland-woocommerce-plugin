@@ -112,9 +112,9 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
             return;
 
         if (!$this->getSetting('secret_key')) {
-            echo '<div class="error"><p>WooCommerce SecureSubmit Gateway error: Please enter your secret key</p></div>';
+            echo '<div class="error"><p>Heartland SecureSubmit Gateway error: Please enter your secret key</p></div>';
         } elseif (!$this->getSetting('public_key')) {
-            echo '<div class="error"><p>WooCommerce SecureSubmit Gateway error: Please enter your public key</p></div>';
+            echo '<div class="error"><p>Heartland SecureSubmit Gateway error: Please enter your public key</p></div>';
         }
 
         WC_Gateway_SecureSubmit::$_alreadyRanChecks = true;
@@ -183,7 +183,7 @@ class WC_Gateway_SecureSubmit extends WC_Payment_Gateway
 
         $isCert = false !== strpos($this->public_key, '_cert_');
 
-        // SecureSubmit js controller for WooCommerce
+        // SecureSubmit js controller for eCommerce
         wp_enqueue_script('woocommerce_securesubmit', plugins_url('assets/js/securesubmit.js', dirname(__FILE__)), array('jquery'), $this->pluginVersion, true);
         // SecureSubmit custom CSS
         wp_enqueue_style('woocommerce_securesubmit', plugins_url('assets/css/securesubmit.css', dirname(__FILE__)), array(), $this->pluginVersion);

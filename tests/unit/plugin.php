@@ -28,7 +28,7 @@ class WC_Gateway_SecureSubmit_Tests_Unit_Plugin
     public function setUp()
     {
         parent::setUp();
-        $this->instance = new WooCommerceSecureSubmitGateway();
+        $this->instance = new HeartlandSecureSubmitGateway();
     }
 
     public function testInit()

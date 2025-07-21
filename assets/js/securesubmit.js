@@ -355,7 +355,7 @@
       }
     );
 
-    // use WooCommerce order button when Single-Use Token isn't needed
+    // use eCommerce order button when Single-Use Token isn't needed
     wc_securesubmit_params.hps.on("submit", "click", function () {
       if (!document.getElementById("secure_submit_card_new")) return;
       if (!document.getElementById("secure_submit_card_new").checked)

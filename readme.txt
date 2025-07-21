@@ -1,16 +1,16 @@
-=== WooCommerce SecureSubmit Gateway ===
+=== Heartland SecureSubmit Gateway ===
 Contributors: markhagan
-Tags: woocommerce, woo, heartland, payment, tokenize
+Tags: heartland, payment, tokenize, ecommerce
 Tested up to: 6.8
 Stable tag: trunk
 License: GPLv2
 License URI: https://github.com/hps/heartland-woocommerce-plugin/blob/master/LICENSE.md
 
-SecureSubmit allows merchants to take PCI-Friendly Credit Card payments on WooCommerce using Heartland Payment Systems Payment Gateway.
+SecureSubmit allows merchants to take PCI-Friendly Credit Card payments using Heartland Payment Systems Payment Gateway.
 
 == Description ==
 
-This plugin provides a Heartland Payment Systems Gateway addon to the WooCommerce plugin using our SecureSubmit card tokenization library.
+This plugin provides a Heartland Payment Systems Gateway addon using our SecureSubmit card tokenization library.
 
 Features of SecureSubmit:
 
@@ -20,12 +20,12 @@ Features of SecureSubmit:
 * Enables credit card saving for a friction-reduced checkout
 
 == Installation ==
-After you have installed and configured the main WooCommerce plugin use the following steps to install the Heartland Payment Systems Gateway addon:
-1. In your WordPress admin, go to Plugins > Add New and search for "WooCommerce SecureSubmit"
+After you have installed and configured the main eCommerce plugin use the following steps to install the Heartland Payment Systems Gateway addon:
+1. In your WordPress admin, go to Plugins > Add New and search for "Heartland SecureSubmit"
 2. Click Install, once installed click Activate
-3. Configure and Enable the gateway in WooCommerce by adding your public and secret Api Keys
+3. Configure and Enable the gateway by adding your public and secret Api Keys
 
-Note: Recent changes to WooCommerce's default configuration options have added a step or two to the initial setup process. Please see the following instructions for help reverting WooCommerce to shortcodes: https://woo.com/document/cart-checkout-blocks-status/#section-6
+Note: Recent changes to default configuration options have added a step or two to the initial setup process. Please see the following instructions for help reverting to shortcodes: https://woo.com/document/cart-checkout-blocks-status/#section-6
 
 == How do I get started? ==
 Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://developer.heartlandpaymentsystems.com/SecureSubmit/
@@ -58,16 +58,16 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 * Bugfix: resolved issue with failing subscription payments
 
 = 2.3.3 =
-* Various updates to bring code in line with current WP and WooCommerce standards
+* Various updates to bring code in line with current WP and eCommerce standards
 
 = 2.3.2 =
 * Minor update to configuration-screen descriptions
 
 = 2.3.1 =
-* Declare current incompatability with WooCommerce "Cart and Checkout Blocks"
+* Declare current incompatibility with "Cart and Checkout Blocks"
 
 = 2.3.0 =
-* Add support for WooCommerce HPOS
+* Add support for HPOS
 
 = 2.2.3 =
 * Allow 8-digit pin HMS gift cards
@@ -88,7 +88,7 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 * Adds order notes for failed transaction attempts
 
 = 2.1.0 =
-* Switch from iframe order button to default WooCommerce order button
+* Switch from iframe order button to default order button
 
 = 2.0.3 =
 * Fix invalid cache after plugin update
@@ -177,7 +177,7 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 
 = 1.11.10 =
 * Fix PayPal button issue in Firefox on cart page
-* Fix PayPal checkout issue when Terms and Conditions are set up through WooCommerce
+* Fix PayPal checkout issue when Terms and Conditions are set up
 
 = 1.11.9 =
 * Reformat all amounts being sent to the payment gateway to have only two decimal places
@@ -192,14 +192,14 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 * Fix issue with utility class when testing existence of properties on classes with magic methods
 
 = 1.11.5 =
-* Fix issue with WooCommerce 3.0 + WooCommerce Subscriptions that caused renewal payments to fail
+* Fix issue with eCommerce 3.0 + Subscriptions that caused renewal payments to fail
 * Remove deprecation notice from gift card code directly accessing object property
 
 = 1.11.4 =
-* Fix issue with WooCommerce 3.0 changes running with WooCommerce 2.6
+* Fix issue with eCommerce 3.0 changes running with eCommerce 2.6
 
 = 1.11.3 =
-* Add support for WooCommerce 3.0
+* Add support for eCommerce 3.0
 
 = 1.11.2 =
 * Fix errant PayPal prompt
@@ -262,7 +262,7 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 * Fix issues with MasterPass and production accounts
 
 = 1.7.2 =
-* Bug Fix - Resolves WooCommerce PayPal collision
+* Bug Fix - Resolves PayPal collision
 * Improvement - Sets Heartland PayPal enabled flag to false for new installs
 
 = 1.7.1 =
@@ -273,13 +273,13 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 
 = 1.6.0 =
 * Restructure SecureSubmit gateway class to reflect MasterPass structure
-* Enable capture/void functionality through WooCommerce interface
+* Enable capture/void functionality through interface
 
 = 1.5.1 =
 * Fix missing Subscriptions class
 
 = 1.5.0 =
-* Improve WooCommerce Subscriptions 2.0 support to support new features
+* Improve Subscriptions 2.0 support to support new features
 * Fix MasterPass lightbox firing when MasterPass not selected
 * Fix MasterPass warnings with missing variable and missing address
 * Fix Javascript library collision with slug used in wp_enqueue_script
@@ -302,7 +302,7 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 * Change bullet to middle dot
 
 = 1.3.2 =
-* Fix bug with WooCommerce checkout form submit handlers
+* Fix bug with checkout form submit handlers
 * Add support for subscriptions with free trials ($0 initial payment)
 
 = 1.3.1 =
@@ -311,7 +311,7 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 = 1.3.0 =
 * New option to use gateway-hosted iframes for credit card form fields
 * New user experience changes in credit card form
-* Fixed basic compatibility issues with WooCommerce Subscriptions 2.0. Support for new features has not been completed.
+* Fixed basic compatibility issues with Subscriptions 2.0. Support for new features has not been completed.
 
 = 1.2.5 =
 * Change CERT gateway url
@@ -332,7 +332,7 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 
 = 1.2.0 =
 * Updated SDK
-* Added support for recurring payments through WooCommerce Subscriptions
+* Added support for recurring payments through Subscriptions
 * Added capability for setting custom error messages
 
 = 1.1.1 =
