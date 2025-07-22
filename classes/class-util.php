@@ -3,8 +3,8 @@
 class WC_SecureSubmit_Util
 {
     /**
-     * Wraps WooCommerce data access APIs to ensure proper data is retrieved
-     * without the merchant experiencing issues during the WooCommerce
+     * Wraps eCommerce data access APIs to ensure proper data is retrieved
+     * without the merchant experiencing issues during the eCommerce
      * 2.6 -> 3.0 transition.
      *
      * @param object $object   Data object to test

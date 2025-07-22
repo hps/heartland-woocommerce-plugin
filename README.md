@@ -1,6 +1,6 @@
-## SecureSubmit WooCommerce Payment Gateway
+## SecureSubmit eCommerce Payment Gateway
 
-This extension allows WooCommerce to use the Heartland Payment Systems Gateway. All card data is tokenized using Heartland's SecureSubmit product.
+This extension allows eCommerce stores to use the Heartland Payment Systems Gateway. All card data is tokenized using Heartland's SecureSubmit product.
 
 ## Installation
 
@@ -44,7 +44,7 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 #### 2.3.3
 
-* Various updates to bring code in line with current WP and WooCommerce standards
+* Various updates to bring code in line with current WP and eCommerce standards
 
 #### 2.3.2
 
@@ -52,7 +52,7 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 #### 2.3.1
 
-* Declare current incompatability with WooCommerce "Cart and Checkout Blocks"
+* Declare current incompatibility with "Cart and Checkout Blocks"
 
 #### 2.3.0
 

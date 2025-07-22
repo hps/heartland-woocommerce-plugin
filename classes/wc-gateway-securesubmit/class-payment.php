@@ -319,7 +319,7 @@ class WC_Gateway_SecureSubmit_Payment
                         $this->parent->fraud_address,
                         'Suspicious order ' . ($this->parent->allow_fraud == 'yes' ? 'allowed' : 'declined') . ' (' . $orderId . ')',
                         'Hello,<br><br>Heartland has determined that you should review order ' . $orderId . ' for the amount of ' . $orderTotal . '.<p><br></p>' .
-                            '<p>You have received this email because you have configured the \'Email store owner on suspicious orders\' settings in the [WooCommerce | Checkout | SecureSubmit] options page.</p>'
+                            '<p>You have received this email because you have configured the \'Email store owner on suspicious orders\' settings in the [eCommerce | Checkout | SecureSubmit] options page.</p>'
                     );
                 }
 

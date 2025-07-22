@@ -1,15 +1,15 @@
 <?php
 /*
-Plugin Name: WooCommerce SecureSubmit Gateway
+Plugin Name: Heartland SecureSubmit Gateway
 Plugin URI: https://developer.heartlandpaymentsystems.com/SecureSubmit/
-Description: Heartland Payment Systems gateway for WooCommerce.
+Description: Heartland Payment Systems gateway for eCommerce.
 Version: 3.0.2
 WC tested up to: 9.8.1
 Author: SecureSubmit
 Author URI: https://developer.heartlandpaymentsystems.com/SecureSubmit/
 */
 
-class WooCommerceSecureSubmitGateway
+class HeartlandSecureSubmitGateway
 {
     const SECURESUBMIT_GATEWAY_CLASS = 'WC_Gateway_SecureSubmit';
 
@@ -167,4 +167,4 @@ class WooCommerceSecureSubmitGateway
         include_once('classes/class-giftcard-order-placement.php');
     }
 }
-new WooCommerceSecureSubmitGateway();
+new HeartlandSecureSubmitGateway();
