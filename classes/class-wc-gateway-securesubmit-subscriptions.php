@@ -138,6 +138,22 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
                                 'card_type' => $card_type,
                             ));
                             $saveToOrder = true;
+                        } else {
+                            // For subscriptions, we MUST have a token for renewals, even if token generation initially failed
+                            // Use the original token from the request if no new token was generated
+                            if (
+                                (
+                                    $this->orderHasSubscription(WC_SecureSubmit_Util::getData($order, 'get_id', 'id'))
+                                    || (
+                                        function_exists('wcs_is_subscription')
+                                        && wcs_is_subscription(WC_SecureSubmit_Util::getData($order, 'get_id', 'id'))
+                                    )
+                                )
+                                && !empty($securesubmitToken)
+                            ) {
+                                $tokenval = $securesubmitToken;
+                                $saveToOrder = true;
+                            }
                         }
                     }
                 }
@@ -183,6 +199,7 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
 
         if (OrderUtil::custom_orders_table_usage_is_enabled()) {
             $order->update_meta_data('_securesubmit_card_token', $token);
+            $order->save();
         } else {
             update_post_meta($orderId, '_securesubmit_card_token', $token);
         }
@@ -249,16 +266,150 @@ class WC_Gateway_SecureSubmit_Subscriptions extends WC_Gateway_SecureSubmit
 
         $orderId = WC_SecureSubmit_Util::getData($order, 'get_id', 'id');
 
+        // Try to get token from current order
         if (OrderUtil::custom_orders_table_usage_is_enabled()) {
             $tokenValue = wc_get_order($orderId)->get_meta('_securesubmit_card_token');
         } else {
             $tokenValue = get_post_meta($orderId, '_securesubmit_card_token', true);
         }
 
+        // Fallback: If missing, try parent order or subscription
+        if (empty($tokenValue)) {
+            // Try parent order - using proper WooCommerce method
+            $parentOrderId = 0;
+            if (method_exists($order, 'get_parent_id')) {
+                $parentOrderId = $order->get_parent_id();
+            } elseif (method_exists($order, 'get_meta')) {
+                $parentOrderId = $order->get_meta('_subscription_renewal');
+            }
+            if ($parentOrderId) {
+                if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                    $tokenValue = wc_get_order($parentOrderId)->get_meta('_securesubmit_card_token');
+                } else {
+                    $tokenValue = get_post_meta($parentOrderId, '_securesubmit_card_token', true);
+                }
+                if (!empty($tokenValue)) {
+                    // Save token to current order for future renewals
+                    if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                        wc_get_order($orderId)->update_meta_data('_securesubmit_card_token', $tokenValue);
+                        wc_get_order($orderId)->save();
+                    } else {
+                        update_post_meta($orderId, '_securesubmit_card_token', $tokenValue);
+                    }
+                }
+            }
+
+            // Try subscriptions for this order
+            if (empty($tokenValue)) {
+                // First try standard subscription lookup
+                if (function_exists('wcs_get_subscriptions_for_order')) {
+                    $subscriptions = wcs_get_subscriptions_for_order($orderId);
+                    foreach ($subscriptions as $subscription) {
+                        $subscriptionId = WC_SecureSubmit_Util::getData($subscription, 'get_id', 'id');
+                        if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                            $tokenValue = $subscription->get_meta('_securesubmit_card_token');
+                        } else {
+                            $tokenValue = get_post_meta($subscriptionId, '_securesubmit_card_token', true);
+                        }
+                        if (!empty($tokenValue)) {
+                            // Save token to current order for future renewals
+                            if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                                wc_get_order($orderId)->update_meta_data('_securesubmit_card_token', $tokenValue);
+                                wc_get_order($orderId)->save();
+                            } else {
+                                update_post_meta($orderId, '_securesubmit_card_token', $tokenValue);
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                // If still empty and this is a renewal order, try renewal-specific lookup
+                if (empty($tokenValue) && function_exists('wcs_order_contains_renewal') && wcs_order_contains_renewal($orderId)) {
+                    if (function_exists('wcs_get_subscriptions_for_renewal_order')) {
+                        $renewalSubscriptions = wcs_get_subscriptions_for_renewal_order($orderId);
+                        foreach ($renewalSubscriptions as $subscription) {
+                            $subscriptionId = WC_SecureSubmit_Util::getData($subscription, 'get_id', 'id');
+                            if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                                $tokenValue = $subscription->get_meta('_securesubmit_card_token');
+                            } else {
+                                $tokenValue = get_post_meta($subscriptionId, '_securesubmit_card_token', true);
+                            }
+                            if (!empty($tokenValue)) {
+                                // Save token to current order for future renewals
+                                if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                                    wc_get_order($orderId)->update_meta_data('_securesubmit_card_token', $tokenValue);
+                                    wc_get_order($orderId)->save();
+                                } else {
+                                    update_post_meta($orderId, '_securesubmit_card_token', $tokenValue);
+                                }
+                                break;
+                            } else {
+                                // Token not found on subscription, try to find the parent order that created this subscription
+                                if (method_exists($subscription, 'get_parent_id')) {
+                                    $subscriptionParentId = $subscription->get_parent_id();
+                                    if ($subscriptionParentId) {
+                                        if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                                            $parentTokenValue = wc_get_order($subscriptionParentId)->get_meta('_securesubmit_card_token');
+                                        } else {
+                                            $parentTokenValue = get_post_meta($subscriptionParentId, '_securesubmit_card_token', true);
+                                        }
+                                        if (!empty($parentTokenValue)) {
+                                            $tokenValue = $parentTokenValue;
+                                            // Save token to both subscription and current renewal order
+                                            if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                                                $subscription->update_meta_data('_securesubmit_card_token', $tokenValue);
+                                                $subscription->save();
+                                                wc_get_order($orderId)->update_meta_data('_securesubmit_card_token', $tokenValue);
+                                                wc_get_order($orderId)->save();
+                                            } else {
+                                                update_post_meta($subscriptionId, '_securesubmit_card_token', $tokenValue);
+                                                update_post_meta($orderId, '_securesubmit_card_token', $tokenValue);
+                                            }
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Last resort: Try to find any related subscription by customer
+            if (empty($tokenValue) && function_exists('wcs_get_users_subscriptions')) {
+                $customerId = $order->get_customer_id();
+                if ($customerId) {
+                    $userSubscriptions = wcs_get_users_subscriptions($customerId);
+                    foreach ($userSubscriptions as $subscription) {
+                        if ($subscription->get_payment_method() === $this->id) {
+                            $subscriptionId = WC_SecureSubmit_Util::getData($subscription, 'get_id', 'id');
+                            if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                                $tokenValue = $subscription->get_meta('_securesubmit_card_token');
+                            } else {
+                                $tokenValue = get_post_meta($subscriptionId, '_securesubmit_card_token', true);
+                            }
+                            if (!empty($tokenValue)) {
+                                error_log('[SecureSubmit] Fallback: Found token on customer subscription ID: ' . $subscriptionId);
+                                // Save token to current order for future renewals
+                                if (OrderUtil::custom_orders_table_usage_is_enabled()) {
+                                    wc_get_order($orderId)->update_meta_data('_securesubmit_card_token', $tokenValue);
+                                    wc_get_order($orderId)->save();
+                                } else {
+                                    update_post_meta($orderId, '_securesubmit_card_token', $tokenValue);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         $token = new HpsTokenData();
         $token->tokenValue = $tokenValue;
 
-        if (!isset($tokenValue) && $tokenData == null) {
+        if (empty($tokenValue) && $tokenData == null) {
             return new WP_Error('securesubmit_error', __('SecureSubmit payment token not found', 'wc_securesubmit'));
         }
 

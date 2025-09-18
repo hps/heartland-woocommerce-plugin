@@ -37,6 +37,11 @@ Get your Certification (Dev/Sandbox) Api Keys by creating an account on https://
 3. A view of the Manage Cards section
 
 == Changelog ==
+
+= 3.0.3 =
+
+* Bugfix: Subscriptions renewal issue fixed for lookup token
+
 = 3.0.2 =
 
 * Bugfix: Gift Card visible on HTML issue fixed
