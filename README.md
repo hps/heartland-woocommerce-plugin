@@ -20,6 +20,9 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+### 3.0.3 =
+* Bugfix: Subscriptions renewal issue fixed for lookup token
+
 ### 3.0.2 =
 
 * Bugfix: Gift Card visible on HTML issue fixed
