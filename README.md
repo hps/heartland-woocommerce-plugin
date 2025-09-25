@@ -20,7 +20,12 @@ Download the contents and extract to your WordPress plugin folder. Activate.
 
 ## Changelog
 
+### 3.0.4 =
+
+* Bugfix: For User my account card details not visible
+
 ### 3.0.3 =
+
 * Bugfix: Subscriptions renewal issue fixed for lookup token
 
 ### 3.0.2 =
