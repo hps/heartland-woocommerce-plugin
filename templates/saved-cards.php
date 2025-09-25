@@ -6,20 +6,20 @@
     
     <?php foreach ($cards as $i => $card): ?>
 
-        <div class="clearfix saved-card saved-card-<?php esc_html( strtolower($card['card_type']) ); ?>">
+        <div class="clearfix saved-card saved-card-<?php echo esc_attr(strtolower($card['card_type'])); ?>">
             <div class="account-saved-card-logo">
                 <div class="card-type-logo"></div>
             </div>
             <div class="saved-card-info">
-                <label for="secure_submit_card_0">
-                    <p><?php esc_html($card['card_type']); ?> ending in <?php esc_html($card['last_four']); ?></p>
-                    <p><span>Expires on <?php esc_html($card['exp_month']); ?>/<?php esc_html($card['exp_year']); ?></span></p>
+                <label for="secure_submit_card_<?php echo esc_attr($i); ?>">
+                    <p><?php echo esc_html($card['card_type']); ?> ending in <?php echo esc_html($card['last_four']); ?></p>
+                    <p><span>Expires on <?php echo esc_html($card['exp_month']); ?>/<?php echo esc_html($card['exp_year']); ?></span></p>
                 </label>
             </div>
             
             <form action="#saved-cards" method="POST">
                 <?php wp_nonce_field('secure_submit_del_card'); ?>
-                <input type="hidden" name="delete_card" value="<?php esc_attr($i); ?>">
+                <input type="hidden" name="delete_card" value="<?php echo esc_attr($i); ?>">
                 <input type="submit" value="Delete Card">
             </form>
            
